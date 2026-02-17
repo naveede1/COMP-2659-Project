@@ -1,31 +1,38 @@
-#include <raster.h>
+#include "raster.h"
 
-#define INVADER_HEIGHT 8
-
-int invader_bitmap[INVADER_HEIGHT] = {
-    0x0000,
-    0x0810,
-    0x0810,
-    0x0420,
-    0x0240,
-    0x1FF8,
-    0x2004,
-    0x4662,
-};
+#define SCREEN_BYTES_PER_ROW 80
 
 void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height)
 {
-    for (int r = 0; r < height; r++)
-    {
-        UINT16 data = invader_bitmap[r];
+    static const UINT8 bitmap[8] = {
+        /*Smilly sprite*/
+        0x3C,
+        0x42,
+        0xA5,
+        0x81,
+        0xA5,
+        0x99,
+        0x42,
+        0x3C};
 
-        // loop 8 bits
-        for (int b = 0; b < 8; b++)
+    UINT16 byte_col = col >> 3; /* byte offset */
+    UINT16 bit_shift = col & 7; /* sub-byte */
+    UINT16 r;
+
+    for (r = 0; r < height; r++)
+    {
+        UINT32 offset = (row + r) * SCREEN_BYTES_PER_ROW + byte_col;
+        UINT8 *dest = base + offset;
+        UINT8 src = bitmap[r & 7]; /* wrap if height > 8*/
+
+        if (bit_shift == 0)
         {
-            if (data & (0x80 >> b)) // pixel ON
-            {
-                plot_pixel(base, row + r, col + b);
-            }
+            *dest |= src;
+        }
+        else
+        {
+            *dest |= (src >> bit_shift);
+            *(dest + 1) |= (src << (8 - bit_shift));
         }
     }
 }
