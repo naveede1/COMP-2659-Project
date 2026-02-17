@@ -1,7 +1,15 @@
 #include "raster.h"
+#include <osbind.h>
 
 #define SCREEN_BYTES_PER_ROW 80
 
+int main()
+{
+    UINT8 *base = Physbase();
+
+    plot_bitmap_8(base, 16, 24, 8);
+    return 0;
+}
 void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height)
 {
     static const UINT8 bitmap[8] = {
@@ -23,7 +31,7 @@ void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height)
     {
         UINT32 offset = (row + r) * SCREEN_BYTES_PER_ROW + byte_col;
         UINT8 *dest = base + offset;
-        UINT8 src = bitmap[r & 7]; /* wrap if height > 8*/
+        UINT8 src = bitmap[r & 7]; /* wrap if height > 8           */
 
         if (bit_shift == 0)
         {
