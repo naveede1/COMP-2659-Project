@@ -49,4 +49,4 @@ void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 wi
         *loc = *loc + SCREEN_WIDTH - width;
 
     }    
-}bran
+}
