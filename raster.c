@@ -4,7 +4,14 @@
 #define SCREEN_BYTES_PER_ROW 80
 #define INVADER_HEIGHT 16
 #define BLOCK_HEIGHT 32
+int main()
+{
 
+    UINT8 *base = Physbase();
+    plot_bitmap_8(base, 100, 40, 8);
+    plot_bitmap_16((UINT16 *)base, 100, 80, 16);
+    plot_bitmap_32((UINT32 *)base, 100, 120, 32);
+}
 void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height)
 {
     /*Smilly face*/
