@@ -1,9 +1,9 @@
 #ifndef RASTER_H
 #define RASTER_H
 
-typedef unsigned int UINT8;
-typedef unsigned int UINT16;
-typedef unsigned int UINT32;
+typedef unsigned char UINT8;
+typedef unsigned short UINT16;
+typedef unsigned long UINT32;
 
 /*----- Function: clear_screen -----
 v
