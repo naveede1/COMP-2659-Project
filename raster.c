@@ -80,7 +80,7 @@ void plot_character(UINT8 *base, UINT16 row, UINT16 col, char c)
     }
 }
 
-void plot_string(UINT8 *base, UINT16 row, UINT16 col, const char *str)
+void plot_string(UINT8 *base, UINT16 row, UINT16 col, char *str)
 {
     while (*str)
     {

@@ -180,6 +180,6 @@ void plot_character(UINT8 *base, UINT16 row, UINT16 col, char ch);
 
  OUTPUT: None
 */
-void plot_string(UINT8 *base, UINT16 row, UINT16 col, const char *ch);
+void plot_string(UINT8 *base, UINT16 row, UINT16 col, char *ch);
 
 #endif
