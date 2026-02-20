@@ -116,3 +116,13 @@ void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col, UINT16 end_row,
         }
     }
 }
+
+void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width) {
+    UINT8 *byte_base = (UINT8 *)base;
+
+    UINT8 *top_left_corner = byte_base + row * 80 + (col >> 3);
+    UINT8 *top_right_corner = top_left_corner + width - 1;
+    UINT8 *bottom_right = 
+
+
+}
