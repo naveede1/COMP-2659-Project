@@ -34,11 +34,11 @@ void plot_pixel(UINT8 *base, UINT16 row, UINT16 col) {
 
 void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length) {
     UINT8 *byte_base = (UINT8 *)base;
-    UINT32 *start_byte_loc = byte_base + row * 80 + (col >> 3);
-    UINT32 *end_byte_loc = byte_base + row * 80 + ((col + length - 1) >> 3);
+    UINT8 *start_byte_loc = byte_base + col * 80 + (row >> 3);
+    UINT8 *end_byte_loc = byte_base + col * 80 + ((row + length - 1) >> 3);
 
-    UINT8 start_bit_location = row & 7;
-    UINT8 end_bit_location = ((row + (length - 1)) & 7); 
+    UINT8 start_bit_location = col & 7;
+    UINT8 end_bit_location = (col + length - 1) & 7;
 
     UINT8 *curr = start_byte_loc;
 
