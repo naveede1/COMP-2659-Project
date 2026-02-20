@@ -11,6 +11,7 @@ int main() {
         UINT16 col = 100;
         UINT16 length = 50;
         UINT16 width = 80;
+        UINT16 side = 40;
 
         UINT16 start_row;
         UINT16 end_row;
@@ -21,7 +22,8 @@ int main() {
         /*plot_horizontal_line(base, row, col, length);*/
         /*plot_vertical_line(base, row, col, length);*/
         /*plot_line(base, start_row, start_col, end_row, end_col);*/
-        plot_rectangle(base, row, col, length, width);
+        /*plot_rectangle(base, row, col, length, width);*/
+        plot_square(base, row, col, side);
         
     return 0;
 }
@@ -127,4 +129,18 @@ void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 
     plot_horizontal_line(base, row, bottom_horizontal_line_col, width);
     plot_vertical_line(base, row, col, length);
     plot_vertical_line(base, right_vertical_line_row, col, length);
+}
+
+void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side) {
+    UINT16 right_vertical_line_row = row + side - 1;    
+    UINT16 bottom_horizontal_line_col = col + side - 1;
+
+    plot_horizontal_line(base, row, col, side);
+    plot_horizontal_line(base, row, bottom_horizontal_line_col, side);
+    plot_vertical_line(base, row, col, side);
+    plot_vertical_line(base, right_vertical_line_row, col, side);
+}
+
+void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 height, UINT8 direction) {
+    
 }
