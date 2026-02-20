@@ -15,17 +15,18 @@ int main(void)
 
     linea0(); /*REQUIRED for V_FNT_AD*/
     clear_screen(base32);
-    plot_character(base, 0, 0, 'A');
-
+    /*plot_character(base, 0, 0, 'A');
+    plot_string(base, 16, 0, "Hello, World!");
+    plot_string(base, 32, 0, "qwertyuiopasdfghjklzxcvbnm[];'./,<>?L:{}|+_-=-0987654321`~");
+*/
     Cnecin();
     return 0;
 }
 
 void clear_screen(UINT32 *base)
-{
+{ /*From Aidan's*/
     int i;
     UINT32 *loc;
-
     i = 0;
     loc = base;
     while (i++ < LONGS_PER_SCREEN)
@@ -33,7 +34,7 @@ void clear_screen(UINT32 *base)
 }
 
 void plot_pixel(UINT8 *base, UINT16 row, UINT16 col)
-{
+{ /*from Naveed's PR*/
     if (row >= 0 && row < SCREEN_WIDTH && col >= 0 && col < SCREEN_HEIGHT)
     {
         *(base + col * 80 + (row >> 3)) |= 1 << (7 - (row & 7));
@@ -47,22 +48,22 @@ void plot_character(UINT8 *base, UINT16 row, UINT16 col, char c)
     UINT32 offset;
     UINT8 *dest;
     UINT8 src;
-    /* Check if it is within the screen boundaries */
+    /*Check if it is within the screen boundaries*/
     if (row >= SCREEN_HEIGHT || col >= SCREEN_WIDTH)
+    {
         return;
-
-    font = (UINT8 *)V_FNT_AD; /* get start add. of font table */
+    }
+    font = (UINT8 *)V_FNT_AD; /*Get the start add. of font table*/
     byte_col = (UINT16)(col >> 3);
     bit_shift = (UINT16)(col & 7);
-
     for (r = 0; r < 16; r++)
     {
         if ((UINT16)(row + r) >= SCREEN_HEIGHT)
+        {
             return;
-
-        /* row r of glyph c: font[c + 256*r] from lab*/
+        }
+        /* row r of glyph c: font[c + 256 * r] ?//from lab*/
         src = font[(UINT16)(UINT8)c + (UINT16)(256 * r)];
-
         offset = (UINT32)(row + r) * SCREEN_BYTES_PER_ROW + byte_col;
         dest = base + offset;
         if (bit_shift == 0)
@@ -73,7 +74,18 @@ void plot_character(UINT8 *base, UINT16 row, UINT16 col, char c)
         {
             dest[0] |= (UINT8)(src >> bit_shift);
             if (byte_col < (SCREEN_BYTES_PER_ROW - 1))
+            {
                 dest[1] |= (UINT8)(src << (8 - bit_shift));
+            }
         }
+    }
+}
+
+void plot_string(UINT8 *base, UINT16 row, UINT16 col, const char *str)
+{
+    while (*str)
+    {
+        plot_character(base, row, col, *str++);
+        col += 8; /*Move to the next character position*/
     }
 }
