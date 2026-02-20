@@ -5,6 +5,7 @@
 #define INVADER_HEIGHT 16
 #define BLOCK_HEIGHT 32
 int main()
+
 {
 
     UINT8 *base = Physbase();
