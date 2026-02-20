@@ -12,6 +12,7 @@ v
  INPUT: Address(UINT32*): to the start of the screen
 
  OUTPUT: None
+
 */
 void clear_screen(UINT32 *base);
 
@@ -130,7 +131,7 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
 
  OUTPUT: None
 */
-void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height);
+void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height, const UINT8 *bitmap);
 
 /*----- Function: plot_bitmap_16 -----
 
@@ -143,7 +144,7 @@ void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height);
  OUTPUT: None
 */
 
-void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height);
+void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height, const UINT16 *bitmap);
 
 /*----- Function: plot_bitmap_32 -----
 
@@ -155,7 +156,7 @@ void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height);
 
  OUTPUT: None
 */
-void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col, UINT16 height);
+void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col, UINT16 height, const UINT32 *bitmap);
 
 /*----- Function: plot_character -----
 
@@ -180,5 +181,73 @@ void plot_character(UINT8 *base, UINT16 row, UINT16 col, char ch);
  OUTPUT: None
 */
 void plot_string(UINT8 *base, UINT16 row, UINT16 col, char *ch);
+
+static const UINT16 invader_bitmap[16] =
+    {
+        0x0000,
+        0x0810,
+        0x0810,
+        0x0420,
+        0x0240,
+        0x1FF8,
+        0x2004,
+        0x4662,
+        0x4002,
+        0x43C2,
+        0x2424,
+        0x1008,
+        0x0FF0,
+        0x0240,
+        0x0E70,
+        0x0000,
+};
+
+static const UINT8 smiley_bitmap[8] =
+    {
+        0x3C,
+        0x42,
+        0xA5,
+        0x81,
+        0xA5,
+        0x99,
+        0x42,
+        0x3C,
+};
+
+static const UINT32 block_bitmap[32] =
+    {
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+        0xFFFFFFFF,
+};
 
 #endif

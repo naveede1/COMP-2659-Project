@@ -2,30 +2,19 @@
 #include <osbind.h>
 
 #define SCREEN_BYTES_PER_ROW 80
-#define INVADER_HEIGHT 16
-#define BLOCK_HEIGHT 32
-int main()
 
+int main()
 {
 
     UINT8 *base = Physbase();
-    plot_bitmap_8(base, 100, 40, 8);
-    plot_bitmap_16((UINT16 *)base, 100, 80, 16);
-    plot_bitmap_32((UINT32 *)base, 100, 120, 32);
-}
-void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height)
-{
-    /*Smilly face*/
-    static const UINT8 bitmap[8] = {
-        0x3C,
-        0x42,
-        0xA5,
-        0x81,
-        0xA5,
-        0x99,
-        0x42,
-        0x3C};
+    plot_bitmap_8(base, 100, 40, 8, smiley_bitmap);
+    plot_bitmap_16((UINT16 *)base, 100, 80, 16, invader_bitmap);
+    plot_bitmap_32((UINT32 *)base, 100, 120, 32, block_bitmap);
 
+    return 0;
+}
+void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height, const UINT8 *bitmap_8)
+{
     UINT16 byte_col = col >> 3; /*byte offset*/
     UINT16 bit_shift = col & 7; /*sub-byte*/
     UINT16 r;
@@ -34,7 +23,7 @@ void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height)
         /*Compute offset framebuffer: (row+r) * bytes_per_row + column_byte*/
         UINT32 offset = (row + r) * SCREEN_BYTES_PER_ROW /*divide by 1 byte*/ + byte_col;
         UINT8 *dest = base + offset;
-        UINT8 src = bitmap[r & 7]; /*wrapping when height > 8*/
+        UINT8 src = bitmap_8[r & 7]; /*wrapping when height > 8*/
 
         /* If column is byte-alligned, OR the source byte directly */
         if (bit_shift == 0)
@@ -51,28 +40,8 @@ void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height)
     }
 }
 
-void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height)
+void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height, const UINT16 *bitmap_16)
 {
-    /*from tutorial*/
-    static const UINT16 invader_bitmap[16] =
-        {
-            0x0000,
-            0x0810,
-            0x0810,
-            0x0420,
-            0x0240,
-            0x1FF8,
-            0x2004,
-            0x4662,
-            0x4002,
-            0x43C2,
-            0x2424,
-            0x1008,
-            0x0FF0,
-            0x0240,
-            0x0E70,
-            0x0000,
-        };
 
     UINT16 word_col = col >> 4; /*word offset*/
     UINT16 bit_shift = col & 15;
@@ -83,7 +52,7 @@ void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height)
         UINT32 offset = (row + r) * (SCREEN_BYTES_PER_ROW / 2) + word_col;
         UINT16 *dest = base + offset;
         /*wraps index with mask*/
-        UINT16 src = invader_bitmap[r & (INVADER_HEIGHT - 1)]; /*wrap if height > INVADER_HEIGHT*/
+        UINT16 src = bitmap_16[r & (15)]; /*wrap if height > INVADER_HEIGHT*/
 
         /*If alligned, OR the source directly*/
         if (bit_shift == 0)
@@ -99,18 +68,8 @@ void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height)
     }
 }
 
-void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col, UINT16 height)
+void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col, UINT16 height, const UINT32 *bitmap_32)
 {
-    static const UINT32 bitmap[BLOCK_HEIGHT] = {
-        0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
-        0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
-        0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
-        0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
-        0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
-        0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
-        0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
-        0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
-
     UINT8 *base8 = (UINT8 *)base;
     UINT16 byte_col = col >> 3; /*computing the byte offset within a row*/
     UINT16 bit_shift = col & 7; /*computing the bit shift within a byte*/
@@ -119,7 +78,7 @@ void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col, UINT16 height)
     {
         /* Destination pointer into framebuffer for this row*/
         UINT8 *dest = base8 + (UINT32)(row + r) * SCREEN_BYTES_PER_ROW + byte_col;
-        UINT32 src = bitmap[r & 31]; /*wrapping at 32 bits*/
+        UINT32 src = bitmap_32[r & 31]; /*wrapping at 32 bits*/
 
         UINT8 b0 = (src >> 24);
         UINT8 b1 = (src >> 16);
