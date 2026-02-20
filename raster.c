@@ -17,8 +17,7 @@ int main(void)
     clear_screen(base32);
     /*plot_character(base, 0, 0, 'A');
     plot_string(base, 16, 0, "Hello, World!");
-    plot_string(base, 32, 0, "qwertyuiopasdfghjklzxcvbnm[];'./,<>?L:{}|+_-=-0987654321`~");
-*/
+    plot_string(base, 32, 0, "qwertyuiopasdfghjklzxcvbnm[];'./,<>?L:{}|+_-=-0987654321`~"); /*Test the character plotting and string plotting functions (This for all keys)*/
     Cnecin();
     return 0;
 }
