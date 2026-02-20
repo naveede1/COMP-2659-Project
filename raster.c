@@ -7,9 +7,10 @@
 int main() {
 
     	UINT32 *base = Physbase();
-        UINT16 row;
-        UINT16 col;
-        UINT16 length;
+        UINT16 row = 200;
+        UINT16 col = 100;
+        UINT16 length = 50;
+        UINT16 width = 80;
 
         UINT16 start_row;
         UINT16 end_row;
@@ -20,6 +21,7 @@ int main() {
         /*plot_horizontal_line(base, row, col, length);*/
         /*plot_vertical_line(base, row, col, length);*/
         /*plot_line(base, start_row, start_col, end_row, end_col);*/
+        plot_rectangle(base, row, col, length, width);
         
     return 0;
 }
@@ -34,11 +36,11 @@ void plot_pixel(UINT8 *base, UINT16 row, UINT16 col) {
 
 void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length) {
     UINT8 *byte_base = (UINT8 *)base;
-    UINT32 *start_byte_loc = byte_base + row * 80 + (col >> 3);
-    UINT32 *end_byte_loc = byte_base + row * 80 + ((col + length - 1) >> 3);
+    UINT8 *start_byte_loc = byte_base + col * 80 + (row >> 3);
+    UINT8 *end_byte_loc = byte_base + col * 80 + ((row + length - 1) >> 3);
 
-    UINT8 start_bit_location = row & 7;
-    UINT8 end_bit_location = ((row + (length - 1)) & 7); 
+    UINT8 start_bit_location = col & 7;
+    UINT8 end_bit_location = (col + length - 1) & 7;
 
     UINT8 *curr = start_byte_loc;
 
@@ -118,11 +120,11 @@ void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col, UINT16 end_row,
 }
 
 void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width) {
-    UINT8 *byte_base = (UINT8 *)base;
-
-    UINT8 *top_left_corner = byte_base + row * 80 + (col >> 3);
-    UINT8 *top_right_corner = top_left_corner + width - 1;
-    UINT8 *bottom_right = 
-
-
+    UINT16 right_vertical_line_row = row + width - 1;    
+    UINT16 bottom_horizontal_line_col = col + length - 1;
+                                                  
+    plot_horizontal_line(base, row, col, width);
+    plot_horizontal_line(base, row, bottom_horizontal_line_col, width);
+    plot_vertical_line(base, row, col, length);
+    plot_vertical_line(base, right_vertical_line_row, col, length);
 }
