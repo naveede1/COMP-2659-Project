@@ -5,7 +5,7 @@
 #define SCREEN_BYTES_PER_ROW 80
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 400
-
+#define LONGS_PER_SCREEN 8000
 int main()
 {
     /*
@@ -23,23 +23,24 @@ int main()
 
     return 0;
 }
+
 void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width)
 {
-    UINT8 *base8 = (UINT8 *)base; /* cast to byte pointer for byte-level access */
+    UINT8 *base8 = (UINT8 *)base;
 
     UINT16 r;
-    UINT16 start_byte = col >> 3;             /*index of 1st byte in the row the region*/
-    UINT16 end_byte = (col + width - 1) >> 3; /*last byte index in the row the region*/
+    UINT16 start_byte = col >> 3;
+    UINT16 end_byte = (col + width - 1) >> 3;
 
-    UINT8 start_bit = col & 7;             /*bit pos within the first byte where it starts*/
-    UINT8 end_bit = (col + width - 1) & 7; /*bit pos within the last byte where it ends */
+    UINT8 start_bit = col & 7;
+    UINT8 end_bit = (col + width - 1) & 7;
 
-    for (r = row; r < row + length; r++)
+    for (r = row; r < (row + length); r++)
     {
-        UINT8 *line = base8 + (UINT32)r * SCREEN_BYTES_PER_ROW; /*pointer to the start of row r*/
-
-        UINT8 *start = line + start_byte; /*pointer to the first byte of the region on this row*/
-        UINT8 *end = line + end_byte;     /*pointer to the last byte of the region on this row */
+        UINT8 *line = base8 + (UINT32)r * SCREEN_BYTES_PER_ROW;
+        /* r to UINT32 to prevent 16-bit overflow when computing byte offset */
+        UINT8 *start = line + start_byte;
+        UINT8 *end = line + end_byte;
 
         UINT8 *curr = start;
 
@@ -49,31 +50,30 @@ void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 wi
 
             if ((curr == start) && (curr == end))
             {
-                /* region fits within a single byte, mask only the bits between start_bit and end_bit */
-                UINT8 left = 0xFF >> start_bit;      /*1s from start_bit to bit 0*/
-                UINT8 right = 0xFF << (7 - end_bit); /*1s from bit 7 to end_bit*/
-                mask = left & right;                 /*overlap gives us exactly what bits to clear*/
+                /*clear bits start_bit to end_bit*/
+                UINT8 left = 0xFF >> start_bit;
+                UINT8 right = 0xFF << (7 - end_bit);
+                mask = left & right;
                 *curr &= ~mask;
             }
             else if (curr == start)
             {
-                /* first byte: clear only from start_bit to the end of the byte */
+                /* clear from start_bit*/
                 mask = 0xFF >> start_bit;
                 *curr &= ~mask;
             }
             else if (curr == end)
             {
-                /* last byte: clear only from the start of the byte to end_bit */
+                /* clear from left edge of this byte up to end_bit */
                 mask = 0xFF << (7 - end_bit);
                 *curr &= ~mask;
             }
             else
             {
-                /*Clearing all bits in middle*/
                 *curr = 0x00;
             }
 
-            curr++; /* move to the next byte */
+            curr++;
         }
     }
 }
