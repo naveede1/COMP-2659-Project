@@ -4,26 +4,6 @@
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 400
 
-int main() {
-
-    	UINT32 *base = Physbase();
-        UINT16 row;
-        UINT16 col;
-        UINT16 length;
-
-        UINT16 start_row;
-        UINT16 end_row;
-        UINT16 start_col;
-        UINT16 end_col;
-
-        /*plot_pixel(base, row, col);*/
-        /*plot_horizontal_line(base, row, col, length);*/
-        /*plot_vertical_line(base, row, col, length);*/
-        /*plot_line(base, start_row, start_col, end_row, end_col);*/
-        
-    return 0;
-}
-
 void plot_pixel(UINT8 *base, UINT16 row, UINT16 col) {
     UINT8 *byte_base = (UINT8 *)base;
 
