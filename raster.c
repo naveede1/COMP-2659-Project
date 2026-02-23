@@ -5,10 +5,8 @@
 #define SCREEN_HEIGHT 400
 
 void plot_pixel(UINT8 *base, UINT16 row, UINT16 col) {
-    UINT8 *byte_base = (UINT8 *)base;
-
     if (row >= 0 && row < SCREEN_WIDTH && col >= 0 && col < SCREEN_HEIGHT){
-        *(byte_base + col * 80 + (row >> 3)) |= 1 << (7 - (row & 7));
+        *(base + col * 80 + (row >> 3)) |= 1 << (7 - (row & 7));
     }
 }
 
