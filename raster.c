@@ -4,34 +4,6 @@
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 400
 
-int main() {
-
-    	UINT32 *base = Physbase();
-        UINT16 row = 200;
-        UINT16 col = 100;
-        UINT16 length = 50;
-        UINT16 width = 80;
-        UINT16 side = 40;
-        UINT16 base_length = 20;
-        UINT16 height = 30;
-        UINT8 direction = 3;
-
-        UINT16 start_row;
-        UINT16 end_row;
-        UINT16 start_col;
-        UINT16 end_col;
-
-        /*plot_pixel(base, row, col);*/
-        /*plot_horizontal_line(base, row, col, length);*/
-        /*plot_vertical_line(base, row, col, length);*/
-        /*plot_line(base, start_row, start_col, end_row, end_col);*/
-        /*plot_rectangle(base, row, col, length, width);*/
-        /*plot_square(base, row, col, side);*/
-        plot_triangle(base, row, col, base_length, height, direction);
-        
-    return 0;
-}
-
 void plot_pixel(UINT8 *base, UINT16 row, UINT16 col) {
     UINT8 *byte_base = (UINT8 *)base;
 
@@ -150,14 +122,9 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
     UINT16 diag_end_row, diag_end_col;
     
     if (direction == 0) {
-        /* Top left - 90° angle at top-left */
-        /* Vertical line going down from (row, col) */
         plot_vertical_line(baseptr, row, col, height);
-        
-        /* Horizontal line going right from (row, col) */
         plot_horizontal_line(baseptr, row, col, base);
         
-        /* Diagonal from (row + base - 1, col) to (row, col + height - 1) */
         diag_start_row = row + base - 1;
         diag_start_col = col;
         diag_end_row = row;
@@ -165,15 +132,9 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
         plot_line(baseptr, diag_start_row, diag_start_col, diag_end_row, diag_end_col);
         
     } else if (direction == 1) {
-        /* Top right - 90° angle at top-right */
-        /* Vertical line going down from (row, col) */
         plot_vertical_line(baseptr, row, col, height);
-        
-        /* Horizontal line going left from (row, col) */
-        /* Need to draw from left to right, so start at (row - base + 1, col) */
         plot_horizontal_line(baseptr, row - base + 1, col, base);
         
-        /* Diagonal from (row - base + 1, col) to (row, col + height - 1) */
         diag_start_row = row - base + 1;
         diag_start_col = col;
         diag_end_row = row;
@@ -181,15 +142,9 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
         plot_line(baseptr, diag_start_row, diag_start_col, diag_end_row, diag_end_col);
         
     } else if (direction == 2) {
-        /* Bottom left - 90° angle at bottom-left */
-        /* Vertical line going up from (row, col) */
-        /* Need to draw from top down, so start at (row, col - height + 1) */
         plot_vertical_line(baseptr, row, col - height + 1, height);
-        
-        /* Horizontal line going right from (row, col) */
         plot_horizontal_line(baseptr, row, col, base);
-        
-        /* Diagonal from (row + base - 1, col) to (row, col - height + 1) */
+
         diag_start_row = row + base - 1;
         diag_start_col = col;
         diag_end_row = row;
@@ -197,16 +152,9 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
         plot_line(baseptr, diag_start_row, diag_start_col, diag_end_row, diag_end_col);
         
     } else if (direction == 3) {
-        /* Bottom right - 90° angle at bottom-right */
-        /* Vertical line going up from (row, col) */
-        /* Need to draw from top down, so start at (row, col - height + 1) */
         plot_vertical_line(baseptr, row, col - height + 1, height);
-        
-        /* Horizontal line going left from (row, col) */
-        /* Need to draw from left to right, so start at (row - base + 1, col) */
         plot_horizontal_line(baseptr, row - base + 1, col, base);
         
-        /* Diagonal from (row - base + 1, col) to (row, col - height + 1) */
         diag_start_row = row - base + 1;
         diag_start_col = col;
         diag_end_row = row;
