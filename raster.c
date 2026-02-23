@@ -8,7 +8,7 @@
 #define LONGS_PER_SCREEN 8000
 
 void clear_screen(UINT32 *base)
-{ /*From Aidan's*/
+{
     int i;
     UINT32 *loc;
     i = 0;
