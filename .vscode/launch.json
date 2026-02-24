@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/yqgam/OneDrive/Documents/GitStuff/COMP-2659-Project",
-      "program": "c:/Users/yqgam/OneDrive/Documents/GitStuff/COMP-2659-Project/build/Debug/outDebug",
+      "cwd": "c:/D/COMP2659/COMP-2659-Project",
+      "program": "c:/D/COMP2659/COMP-2659-Project/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
