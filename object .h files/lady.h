@@ -7,7 +7,6 @@ typedef struct { /* Structure for Pauline */
     int posX, posY; /* Current Position */
     int topL, bottomR; /* Bounds for Victory Box*/
    
-
 } Lady;
 
 #endif

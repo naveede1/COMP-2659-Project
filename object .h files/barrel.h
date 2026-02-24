@@ -13,4 +13,9 @@ typedef struct { /* Structure for the Barrels */
 
 } Barrel;
 
+void updateBarrel(Barrel *b, float deltaTime);
+void rollBarrel(Barrel *b);
+void sendDownLadder(Barrel *b);
+void breakBarrel(Barrel *b);
+
 #endif

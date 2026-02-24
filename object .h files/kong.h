@@ -9,6 +9,14 @@ typedef struct { /* Structure for Donkey Kong */
     int topL, bottomR; /* Bounds for Hurt Box*/
     int spawnX, spawnY; /* Position the Barrels spawn from */
 
+    float stateTimer; /* Controls animation timing */
+    float barrelCooldown; /* Time between barrel throws */
+    int spawnBarrel; /* 1 when a barrel should spawn */
+    int spawnFireBarrel; /* Only 1 when a FIRE barrel should spawn */
+
 } Kong;
+
+void updateKong(Kong *kong, float deltaTime);
+void requestFireBarrel(Kong *kong);
 
 #endif

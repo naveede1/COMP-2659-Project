@@ -10,4 +10,7 @@ typedef struct { /* Structure for the Hammers */
 
 } Hammer;
 
+int checkHammerPickup(Hammer *h, int playerX, int playerY);
+void deactivateHammer(Hammer *h);
+
 #endif

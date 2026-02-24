@@ -7,7 +7,6 @@ typedef struct { /* Structure for the Lives counter */
     int posX, posY; /* Current Position */
     int value; /* How many lives the player has */
    
-
 } Lives;
 
 #endif

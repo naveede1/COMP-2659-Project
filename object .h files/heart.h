@@ -7,6 +7,9 @@ typedef struct { /* Structure for the Heart that appears at level end*/
     int posX, posY; /* Current Position */
     int broken; /* No = 0, Yes = 1 */
 
+    float animTimer;
+    float animRate;
+
 } Heart;
 
 #endif
