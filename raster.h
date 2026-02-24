@@ -182,6 +182,17 @@ void plot_character(UINT8 *base, UINT16 row, UINT16 col, char ch);
 */
 void plot_string(UINT8 *base, UINT16 row, UINT16 col, char *ch);
 
+/*----- Function: clip_right_bottom -----
+
+ PURPOSE: Error Checking.
+ INPUT: Position(row,col): the coordinates of the top left pixel of the bitmap
+        Height: the lenth (number of rows) in pixels of the bitmap
+        Sprite_width: the width (number of columns) in pixels of the bitmap
+
+ OUTPUT: The number of visible columns (width) of the bitmap after clipping to the right edge.
+*/
+UINT16 clip_right_bottom(UINT16 row, UINT16 col, UINT16 *height, UINT16 sprite_width);
+
 static const UINT16 invader_bitmap[16] =
     {
         0x0000,
