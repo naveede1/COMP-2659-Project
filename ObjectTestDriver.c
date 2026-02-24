@@ -115,7 +115,7 @@ void testHeart(Heart *heart) {
     }
 
     printf("Current Animation Timer: ");
-    printf(heart->animTimer);
+    printf("%f", heart->animTimer);
     printf("\n");    
 }
 
@@ -147,7 +147,7 @@ void testItem(Item *item) {
     }
 
     printf("This Item has been visible for ");
-    printf(item->lifetime);
+    printf("%f", item->lifetime);
     printf("\n"); 
 
 }
@@ -180,7 +180,7 @@ void testKong(Kong *kong){
     }
 
     printf("The next Barrel will be thrown in ");
-    printf(kong->barrelCooldown);
+    printf("%f", kong->barrelCooldown);
     printf("\n"); 
 
 }
@@ -231,7 +231,7 @@ void testLady(Lady *lady) {
     }    
 
     printf("Current x pos: ");
-    printf(Lady->posX);
+    printf(lady->posX);
     printf("\n");
     
     printf("Current y pos: ");
@@ -333,7 +333,7 @@ void testMario (Mario *mario) {
         printf("Mario is using a Hammer \n");
 
         printf("The hammer has ");
-        printf(mario->hammerTimer);
+        printf("%f", mario->hammerTimer);
         printf(" left \n");
 
     }
