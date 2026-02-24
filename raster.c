@@ -102,7 +102,7 @@ void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length) {
 }
 
 void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length) {
-    UINT8 *byte_base = (UINT8 *)base; /* So we can work byte by byte */
+    UINT8 *byte_base = (UINT8 *)base;
     UINT16 i;
     UINT16 current_column;
     
@@ -213,3 +213,5 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
         diag_end_row = row;
         diag_end_col = col - height + 1;
         plot_line(baseptr, diag_start_row, diag_start_col, diag_end_row, diag_end_col);
+    }
+}
