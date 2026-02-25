@@ -5,6 +5,10 @@ typedef unsigned char UINT8;
 typedef unsigned short UINT16;
 typedef unsigned long UINT32;
 
+typedef signed char INT8;
+typedef signed short INT16;
+typedef signed long INT32;
+
 /*----- Function: clear_screen -----
 v
  PURPOSE: Clears the entire screen.
@@ -131,7 +135,7 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
 
  OUTPUT: None
 */
-void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height, const UINT8 *bitmap);
+void plot_bitmap_8(UINT8 *base, INT16 row, INT16 col, UINT16 height, const UINT8 *bitmap_8);
 
 /*----- Function: plot_bitmap_16 -----
 
@@ -182,6 +186,16 @@ void plot_character(UINT8 *base, UINT16 row, UINT16 col, char ch);
 */
 void plot_string(UINT8 *base, UINT16 row, UINT16 col, char *ch);
 
+/*----- Function: clip_right_bottom -----
+
+ PURPOSE: Error Checking.
+ INPUT: Position(row,col): the coordinates of the top left pixel of the bitmap
+        Height: the lenth (number of rows) in pixels of the bitmap
+        Sprite_width: the width (number of columns) in pixels of the bitmap
+
+ OUTPUT: The number of visible columns (width) of the bitmap after clipping to the right edge.
+*/
+
 static const UINT16 invader_bitmap[16] =
     {
         0x0000,
@@ -214,7 +228,9 @@ static const UINT8 smiley_bitmap[8] =
         0x3C,
 };
 
-static const UINT32 block_bitmap[32] =
+UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height, UINT16 sprite_width, UINT16 *skip_x, UINT16 *skip_y);
+
+static const UINT32 testBM[32] =
     {
         0xFFFFFFFF,
         0xFFFFFFFF,
