@@ -4,68 +4,116 @@
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 400
 #define SCREEN_BYTES_PER_ROW 80
+#define LONGS_PER_SCREEN 8000
 
 int main()
 {
-    UINT8 *base = Physbase();
+    UINT8 *base = (UINT8 *)Physbase();
 
-    plot_bitmap_8(base, 141, 636, 8, smiley_bitmap);
-    plot_bitmap_16((UINT16 *)base, 241, 636, 16, invader_bitmap);
-    plot_bitmap_32((UINT32 *)base, 341, 636, 32, block_bitmap);
+    clear_screen((UINT32 *)base);
+    plot_bitmap_8(base, 20, 20, 8, smiley_bitmap);
+    plot_bitmap_8(base, 141, 636, 8, smiley_bitmap); /* right clipped */
+    plot_bitmap_8(base, -5, 10, 8, smiley_bitmap);   /* top clipped */
+    plot_bitmap_8(base, 10, -3, 8, smiley_bitmap);   /* left clipped */
+
+    Cnecin();
     return 0;
 }
 
-UINT16 clip_right_bottom(UINT16 row, UINT16 col, UINT16 *height, UINT16 sprite_width)
+void clear_screen(UINT32 *base)
 {
-    UINT16 visible;
-    /* bottom clip */
-    if (row >= SCREEN_HEIGHT)
-        return 0;
-
-    if ((UINT32)row + (UINT32)(*height) > (UINT32)SCREEN_HEIGHT)
-        *height = (UINT16)(SCREEN_HEIGHT - row);
-
-    /* right clip */
-    if (col >= SCREEN_WIDTH)
-        return 0;
-
-    /* compute visible width */
-
-    visible = (UINT16)(SCREEN_WIDTH - col);
-
-    if (visible > sprite_width)
-        visible = sprite_width;
-
-    return visible;
+    UINT32 *loc;
+    int i = 0;
+    loc = base;
+    while (i++ < LONGS_PER_SCREEN)
+    {
+        *(loc++) = 0;
+    }
 }
 
-void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height, const UINT8 *bitmap_8)
+/* returns visible width in pixels (0..sprite_width) and updates row/col/height + skip_x/skip_y */
+UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height,
+                                  UINT16 sprite_width, UINT16 *skip_x, UINT16 *skip_y)
 {
+    INT32 r = (INT32)(*row);
+    INT32 c = (INT32)(*col);
 
-    UINT16 byte_col;
-    UINT16 bit_shift;
-    UINT16 r;
+    *skip_x = 0;
+    *skip_y = 0;
+
+    /* ---- top clip ---- */
+    if (r < 0)
+    {
+        UINT16 s = (UINT16)(-r);
+        if (s >= *height)
+            return 0;
+        *skip_y = s;
+        *height = (UINT16)(*height - s);
+        r = 0;
+    }
+
+    /* ---- bottom clip ---- */
+    if (r >= SCREEN_HEIGHT)
+        return 0;
+
+    if ((UINT32)r + (UINT32)(*height) > (UINT32)SCREEN_HEIGHT)
+        *height = (UINT16)(SCREEN_HEIGHT - (UINT16)r);
+
+    /* ---- left clip ---- */
+    if (c < 0)
+    {
+        UINT16 s = (UINT16)(-c);
+        if (s >= sprite_width)
+            return 0;
+        *skip_x = s;
+        c = 0;
+    }
+
+    /* ---- right clip ---- */
+    if (c >= SCREEN_WIDTH)
+        return 0;
+
+    /* visible width = min(screen remaining, sprite remaining after skip_x) */
+    {
+        UINT16 visible = (UINT16)(SCREEN_WIDTH - (UINT16)c);
+        UINT16 remaining = (UINT16)(sprite_width - *skip_x);
+
+        if (visible > remaining)
+            visible = remaining;
+
+        *row = (INT16)r;
+        *col = (INT16)c;
+        return visible;
+    }
+}
+
+void plot_bitmap_8(UINT8 *base, INT16 row, INT16 col, UINT16 height, const UINT8 *bitmap_8)
+{
+    UINT16 r, byte_col, bit_shift, visible, skip_x, skip_y;
     UINT32 offset;
     UINT8 *dest;
-    UINT8 src;
-    UINT8 mask;
-    UINT16 visible;
-    visible = clip_right_bottom(row, col, &height, 8);
+    UINT8 src, mask;
+
+    visible = clip_left_top_right_bottom(&row, &col, &height, 8, &skip_x, &skip_y);
     if (visible == 0)
         return;
 
-    byte_col = (UINT16)(col >> 3);
-    bit_shift = (UINT16)(col & 7);
+    bitmap_8 += skip_y;  /*skip rows clipped off the top*/
+    byte_col = col >> 3; /*starting byte in row*/
+    bit_shift = col & 7; /*bit offset inside that byte*/
 
     for (r = 0; r < height; r++)
     {
-        offset = (UINT32)(row + r) * (UINT32)SCREEN_BYTES_PER_ROW + (UINT32)byte_col;
+        offset = (UINT32)(row + (INT16)r) * (UINT32)SCREEN_BYTES_PER_ROW + (UINT32)byte_col;
         dest = base + offset;
-
         src = bitmap_8[r];
-
-        /* mask off pixels past right edge */
-        if (visible < 8)
+        /*left clip: drop leftmost pixels*/
+        if (skip_x != 0)
+        {
+            src = (UINT8)(src << skip_x);
+        }
+        /* right clip: keep only leftmost 'visible' bits */
+        if (visible < (UINT16)(8 - skip_x))
         {
             mask = (UINT8)(0xFF << (8 - visible));
             src = (UINT8)(src & mask);
@@ -77,145 +125,15 @@ void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height, const UIN
         }
         else
         {
+            UINT16 spill = 8 - bit_shift;
+            /*first byte always gets the right-shifted portion*/
             *dest = (UINT8)(*dest | (UINT8)(src >> bit_shift));
 
-            if (byte_col + 1 < SCREEN_BYTES_PER_ROW)
+            /*second byte ONLY if some visible pixels actually spill into it*/
+            if (visible > spill && (byte_col + 1 < SCREEN_BYTES_PER_ROW))
             {
-                *(dest + 1) = (UINT8)(*(dest + 1) | (UINT8)(src << (8 - bit_shift)));
+                dest[1] = (UINT8)(dest[1] | (UINT8)(src << spill));
             }
-        }
-    }
-}
-
-void plot_bitmap_16(UINT16 *base16, UINT16 row, UINT16 col, UINT16 height, const UINT16 *bitmap_16)
-{
-    UINT16 r;
-    UINT16 byte_col;
-    UINT16 bit_shift;
-    UINT32 row_offset;
-    UINT8 *row_ptr;
-    UINT8 *dest;
-    UINT16 src16;
-    UINT16 mask16;
-    UINT8 b0, b1, b2;
-    UINT16 visible;
-    visible = clip_right_bottom(row, col, &height, 16);
-    if (visible == 0)
-        return;
-    byte_col = col >> 3;
-    bit_shift = col & 7;
-
-    for (r = 0; r < height; r++)
-    {
-        row_offset = (UINT32)(row + r) * (UINT32)SCREEN_BYTES_PER_ROW;
-        row_ptr = (UINT8 *)base16 + row_offset;
-        dest = row_ptr + byte_col;
-
-        src16 = bitmap_16[r];
-
-        /* mask off pixels past right edge (keep leftmost 'visible' bits) */
-        if (visible < 16)
-        {
-            mask16 = (UINT16)(0xFFFFu << (16 - visible));
-            src16 = (UINT16)(src16 & mask16);
-        }
-
-        /* shift into position */
-        if (bit_shift != 0)
-            src16 = (UINT16)(src16 >> bit_shift);
-
-        /* split into bytes (big-endian bit order within the 16-bit row) */
-        b0 = (UINT8)(src16 >> 8);
-        b1 = (UINT8)(src16 & 0xFF);
-
-        /* OR into framebuffer bytes, with carry into next byte if needed */
-        dest[0] |= b0;
-
-        if (byte_col + 1 < SCREEN_BYTES_PER_ROW)
-            dest[1] |= b1;
-
-        /* If bit_shift != 0, some bits spill into a 3rd byte */
-        if (bit_shift != 0)
-        {
-            UINT32 stage;
-            stage = (UINT32)bitmap_16[r];
-            if (visible < 16)
-                stage &= (UINT32)mask16;
-            stage >>= bit_shift;        /* aligned to dest[0] bit7 */
-            b2 = (UINT8)(stage & 0xFF); /* lowest 8 bits land in dest[2] */
-
-            if (byte_col + 2 < SCREEN_BYTES_PER_ROW)
-                dest[2] |= b2;
-        }
-    }
-}
-
-void plot_bitmap_32(UINT32 *base32, UINT16 row, UINT16 col, UINT16 height, const UINT32 *bitmap_32)
-{
-    UINT16 r;
-    UINT16 byte_col;
-    UINT16 bit_shift;
-    UINT32 row_offset;
-    UINT8 *row_ptr;
-    UINT8 *dest;
-    UINT32 src32;
-    UINT32 mask32;
-    UINT32 stage;
-    UINT8 b0, b1, b2, b3, b4;
-    UINT16 visible;
-    visible = clip_right_bottom(row, col, &height, 32);
-    if (visible == 0)
-        return;
-
-    byte_col = (UINT16)(col >> 3);
-    bit_shift = (UINT16)(col & 7);
-
-    for (r = 0; r < height; r++)
-    {
-        row_offset = (UINT32)(row + r) * (UINT32)SCREEN_BYTES_PER_ROW;
-        row_ptr = (UINT8 *)base32 + row_offset;
-        dest = row_ptr + byte_col;
-
-        src32 = bitmap_32[r];
-
-        /* mask off pixels past right edge (keep leftmost 'visible' bits) */
-        if (visible < 32)
-        {
-            mask32 = (UINT32)(0xFFFFFFFFu << (32 - visible));
-            src32 = (UINT32)(src32 & mask32);
-        }
-
-        /* Use a 40-bit staging in a 32-bit var by OR-ing bytes after shifting */
-        stage = src32;
-        if (bit_shift != 0)
-            stage >>= bit_shift;
-
-        b0 = (UINT8)(stage >> 24);
-        b1 = (UINT8)(stage >> 16);
-        b2 = (UINT8)(stage >> 8);
-        b3 = (UINT8)(stage);
-
-        dest[0] |= b0;
-        if (byte_col + 1 < SCREEN_BYTES_PER_ROW)
-            dest[1] |= b1;
-        if (byte_col + 2 < SCREEN_BYTES_PER_ROW)
-            dest[2] |= b2;
-        if (byte_col + 3 < SCREEN_BYTES_PER_ROW)
-            dest[3] |= b3;
-
-        /* spill into 5th byte when not byte-aligned */
-        if (bit_shift != 0)
-        {
-            /* compute spill byte from masked original */
-            UINT32 spill_stage;
-            spill_stage = bitmap_32[r];
-            if (visible < 32)
-                spill_stage &= mask32;
-            spill_stage >>= bit_shift;
-            b4 = (UINT8)(spill_stage & 0xFF);
-
-            if (byte_col + 4 < SCREEN_BYTES_PER_ROW)
-                dest[4] |= b4;
         }
     }
 }

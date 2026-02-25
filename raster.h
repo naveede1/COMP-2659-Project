@@ -1,9 +1,13 @@
 #ifndef RASTER_H
 #define RASTER_H
 
-typedef unsigned char UINT8;
-typedef unsigned short UINT16;
-typedef unsigned long UINT32;
+typedef signed char UINT8;
+typedef signed short UINT16;
+typedef signed long UINT32;
+
+typedef signed char INT8;
+typedef signed short INT16;
+typedef signed long INT32;
 
 /*----- Function: clear_screen -----
 v
@@ -191,7 +195,8 @@ void plot_string(UINT8 *base, UINT16 row, UINT16 col, char *ch);
 
  OUTPUT: The number of visible columns (width) of the bitmap after clipping to the right edge.
 */
-UINT16 clip_right_bottom(UINT16 row, UINT16 col, UINT16 *height, UINT16 sprite_width);
+
+UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height, UINT16 sprite_width, UINT16 *skip_x, UINT16 *skip_y);
 
 static const UINT16 invader_bitmap[16] =
     {
@@ -225,7 +230,7 @@ static const UINT8 smiley_bitmap[8] =
         0x3C,
 };
 
-static const UINT32 block_bitmap[32] =
+static const UINT32 testBM[32] =
     {
         0xFFFFFFFF,
         0xFFFFFFFF,
