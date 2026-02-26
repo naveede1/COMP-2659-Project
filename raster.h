@@ -145,6 +145,8 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
  OUTPUT: None
 */
 
+UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height, UINT16 sprite_width, UINT16 *skip_x, UINT16 *skip_y);
+
 void plot_bitmap_8(UINT8 *base, INT16 row, INT16 col, UINT16 height, const UINT8 *bitmap_8);
 
 /*----- Function: plot_bitmap_16 -----
@@ -208,8 +210,6 @@ void plot_string(UINT8 *base, UINT16 row, UINT16 col, char *ch);
 
  OUTPUT: The number of visible columns (width) of the bitmap after clipping to the right edge.
 */
-
-UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height, UINT16 sprite_width, UINT16 *skip_x, UINT16 *skip_y);
 
 static const UINT16 invader_bitmap[16] = {
         0x0000,

@@ -226,7 +226,7 @@ UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height,UINT16 
     *y_skip = 0;
 
     /*top clip*/
-    if (r < 0){
+    if (r < 0) {
         UINT16 s = -r;
         if (s >= *height) {
             return 0;
@@ -241,15 +241,15 @@ UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height,UINT16 
     if (r >= SCREEN_HEIGHT) {
         return 0;
     }
-    if (r + *height > SCREEN_HEIGHT){
+    if (r + *height > SCREEN_HEIGHT) {
         *height = SCREEN_HEIGHT - r;
     }
     /*left cliping */
     /*If start from left, skip the off-screen and draw remaining*/
-    if (c < 0){
+    if (c < 0) {
         UINT16 s;
         s = -c;
-        if (s >= sprite_width){
+        if (s >= sprite_width) {
             return 0;
         }
         *x_skip = s;
@@ -257,7 +257,7 @@ UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height,UINT16 
     }
 
     /*right clipping*/
-    if (c >= SCREEN_WIDTH){
+    if (c >= SCREEN_WIDTH) {
         return 0;
     }
 
@@ -265,7 +265,7 @@ UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height,UINT16 
     visible = SCREEN_WIDTH - c;
     remaining = sprite_width - *x_skip;
 
-    if (visible > remaining){
+    if (visible > remaining) {
         visible = remaining;
     }
     *row = (UINT16)r;
@@ -273,14 +273,14 @@ UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height,UINT16 
     return visible;
 }
 
-void plot_bitmap_8(UINT8 *base, INT16 row, INT16 col, UINT16 height, const UINT8 *bitmap_8){
+void plot_bitmap_8(UINT8 *base, INT16 row, INT16 col, UINT16 height, const UINT8 *bitmap_8) {
     UINT16 r, byte_col, bit_shift, visible, x_skip, y_skip;
     UINT32 offset;
     UINT8 *dest;
     UINT8 src, mask;
 
     visible = clip_left_top_right_bottom(&row, &col, &height, 8, &x_skip, &y_skip);
-    if (visible == 0){ /*out of bounds, donot draw*/ 
+    if (visible == 0) { /*out of bounds, donot draw*/ 
         return;
     }
 
@@ -294,22 +294,22 @@ void plot_bitmap_8(UINT8 *base, INT16 row, INT16 col, UINT16 height, const UINT8
         dest = base + offset;
         src = bitmap_8[r];
         /*left clipped*/
-        if (x_skip != 0){
+        if (x_skip != 0) {
             src = src << x_skip;
         }
         /*right clipped*/
-        if (visible < 8 - x_skip){
+        if (visible < 8 - x_skip) {
             mask = 0xFF << (8 - visible);
             src &= mask;
         }
         /*regular printing*/
-        if (bit_shift == 0){
+        if (bit_shift == 0) {
             *dest |= src;
         }
         else {
             *dest |= src >> bit_shift;
             /*writing clipped sprite*/
-            if (visible + bit_shift > 8 && byte_col + 1 < SCREEN_BYTES_PER_ROW){
+            if (visible + bit_shift > 8 && byte_col + 1 < SCREEN_BYTES_PER_ROW) {
                 dest[1] |= src << (8 - bit_shift);
             }
         }
@@ -361,7 +361,7 @@ void plot_bitmap_32(UINT32 *base, INT16 row, INT16 col, UINT16 height, const UIN
     UINT8 *base8 = (UINT8 *)base;
 	UINT8 b0, b1, b2, b3;
     visible = clip_left_top_right_bottom(&row, &col, &height, 32, &x_skip, &y_skip);
-    if (visible == 0){ 
+    if (visible == 0) { 
 		return;
 	}
     bitmap_32 += y_skip;
