@@ -1,15 +1,13 @@
 #include "raster.h"
 #include <osbind.h>
 
-
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 400
 #define SCREEN_BYTES_PER_ROW 80
 #define LONGS_PER_SCREEN 8000
 
 
-
-UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height,UINT16 sprite_width, UINT16 *x_skip, UINT16 *y_skip) {
+UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height,UINT16 sprite_width, UINT16 *x_skip, UINT16 *y_skip){
     INT16 r = *row;
     INT16 c = *col;
     UINT16 visible;
@@ -18,11 +16,9 @@ UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height,UINT16 
     *x_skip = 0;
     *y_skip = 0;
 
-    /* ---- top clip ---- */
-    /*If starts above, skipp the off-screen rows and decrease the height*/
+    /*top clip*/
     if (r < 0){
         UINT16 s = -r;
-        /*if height is small then draw nothing*/
         if (s >= *height) {
             return 0;
         }
@@ -31,7 +27,7 @@ UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height,UINT16 
         r = 0;
     }
 
-    /* ---- bottom clip ---- */
+    /*bottom clipping*/
     /*same logic as top clip but just camparing with the height*/
     if (r >= SCREEN_HEIGHT) {
         return 0;
@@ -39,8 +35,8 @@ UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height,UINT16 
     if (r + *height > SCREEN_HEIGHT){
         *height = SCREEN_HEIGHT - r;
     }
-    /* ---- left clip ---- */
-    /*If starting from left then, skip the off-screena and draw remaining*/
+    /*left cliping */
+    /*If start from left, skip the off-screen and draw remaining*/
     if (c < 0){
         UINT16 s;
         s = -c;
@@ -51,8 +47,7 @@ UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height,UINT16 
         c = 0;
     }
 
-    /* ---- right clip ---- */
-    /*f the sprite starts at or past the right edge, draw nothing*/
+    /*right clipping*/
     if (c >= SCREEN_WIDTH){
         return 0;
     }
@@ -111,62 +106,94 @@ void plot_bitmap_8(UINT8 *base, INT16 row, INT16 col, UINT16 height, const UINT8
         }
     }
 }
-void clear_screen(UINT32 *base){
-    int i;
-    UINT32 *loc;
-    i = 0;
-    loc = base;
-    while (i++ < LONGS_PER_SCREEN)
-        *(loc++) = 0;
-}
+void plot_bitmap_16(UINT16 *base, INT16 row, INT16 col, UINT16 height, const UINT16 *bitmap_16) {
+    UINT16 x_skip, y_skip, visible;
+    UINT16 word_col, bit_shift, r;
+    UINT8 *base8 = (UINT8 *)base;
 
-/*Non clipping version*/
-void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height, const UINT16 *bitmap_16) {
-    UINT16 word_col = col >> 4; /*word offset*/
-    UINT16 bit_shift = col & 15;
-    UINT16 r;
-    for (r = 0; r < height; r++){ 
-		/*offset in 16-bits*/
-        UINT32 offset = (row + r) * (SCREEN_BYTES_PER_ROW / 2) + word_col;
-        UINT16 *dest = base + offset;                                         /*wraps index with mask*/
-        UINT16 src = bitmap_16[r & (15)]; /*wrap if height > INVADER_HEIGHT*/ /*If alligned, OR the source directly*/
-        if (bit_shift == 0){
-            *dest |= src;
+    visible = clip_left_top_right_bottom(&row, &col, &height, 16, &x_skip, &y_skip);
+    if (visible == 0) return;
+
+    bitmap_16 += y_skip;
+    word_col = col >> 4;
+    bit_shift = col & 15;
+
+    for (r = 0; r < height; r++) {
+        UINT32 offset = (UINT32)(row + r) * (SCREEN_BYTES_PER_ROW / 2) + word_col;
+        UINT16 *dest = (UINT16 *)base8 + offset;
+        UINT16 src = bitmap_16[r];
+
+        /* Apply left clip: shift out the skipped bits on the left */
+        if (x_skip != 0) {
+            src = src << x_skip;
         }
-        else{ /*else shift across word boundary*/
+
+        /* Apply right clip: mask out bits beyond visible width */
+        if (visible < 16 - x_skip) {
+            UINT16 mask = (UINT16)(0xFFFF << (16 - visible));
+            src &= mask;
+        }
+
+        if (bit_shift == 0) {
+            *dest |= src;
+        } else {
             *dest |= (src >> bit_shift);
-            *(dest + 1) |= (src << (16 - bit_shift)); /*remaining to the next*/
+            /* Write overflow into next word only if it's within screen bounds */
+            if (visible + bit_shift > 16 && word_col + 1 < (SCREEN_BYTES_PER_ROW / 2)) {
+                dest[1] |= (src << (16 - bit_shift));
+            }
         }
     }
 }
 
-/*Non clipping version*/
-void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col, UINT16 height, const UINT32 *bitmap_32){
+void plot_bitmap_32(UINT32 *base, INT16 row, INT16 col, UINT16 height, const UINT32 *bitmap_32) {
+    UINT16 x_skip, y_skip, visible;
+    UINT16 byte_col, bit_shift, r;
     UINT8 *base8 = (UINT8 *)base;
-    UINT16 byte_col = col >> 3; /*computing the byte offset within a row*/
-    UINT16 bit_shift = col & 7; /*computing the bit shift within a byte*/
-    UINT16 r;
-    for (r = 0; r < height; r++){
-		/* Destination pointer into framebuffer for this row*/
+	UINT8 b0, b1, b2, b3;
+    visible = clip_left_top_right_bottom(&row, &col, &height, 32, &x_skip, &y_skip);
+    if (visible == 0){ 
+		return;
+	}
+    bitmap_32 += y_skip;
+    byte_col = col >> 3;
+    bit_shift = col & 7;
+
+    for (r = 0; r < height; r++) {
         UINT8 *dest = base8 + (UINT32)(row + r) * SCREEN_BYTES_PER_ROW + byte_col;
-        UINT32 src = bitmap_32[r & 31]; /*wrapping at 32 bits*/
-        UINT8 b0 = (src >> 24);
-        UINT8 b1 = (src >> 16);
-        UINT8 b2 = (src >> 8);
-        UINT8 b3 = src; /* If byte-alligned, OR each source byte into consecutive destination bytes*/
+        UINT32 src = bitmap_32[r];
+
+        /*left cliping*/
+        if (x_skip != 0) {
+            src = src << x_skip;
+        }
+
+        /*right cliping*/
+        if (visible < 32 - x_skip) {
+            UINT32 mask;
+	    mask = (UINT32)(0xFFFFFFFF << (32 - (UINT32)visible));
+            src &= mask;
+        }
+
+        b0 = src >> 24;
+        b1 = src >> 16;
+        b2 = src >> 8;
+        b3 = src;
+
         if (bit_shift == 0) {
             dest[0] |= b0;
             dest[1] |= b1;
             dest[2] |= b2;
             dest[3] |= b3;
-        }
-        else{
-			/* else shift bytes across byte boundaries according to bit_shift*/
+        } else {
             dest[0] |= (b0 >> bit_shift);
             dest[1] |= (b0 << (8 - bit_shift)) | (b1 >> bit_shift);
             dest[2] |= (b1 << (8 - bit_shift)) | (b2 >> bit_shift);
             dest[3] |= (b2 << (8 - bit_shift)) | (b3 >> bit_shift);
-            dest[4] |= (b3 << (8 - bit_shift));
+            /*Write overflow byte*/
+            if (visible + bit_shift > 32 && byte_col + 4 < SCREEN_BYTES_PER_ROW) {
+                dest[4] |= (b3 << (8 - bit_shift));
+            }
         }
     }
 }
