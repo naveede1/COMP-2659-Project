@@ -196,6 +196,8 @@ void plot_string(UINT8 *base, UINT16 row, UINT16 col, char *ch);
  OUTPUT: The number of visible columns (width) of the bitmap after clipping to the right edge.
 */
 
+UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height, UINT16 sprite_width, UINT16 *skip_x, UINT16 *skip_y);
+
 static const UINT16 invader_bitmap[16] =
     {
         0x0000,
@@ -227,8 +229,6 @@ static const UINT8 smiley_bitmap[8] =
         0x42,
         0x3C,
 };
-
-UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height, UINT16 sprite_width, UINT16 *skip_x, UINT16 *skip_y);
 
 static const UINT32 testBM[32] =
     {
