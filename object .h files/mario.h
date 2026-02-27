@@ -3,6 +3,16 @@
 
 #include "girder.h"
 
+#define GRAVITY 0.5f
+#define JUMP_FORCE -10
+#define MOVE_SPEED 3
+#define HAMMER_DURATION 8.0f
+
+/* For Hammer swinging animation */
+#define HAMMER_DURATION 8.0f
+#define HAMMER_FRAME_TIME 0.15f
+#define HAMMER_TOTAL_FRAMES 4
+
 typedef struct { /* Structure for Jumpman */
 
     int visible; /* No = 0, Yes = 1 */

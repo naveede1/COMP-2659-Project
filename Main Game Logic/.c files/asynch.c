@@ -1,6 +1,5 @@
 #include "asynch.h"
 #include "mario.h"
-#include "mario.c"
 
 void handle_asynch_event(Model *model, int event)
 {

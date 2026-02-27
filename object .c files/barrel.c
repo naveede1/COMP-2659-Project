@@ -1,10 +1,12 @@
 #include "barrel.h"
+#include "oil.h"
+#include "ladder.h"
 
 #define GRAVITY 1
 #define ROLL_SPEED 2
 #define LADDER_SPEED 2
 
-void updateBarrel(Barrel *b, float deltaTime)
+void updateBarrel(Barrel *b, Oil *oil, Ladder *ladder, float deltaTime)
 {
     if (!b->visible || b->broken)
         return;
@@ -18,6 +20,18 @@ void updateBarrel(Barrel *b, float deltaTime)
         case 1: /* ON LADDER */
             b->posY += LADDER_SPEED;
             break;
+    }
+    /*When spawning use: "barrel.type = 1;"*/
+    if (b->type == 1 && (b->posX == oil->bottomR)) /*(IN COLLISION LOGIC)*/
+    {
+        igniteOil(&oil);
+        breakBarrel(&b);
+    }
+
+    if (isOnLadder(ladder, b->posX, b->posY))
+    {
+        if (rand() % 4 == 0)
+            sendDownLadder(b);
     }
 }
 
@@ -42,19 +56,3 @@ void breakBarrel(Barrel *b)
     b->broken = 1;
     b->visible = 0;
 }
-/* if (barrel.type == 1 && collisionWithOil) (IN COLLISION LOGIC)
-{
-    igniteOil(&oil);
-    breakBarrel(&barrel);
-}
-
--> When spawning use: "barrel.type = 1;"
-
-To mimic arcade versions randomness: (25% Chance)
-
-if (isOnLadder(ladder, b->posX, b->posY))
-{
-    if (rand() % 4 == 0)
-        sendDownLadder(b);
-}
-*/
