@@ -197,7 +197,6 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
     } else if (direction == 2) {
         plot_vertical_line(baseptr, row, col - height + 1, height);
         plot_horizontal_line(baseptr, row, col, base);
-
         diag_start_row = row + base - 1;
         diag_start_col = col;
         diag_end_row = row;
