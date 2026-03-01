@@ -1,0 +1,1 @@
+#define SPRITE_HEIGHT 8
