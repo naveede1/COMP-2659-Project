@@ -9,6 +9,8 @@ typedef signed char INT8;
 typedef signed short INT16;
 typedef signed long INT32;
 
+#define SPRITE_HEIGHT 32
+
 /*----- Function: clear_screen -----
 v
  PURPOSE: Clears the entire screen.
@@ -86,7 +88,7 @@ void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length);
  OUTPUT: None
 */
 
-void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col, UINT16 end_row, UINT16 end_col);
+void plot_line(UINT32 *base, INT16 start_row, INT16 start_col, INT16 end_row, INT16 end_col);
 
 /*----- Function: plot_rectangle -----
 
@@ -160,7 +162,7 @@ void plot_bitmap_8(UINT8 *base, INT16 row, INT16 col, UINT16 height, const UINT8
  OUTPUT: None
 */
 
-void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height, const UINT16 *bitmap);
+void plot_bitmap_16(UINT16 *base, INT16 row, INT16 col, UINT16 height, const UINT16 *bitmap);
 
 /*----- Function: plot_bitmap_32 -----
 
@@ -173,7 +175,7 @@ void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height, const U
  OUTPUT: None
 */
 
-void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col, UINT16 height, const UINT32 *bitmap);
+void plot_bitmap_32(UINT32 *base, INT16 row, INT16 col, UINT16 height, const UINT32 *bitmap);
 
 /*----- Function: plot_character -----
 
