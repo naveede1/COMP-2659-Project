@@ -30,7 +30,7 @@ typedef struct {
 
     Mario mario;
     Girder girders[9];
-    Ladder ladders[13];
+    Ladder ladders[19];
     Kong kong;
     Oil oil;
     Hammer hammers[2];

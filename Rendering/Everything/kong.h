@@ -5,7 +5,7 @@ typedef struct { /* Structure for Donkey Kong */
 
     int visible; /* No = 0, Yes = 1 */
     int posX, posY; /* Current Position */
-    int state; /* Idle = 0, Grab Barrel = 1, Throw Barrel = 2 */
+    int state; /* Idle = 0, Grab Barrel = 1, Holding Barrel = 2, Throw Barrel = 3, Mocking = 4 */
     int topL, bottomR; /* Bounds for Hurt Box*/
     int spawnX, spawnY; /* Position the Barrels spawn from */
 

@@ -4,7 +4,7 @@
 typedef struct { /* Structure for the Barrels */
 
     int visible; /* No = 0, Yes = 1 */
-    int posX, posY; /* Current Position */
+    int posY, posX; /* Current Position */
     int deltX, deltY; /* Current Horizontal/Veritcal Velocity */ 
     int state; /* Rolling = 0, On Ladder = 1 */ 
     int topL, bottomR; /* Bounds for Hurt Box*/
