@@ -188,7 +188,7 @@ void plot_bitmap_32(UINT32 *base, INT16 row, INT16 col, UINT16 height, const UIN
  OUTPUT: None
 */
 
-void plot_character(UINT8 *base, UINT16 row, UINT16 col, char ch);
+void plot_character(UINT8 *base, INT16 row, INT16 col, char ch);
 
 /*----- Function: plot_string -----
 
@@ -201,7 +201,7 @@ void plot_character(UINT8 *base, UINT16 row, UINT16 col, char ch);
  OUTPUT: None
 */
 
-void plot_string(UINT8 *base, UINT16 row, UINT16 col, char *ch);
+void plot_string(UINT8 *base, INT16 row, INT16 col, char *ch);
 
 /*----- Function: clip_right_bottom -----
 
