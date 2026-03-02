@@ -8,7 +8,6 @@
 #define LONGS_PER_SCREEN 8000
 
 
-
 void clear_screen(UINT32 *base){
     int i;
     UINT32 *loc;
@@ -126,18 +125,15 @@ void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length) {
     }
 }
 
-void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length) {
+void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length)
+{
     UINT8 *base8;
     INT16 r;
     INT16 c;
     UINT16 h;
     UINT16 x_skip, y_skip;
     UINT16 visible;
-
     UINT16 i;
-    UINT16 byte_col;
-    UINT8 bit_mask;
-    UINT8 *p;
 
     base8 = (UINT8 *)base;
 
@@ -146,23 +142,32 @@ void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length) {
     h = length;
 
     visible = clip_left_top_right_bottom(&r, &c, &h, 1, &x_skip, &y_skip);
-    if (visible == 0 || h == 0) return;
+    if (visible == 0 || h == 0)
+        return;
 
-    byte_col = ((UINT16)c) >> 3;
-    bit_mask = (UINT8)(1 << (7 - (((UINT16)c) & 7)));
+    for (i = 0; i < h; i++)
+    {
+        INT16 rr = (INT16)(r + i);
 
-    for (i = 0; i < h; i++){
-        p = base8 + (UINT32)((UINT16)r + i) * SCREEN_BYTES_PER_ROW + byte_col;
-        *p |= bit_mask;
+        if (rr >= 0 && rr < SCREEN_HEIGHT)
+        {
+            base8[(UINT32)rr * SCREEN_BYTES_PER_ROW + ((UINT16)c >> 3)] |=
+                (UINT8)(1 << (7 - ((UINT16)c & 7)));
+        }
     }
 }
-void plot_line(UINT32 *base, INT16 start_row, INT16 start_col, INT16 end_row, INT16 end_col) {
-    UINT8 *byte_base = (UINT8 *)base;
+void plot_line(UINT32 *base, INT16 start_row, INT16 start_col, INT16 end_row, INT16 end_col)
+{
+    UINT8 *byte_base;
     int abs_distance_x, abs_distance_y;
     int step_x, step_y;
     int error, temp_error;
-    UINT16 current_row = start_row;
-    UINT16 current_col = start_col;
+    INT16 current_row, current_col;
+
+    byte_base = (UINT8 *)base;
+
+    current_row = start_row;
+    current_col = start_col;
 
     abs_distance_x = end_row > start_row ? end_row - start_row : start_row - end_row;
     abs_distance_y = end_col > start_col ? end_col - start_col : start_col - end_col;
@@ -172,92 +177,124 @@ void plot_line(UINT32 *base, INT16 start_row, INT16 start_col, INT16 end_row, IN
 
     error = abs_distance_x - abs_distance_y;
 
-    while (1){
-		/* Bresenham's line algorithm */
-        if ((INT16)current_row >= 0 && current_row < SCREEN_HEIGHT &&
-            (INT16)current_col >= 0 && current_col < SCREEN_WIDTH){
-            *(byte_base + current_col * 80 + (current_row >> 3)) |= 1 << (7 - (current_row & 7));
+    while (1)
+    {
+        /* clip: only plot if on-screen */
+        if (current_row >= 0 && current_row < SCREEN_HEIGHT &&
+            current_col >= 0 && current_col < SCREEN_WIDTH)
+        {
+            /* correct 1bpp address: row*80 + (col>>3), bit uses col */
+            byte_base[(UINT32)current_row * SCREEN_BYTES_PER_ROW + ((UINT16)current_col >> 3)] |=
+                (UINT8)(1 << (7 - ((UINT16)current_col & 7)));
         }
 
-        if (current_row == end_row && current_col == end_col){
+        if (current_row == end_row && current_col == end_col)
             break;
-        }
+
         temp_error = 2 * error;
-        if (temp_error > -abs_distance_y){
+
+        if (temp_error > -abs_distance_y)
+        {
             error -= abs_distance_y;
-            current_row += step_x;
+            current_row = (INT16)(current_row + step_x);
         }
 
-        if (temp_error < abs_distance_x){
+        if (temp_error < abs_distance_x)
+        {
             error += abs_distance_x;
-            current_col += step_y;
+            current_col =	 (INT16)(current_col + step_y);
         }
     }
 }
-	
-void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width) {
-    UINT16 right_vertical_line_row = row + width - 1;    
-    UINT16 bottom_horizontal_line_col = col + length - 1;
-                                                  
-    plot_horizontal_line(base, row, col, width);
-    plot_horizontal_line(base, row, bottom_horizontal_line_col, width);
-    plot_vertical_line(base, row, col, length);
-    plot_vertical_line(base, right_vertical_line_row, col, length);
+void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width)
+{
+    UINT16 bottom_row = row + length - 1;
+    UINT16 right_col  = col + width  - 1;
+
+    /* top + bottom */
+    plot_horizontal_line(base, row,col,width);
+    plot_horizontal_line(base, bottom_row,col,width);
+
+    /* left + right */
+    plot_vertical_line(base, row, col,length);
+    plot_vertical_line(base, row, right_col,length);
 }
 
-void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side) {
-    UINT16 right_vertical_line_row = row + side - 1;    
-    UINT16 bottom_horizontal_line_col = col + side - 1;
+void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side)
+{
+    UINT16 bottom_row = row + side - 1;
+    UINT16 right_col  = col + side - 1;
 
-    plot_horizontal_line(base, row, col, side);
-    plot_horizontal_line(base, row, bottom_horizontal_line_col, side);
-    plot_vertical_line(base, row, col, side);
-    plot_vertical_line(base, right_vertical_line_row, col, side);
+    plot_horizontal_line(base, row,col,side);
+    plot_horizontal_line(base, bottom_row,col,side);
+
+    plot_vertical_line(base, row,col,side);
+    plot_vertical_line(base, row, right_col, side);
 }
 
-void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 height, UINT8 direction) {
-    UINT16 diag_start_row, diag_start_col;
-    UINT16 diag_end_row, diag_end_col;
-    
-    if (direction == 0) {
-        plot_vertical_line(baseptr, row, col, height);
-        plot_horizontal_line(baseptr, row, col, base);
-        
-        diag_start_row = row + base - 1;
-        diag_start_col = col;
-        diag_end_row = row;
-        diag_end_col = col + height - 1;
-        plot_line(baseptr, diag_start_row, diag_start_col, diag_end_row, diag_end_col);
-        
-    } else if (direction == 1) {
-        plot_vertical_line(baseptr, row, col, height);
-        plot_horizontal_line(baseptr, row - base + 1, col, base);
-        
-        diag_start_row = row - base + 1;
-        diag_start_col = col;
-        diag_end_row = row;
-        diag_end_col = col + height - 1;
-        plot_line(baseptr, diag_start_row, diag_start_col, diag_end_row, diag_end_col);
-        
-    } else if (direction == 2) {
-        plot_vertical_line(baseptr, row, col - height + 1, height);
-        plot_horizontal_line(baseptr, row, col, base);
+void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col,
+                   UINT16 base, UINT16 height, UINT8 direction)
+{
+    UINT16 r0, c0, r1, c1, r2, c2;
 
-        diag_start_row = row + base - 1;
-        diag_start_col = col;
-        diag_end_row = row;
-        diag_end_col = col - height + 1;
-        plot_line(baseptr, diag_start_row, diag_start_col, diag_end_row, diag_end_col);
-        
-    } else if (direction == 3) {
-        plot_vertical_line(baseptr, row, col - height + 1, height);
-        plot_horizontal_line(baseptr, row - base + 1, col, base);
-        
-        diag_start_row = row - base + 1;
-        diag_start_col = col;
-        diag_end_row = row;
-        diag_end_col = col - height + 1;
-        plot_line(baseptr, diag_start_row, diag_start_col, diag_end_row, diag_end_col);
+    if (base == 0 || height == 0)
+        return;
+
+    if (direction == 0)
+    {
+        /* top-left */
+        r0 = row;             
+		c0 = col;              /* right angle corner */
+        r1 = row;             
+		c1 = col + base - 1;   /* top-right */
+        r2 = row + height - 1; 
+		c2 = col;             /* bottom-left */
+
+        plot_horizontal_line(baseptr, r0, c0, base);
+        plot_vertical_line(baseptr, r0, c0, height);
+        plot_line(baseptr, (INT16)r2, (INT16)c2, (INT16)r1, (INT16)c1);
+    }
+    else if (direction == 1)
+    {
+        /* bottom-left */
+        r0 = row;
+		c0 = col;              /* right angle corner */
+        r1 = row;              
+		c1 = col + base - 1;   /* bottom-right */
+        r2 = row - (height - 1);
+		c2 = col;            /* top-left */
+
+        plot_horizontal_line(baseptr, r0, c0, base);
+        plot_vertical_line(baseptr, r2, c0, height);
+        plot_line(baseptr, (INT16)r2, (INT16)c2, (INT16)r1, (INT16)c1);
+    }
+    else if (direction == 2)
+    {
+        /* top-right */
+        r0 = row;              
+		c0 = col;              /* right angle corner */
+        r1 = row;              
+		c1 = col - (base - 1); /* top-left */
+        r2 = row + height - 1; 
+		c2 = col;              /* bottom-right */
+
+        plot_horizontal_line(baseptr, r0, c1, base);
+        plot_vertical_line(baseptr, r0, c0, height);
+        plot_line(baseptr, (INT16)r2, (INT16)c2, (INT16)r1, (INT16)c1);
+    }
+    else if (direction == 3)
+    {
+        /* bottom-right */
+        r0 = row;               
+		c0 = col;              /* right angle corner */
+        r1 = row;               
+		c1 = col - (base - 1); /* bottom-left */
+        r2 = row - (height - 1); 
+		c2 = col;             /* top-right */
+
+        plot_horizontal_line(baseptr, r0, c1, base);
+        plot_vertical_line(baseptr, r2, c0, height);
+        plot_line(baseptr, (INT16)r2, (INT16)c2, (INT16)r1, (INT16)c1);
     }
 }
 
@@ -518,3 +555,4 @@ void plot_string(UINT8 *base, INT16 row, INT16 col, char *str) {
         col = (UINT16)(col + 8);
     }
 }
+
