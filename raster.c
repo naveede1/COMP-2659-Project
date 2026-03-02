@@ -1,13 +1,13 @@
 #include "raster.h"
+#include <stdio.h>
 #include <osbind.h>
-#include <linea.h>
 
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 400
-#define SCREEN_BYTES_PER_ROW 80
-#define LONGS_PER_SCREEN 8000
+#define BYTES_PER_SCREEN 32000 
+#define SCREEN_WIDTH 640 
+#define SCREEN_LENGTH 400
 
-void clear_screen(UINT32 *base) {
+
+void clear_screen(UINT32 *base){
     int i;
     UINT32 *loc;
     i = 0;
@@ -16,42 +16,56 @@ void clear_screen(UINT32 *base) {
         *(loc++) = 0;
 }
 
-void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width) {
-    UINT8 *base8 = (UINT8 *)base;
+void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width){
+	
+	UINT8 *base8 = (UINT8 *)base;
+    UINT16 visible;
+	UINT16 x_skip, y_skip;
+    UINT8 *line;
+    UINT8 *start;
+    UINT8 *end;
+    UINT8 *curr;
+	UINT16 start_byte, end_byte;
+    UINT8 start_bit, end_bit;
+	UINT16 r;
+    UINT16 h = length;
+    INT16 r0 = (INT16)row;
+    INT16 c0 = (INT16)col;
+    
+	visible = clip_left_top_right_bottom(&r0, &c0, &h, width, &x_skip, &y_skip);
+    if (visible == 0 || h == 0)
+        return;
 
-    UINT16 r;
-    UINT16 start_byte = col >> 3;
-    UINT16 end_byte = (col + width - 1) >> 3;
+	start_byte = ((UINT16)c0) >> 3;
+    end_byte   = (UINT16)(((UINT16)c0 + visible - 1) >> 3);
 
-    UINT8 start_bit = col & 7;
-    UINT8 end_bit = (col + width - 1) & 7;
-
-    for (r = row; r < (row + length); r++) {
-        UINT8 *line = base8 + (UINT32)r * SCREEN_BYTES_PER_ROW;
-        /* r to UINT32 to prevent 16-bit overflow when computing byte offset */
-        UINT8 *start = line + start_byte;
-        UINT8 *end = line + end_byte;
-
-        UINT8 *curr = start;
-
-        while (curr <= end) {
-            UINT8 mask;
-
-            if ((curr == start) && (curr == end)) {
-                /*clear bits start_bit to end_bit*/
-                UINT8 left = 0xFF >> start_bit;
-                UINT8 right = 0xFF << (7 - end_bit);
-                mask = left & right;
-                *curr &= ~mask;
-            } else if (curr == start) {
-                /* clear from start_bit*/
-                mask = 0xFF >> start_bit;
-                *curr &= ~mask;
-            } else if (curr == end) {
-                /* clear from left edge of this byte up to end_bit */
-                mask = 0xFF << (7 - end_bit);
-                *curr &= ~mask;
-            } else {
+    start_bit = (UINT8)(((UINT16)c0) & 7);
+    end_bit   = (UINT8)((((UINT16)c0 + visible - 1) & 7));
+    /* clear length rows, start from r0*/
+    for (r = 0; r < h; r++){
+        line  = base8 + (UINT32)((UINT16)r0 + r) * SCREEN_BYTES_PER_ROW;
+        start = line + start_byte;
+        end   = line + end_byte;
+        curr = start;
+        while (curr <= end){
+            if (curr == start && curr == end){
+                UINT8 left, right, mask;
+                left  = (UINT8)(0xFF >> start_bit);
+                right = (UINT8)(0xFF << (7 - end_bit));
+                mask  = (UINT8)(left & right);
+                *curr &= (UINT8)~mask;
+            }
+            else if (curr == start) {
+                UINT8 mask;
+                mask = (UINT8)(0xFF >> start_bit);
+                *curr &= (UINT8)~mask;
+            }
+            else if (curr == end) {
+                UINT8 mask;
+                mask = (UINT8)(0xFF << (7 - end_bit));
+                *curr &= (UINT8)~mask;
+            }
+            else{
                 *curr = 0x00;
             }
             curr++;
@@ -59,115 +73,162 @@ void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 wi
     }
 }
 
-void plot_pixel(UINT8 *base, UINT16 row, UINT16 col) {
-    if (row >= 0 && row < SCREEN_WIDTH && col >= 0 && col < SCREEN_HEIGHT){
-        *(base + col * 80 + (row >> 3)) |= 1 << (7 - (row & 7));
-    }
-}
-
 void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length) {
-    UINT8 *byte_base = (UINT8 *)base;
-    UINT8 *start_byte_loc = byte_base + col * 80 + (row >> 3);
-    UINT8 *end_byte_loc = byte_base + col * 80 + ((row + length - 1) >> 3);
+    UINT8 *base8;
+    INT16 r;
+    INT16 c;
+    UINT16 visible, x_skip, y_skip;
+    UINT16 h;
+    UINT16 start_byte, end_byte;
+    UINT8 start_bit, end_bit;
+    UINT8 *line;
+    UINT8 *curr;
+    UINT8 *endp;
+    base8 = (UINT8 *)base;
 
-    UINT8 start_bit_location = col & 7;
-    UINT8 end_bit_location = (col + length - 1) & 7;
+    /* treat line as 1-tall sprite */
+    r = (INT16)row;
+    c = (INT16)col;
+    h = 1;
+    visible = clip_left_top_right_bottom(&r, &c, &h, length, &x_skip, &y_skip);
+    if (visible == 0) return;
+    if (h == 0) return;
 
-    UINT8 *curr = start_byte_loc;
+    start_byte = ((UINT16)c) >> 3;
+    end_byte   = (UINT16)(((UINT16)c + visible - 1) >> 3);
 
-    while (curr <= end_byte_loc) {
-        UINT8 mask;
-        UINT8 number_bits;
+    start_bit = (UINT8)(((UINT16)c) & 7);
+    end_bit   = (UINT8)((((UINT16)c + visible - 1) & 7));
 
-        if ((curr == start_byte_loc) && (curr == end_byte_loc)) {
-            number_bits = start_bit_location - end_bit_location + 1;
-            mask = (1 << number_bits) - 1;
-            mask = mask << end_bit_location;
-            *curr |= mask; 
-        } else if (curr == start_byte_loc) {
-            number_bits = start_bit_location + 1;
-            mask = (1 << number_bits) - 1;
-            *curr |= mask; 
-        } else if (curr == end_byte_loc) {
-            number_bits = 7 - end_bit_location + 1;
-            mask = (1 << number_bits) - 1;
-            mask = mask << end_bit_location;
-            *curr |= mask; 
-        } else {
-            mask = 0xFF;
-            *curr |= mask;
+    line = base8 + ((UINT32)((UINT16)r) * SCREEN_BYTES_PER_ROW);
+    curr = line + start_byte;
+    endp = line + end_byte;
+
+    while (curr <= endp) {
+        if (curr == (line + start_byte) && curr == endp) {
+            UINT8 left, right;
+            left  = (UINT8)(0xFF >> start_bit);
+            right = (UINT8)(0xFF << (7 - end_bit));
+            *curr |= (UINT8)(left & right);
+        }
+        else if (curr == (line + start_byte)) {
+            *curr |= (UINT8)(0xFF >> start_bit);
+        }
+        else if (curr == endp) {
+            *curr |= (UINT8)(0xFF << (7 - end_bit));
+        }
+        else {
+            *curr |= 0xFF;
         }
         curr++;
     }
 }
 
-void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length) {
-    UINT8 *byte_base = (UINT8 *)base;
+void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length)
+{
+    UINT8 *base8;
+    INT16 r;
+    INT16 c;
+    UINT16 h;
+    UINT16 x_skip, y_skip;
+    UINT16 visible;
     UINT16 i;
-    UINT16 current_column;
-    
-    for (i = 0; i < length; i++) {
-        current_column = col + i;
-        *(byte_base + current_column * 80 + (row >> 3)) |= 1 << (7 - (row & 7));
+
+    base8 = (UINT8 *)base;
+
+    r = (INT16)row;
+    c = (INT16)col;
+    h = length;
+
+    visible = clip_left_top_right_bottom(&r, &c, &h, 1, &x_skip, &y_skip);
+    if (visible == 0 || h == 0)
+        return;
+
+    for (i = 0; i < h; i++)
+    {
+        INT16 rr = (INT16)(r + i);
+
+        if (rr >= 0 && rr < SCREEN_HEIGHT)
+        {
+            base8[(UINT32)rr * SCREEN_BYTES_PER_ROW + ((UINT16)c >> 3)] |=
+                (UINT8)(1 << (7 - ((UINT16)c & 7)));
+        }
     }
 }
-
-void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col, UINT16 end_row, UINT16 end_col) {
-    UINT8 *byte_base = (UINT8 *)base;
+void plot_line(UINT32 *base, INT16 start_row, INT16 start_col, INT16 end_row, INT16 end_col)
+{
+    UINT8 *byte_base;
     int abs_distance_x, abs_distance_y;
     int step_x, step_y;
     int error, temp_error;
-    UINT16 current_row = start_row;
-    UINT16 current_col = start_col;
-    
+    INT16 current_row, current_col;
+
+    byte_base = (UINT8 *)base;
+
+    current_row = start_row;
+    current_col = start_col;
+
     abs_distance_x = end_row > start_row ? end_row - start_row : start_row - end_row;
     abs_distance_y = end_col > start_col ? end_col - start_col : start_col - end_col;
-    
+
     step_x = start_row < end_row ? 1 : -1;
     step_y = start_col < end_col ? 1 : -1;
 
     error = abs_distance_x - abs_distance_y;
-    
-    /* Bresenham's line algorithm */
-    while (1) {
-        *(byte_base + current_col * 80 + (current_row >> 3)) |= 1 << (7 - (current_row & 7));
-        
-        if (current_row == end_row && current_col == end_col) {
+
+    while (1)
+    {
+        /* clip: only plot if on-screen */
+        if (current_row >= 0 && current_row < SCREEN_HEIGHT &&
+            current_col >= 0 && current_col < SCREEN_WIDTH)
+        {
+            /* correct 1bpp address: row*80 + (col>>3), bit uses col */
+            byte_base[(UINT32)current_row * SCREEN_BYTES_PER_ROW + ((UINT16)current_col >> 3)] |=
+                (UINT8)(1 << (7 - ((UINT16)current_col & 7)));
+        }
+
+        if (current_row == end_row && current_col == end_col)
             break;
-        }
-        
+
         temp_error = 2 * error;
-        
-        if (temp_error > -abs_distance_y) {
+
+        if (temp_error > -abs_distance_y)
+        {
             error -= abs_distance_y;
-            current_row += step_x;
+            current_row = (INT16)(current_row + step_x);
         }
-        
-        if (temp_error < abs_distance_x) {
+
+        if (temp_error < abs_distance_x)
+        {
             error += abs_distance_x;
-            current_col += step_y;
+            current_col =	 (INT16)(current_col + step_y);
         }
     }
 }
+void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width)
+{
+    UINT16 bottom_row = row + length - 1;
+    UINT16 right_col  = col + width  - 1;
 
-void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width) {
-    UINT16 right_vertical_line_row = row + width - 1;    
-    UINT16 bottom_horizontal_line_col = col + length - 1;
-                                                  
-    plot_horizontal_line(base, row, col, width);
-    plot_horizontal_line(base, row, bottom_horizontal_line_col, width);
-    plot_vertical_line(base, row, col, length);
-    plot_vertical_line(base, right_vertical_line_row, col, length);
+    /* top + bottom */
+    plot_horizontal_line(base, row,col,width);
+    plot_horizontal_line(base, bottom_row,col,width);
+
+    /* left + right */
+    plot_vertical_line(base, row, col,length);
+    plot_vertical_line(base, row, right_col,length);
 }
 
-void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side) {
-    UINT16 right_vertical_line_row = row + side - 1;    
-    UINT16 bottom_horizontal_line_col = col + side - 1;
+void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side)
+{
+    UINT16 bottom_row = row + side - 1;
+    UINT16 right_col  = col + side - 1;
 
-    plot_horizontal_line(base, row, col, side);
-    plot_horizontal_line(base, row, bottom_horizontal_line_col, side);
-    plot_vertical_line(base, row, col, side);
-    plot_vertical_line(base, right_vertical_line_row, col, side);
+    plot_horizontal_line(base, row,col,side);
+    plot_horizontal_line(base, bottom_row,col,side);
+
+    plot_vertical_line(base, row,col,side);
+    plot_vertical_line(base, row, right_col, side);
 }
 
 void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 height, UINT8 direction) {
@@ -197,7 +258,6 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
     } else if (direction == 2) {
         plot_vertical_line(baseptr, row, col - height + 1, height);
         plot_horizontal_line(baseptr, row, col, base);
-
         diag_start_row = row + base - 1;
         diag_start_col = col;
         diag_end_row = row;
@@ -216,7 +276,7 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
     }
 }
 
-UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height,UINT16 sprite_width, UINT16 *x_skip, UINT16 *y_skip){
+UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height, UINT16 sprite_width, UINT16 *x_skip, UINT16 *y_skip) {
     INT16 r = *row;
     INT16 c = *col;
     UINT16 visible;
@@ -228,9 +288,8 @@ UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height,UINT16 
     /*top clip*/
     if (r < 0) {
         UINT16 s = -r;
-        if (s >= *height) {
+        if (s >= *height)
             return 0;
-        }
         *y_skip = s;
         *height -= s;
         r = 0;
@@ -238,10 +297,12 @@ UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height,UINT16 
 
     /*bottom clipping*/
     /*same logic as top clip but just camparing with the height*/
-    if (r >= SCREEN_HEIGHT) {
+    if (r >= SCREEN_HEIGHT)
+    {
         return 0;
     }
-    if (r + *height > SCREEN_HEIGHT) {
+    if (r + *height > SCREEN_HEIGHT)
+    {
         *height = SCREEN_HEIGHT - r;
     }
     /*left cliping */
@@ -272,6 +333,7 @@ UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height,UINT16 
     *col = (UINT16)c;
     return visible;
 }
+
 
 void plot_bitmap_8(UINT8 *base, INT16 row, INT16 col, UINT16 height, const UINT8 *bitmap_8) {
     UINT16 r, byte_col, bit_shift, visible, x_skip, y_skip;
@@ -356,94 +418,79 @@ void plot_bitmap_16(UINT16 *base, INT16 row, INT16 col, UINT16 height, const UIN
     }
 }
 
-void plot_bitmap_32(UINT32 *base, INT16 row, INT16 col, UINT16 height, const UINT32 *bitmap_32) {
-    UINT16 x_skip, y_skip, visible;
-    UINT16 byte_col, bit_shift, r;
-    UINT8 *base8 = (UINT8 *)base;
-	UINT8 b0, b1, b2, b3;
-    visible = clip_left_top_right_bottom(&row, &col, &height, 32, &x_skip, &y_skip);
-    if (visible == 0) { 
-		return;
-	}
-    bitmap_32 += y_skip;
-    byte_col = col >> 3;
-    bit_shift = col & 7;
+    int i = row;
 
-    for (r = 0; r < height; r++) {
-        UINT8 *dest = base8 + (UINT32)(row + r) * SCREEN_BYTES_PER_ROW + byte_col;
-        UINT32 src = bitmap_32[r];
+    for (i; i < width; i++) {
 
-        /*left cliping*/
-        if (x_skip != 0) {
-            src = src << x_skip;
-        }
+        UINT32 *start_byte_loc = base + i * 80 + (col >> 3);
+        UINT32 *end_byte_loc = base + i * 80 + ((col + length - 1) >> 3);
 
-        /*right cliping*/
-        if (visible < 32 - x_skip) {
-            UINT32 mask;
-	    mask = (UINT32)(0xFFFFFFFF << (32 - (UINT32)visible));
-            src &= mask;
-        }
+        UINT8 start_bit_location = i & 7;
+        UINT8 end_bit_location = ((i + (length - 1)) & 7); 
 
-        b0 = src >> 24;
-        b1 = src >> 16;
-        b2 = src >> 8;
-        b3 = src;
+        UINT8 *curr = start_byte_loc;
 
-        if (bit_shift == 0) {
-            dest[0] |= b0;
-            dest[1] |= b1;
-            dest[2] |= b2;
-            dest[3] |= b3;
-        } else {
-            dest[0] |= (b0 >> bit_shift);
-            dest[1] |= (b0 << (8 - bit_shift)) | (b1 >> bit_shift);
-            dest[2] |= (b1 << (8 - bit_shift)) | (b2 >> bit_shift);
-            dest[3] |= (b2 << (8 - bit_shift)) | (b3 >> bit_shift);
-            /*Write overflow byte*/
-            if (visible + bit_shift > 32 && byte_col + 4 < SCREEN_BYTES_PER_ROW) {
-                dest[4] |= (b3 << (8 - bit_shift));
-            }
-        }
-    }
-}
 
-void plot_character(UINT8 *base, UINT16 row, UINT16 col, char c) {
+void plot_character(UINT8 *base, INT16 row, INT16 col, char c) {
     UINT8 *font;
-    UINT16 byte_col, bit_shift, r;
+    UINT16 byte_col, bit_shift;
+    UINT16 r;
     UINT32 offset;
     UINT8 *dest;
     UINT8 src;
-    /*Check if it is within the screen boundaries*/
-    if (row >= SCREEN_HEIGHT || col >= SCREEN_WIDTH) {
-        return;
-    }
-    font = (UINT8 *)V_FNT_AD; /*Get the start add. of font table*/
-    byte_col = (UINT16)(col >> 3);
-    bit_shift = (UINT16)(col & 7);
-    for (r = 0; r < 16; r++) {
-        if ((UINT16)(row + r) >= SCREEN_HEIGHT) {
-            return;
+
+    INT16 rr;
+    INT16 cc;
+    UINT16 h;
+    UINT16 visible, x_skip, y_skip;
+
+    /* set up for clipping: glyph is 8 wide, 16 high */
+    rr = (INT16)row;
+    cc = (INT16)col;
+    h = 16;
+
+    visible = clip_left_top_right_bottom(&rr, &cc, &h, 8, &x_skip, &y_skip);
+    if (visible == 0 || h == 0) return;
+    font = (UINT8 *)V_FNT_AD;
+
+    byte_col = (UINT16)cc >> 3;
+    bit_shift = (UINT16)cc & 7;
+
+    for (r = 0; r < h; r++) {
+        /*fetch correct font row*/
+        src = font[(UINT16)(UINT8)c + (UINT16)(256 * (r + y_skip))];
+        /*Left clip*/
+        if (x_skip != 0)
+            src = (UINT8)(src << x_skip);
+
+        /* apply right clip */
+        if (visible < (UINT16)(8 - x_skip)) {
+            UINT8 mask;
+            mask = (UINT8)(0xFFu << (8 - visible));
+            src = (UINT8)(src & mask);
         }
-        /* row r of glyph c: font[c + 256 * r] ?//from lab*/
-        src = font[(UINT16)(UINT8)c + (UINT16)(256 * r)];
-        offset = (UINT32)(row + r) * SCREEN_BYTES_PER_ROW + byte_col;
+
+        offset = (UINT32)((UINT16)rr + r) * SCREEN_BYTES_PER_ROW + byte_col;
         dest = base + offset;
-        if (bit_shift == 0) {
+
+        if (bit_shift == 0){
             dest[0] |= src;
         }
-        else{
+        else {
             dest[0] |= (UINT8)(src >> bit_shift);
-            if (byte_col < (SCREEN_BYTES_PER_ROW - 1)) {
+
+            /* only write into next byte if it stays on the row */
+            if ((visible + bit_shift > 8) && (byte_col < (SCREEN_BYTES_PER_ROW - 1)))
                 dest[1] |= (UINT8)(src << (8 - bit_shift));
-            }
         }
     }
 }
 
-void plot_string(UINT8 *base, UINT16 row, UINT16 col, char *str) {
+void plot_string(UINT8 *base, INT16 row, INT16 col, char *str) {
     while (*str) {
+        if (col >= SCREEN_WIDTH) return;
         plot_character(base, row, col, *str++);
-        col += 8; /*Move to the next character position*/
+        col = (UINT16)(col + 8);
     }
 }
+
