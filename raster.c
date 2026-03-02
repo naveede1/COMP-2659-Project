@@ -232,69 +232,48 @@ void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side)
     plot_vertical_line(base, row, right_col, side);
 }
 
-void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col,
-                   UINT16 base, UINT16 height, UINT8 direction)
-{
-    UINT16 r0, c0, r1, c1, r2, c2;
-
-    if (base == 0 || height == 0)
-        return;
-
-    if (direction == 0)
-    {
-        /* top-left */
-        r0 = row;             
-		c0 = col;              /* right angle corner */
-        r1 = row;             
-		c1 = col + base - 1;   /* top-right */
-        r2 = row + height - 1; 
-		c2 = col;             /* bottom-left */
-
-        plot_horizontal_line(baseptr, r0, c0, base);
-        plot_vertical_line(baseptr, r0, c0, height);
-        plot_line(baseptr, (INT16)r2, (INT16)c2, (INT16)r1, (INT16)c1);
-    }
-    else if (direction == 1)
-    {
-        /* bottom-left */
-        r0 = row;
-		c0 = col;              /* right angle corner */
-        r1 = row;              
-		c1 = col + base - 1;   /* bottom-right */
-        r2 = row - (height - 1);
-		c2 = col;            /* top-left */
-
-        plot_horizontal_line(baseptr, r0, c0, base);
-        plot_vertical_line(baseptr, r2, c0, height);
-        plot_line(baseptr, (INT16)r2, (INT16)c2, (INT16)r1, (INT16)c1);
-    }
-    else if (direction == 2)
-    {
-        /* top-right */
-        r0 = row;              
-		c0 = col;              /* right angle corner */
-        r1 = row;              
-		c1 = col - (base - 1); /* top-left */
-        r2 = row + height - 1; 
-		c2 = col;              /* bottom-right */
-
-        plot_horizontal_line(baseptr, r0, c1, base);
-        plot_vertical_line(baseptr, r0, c0, height);
-        plot_line(baseptr, (INT16)r2, (INT16)c2, (INT16)r1, (INT16)c1);
-    }
-    else if (direction == 3)
-    {
-        /* bottom-right */
-        r0 = row;               
-		c0 = col;              /* right angle corner */
-        r1 = row;               
-		c1 = col - (base - 1); /* bottom-left */
-        r2 = row - (height - 1); 
-		c2 = col;             /* top-right */
-
-        plot_horizontal_line(baseptr, r0, c1, base);
-        plot_vertical_line(baseptr, r2, c0, height);
-        plot_line(baseptr, (INT16)r2, (INT16)c2, (INT16)r1, (INT16)c1);
+void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 height, UINT8 direction) {
+    UINT16 diag_start_row, diag_start_col;
+    UINT16 diag_end_row, diag_end_col;
+    
+    if (direction == 0) {
+        plot_vertical_line(baseptr, row, col, height);
+        plot_horizontal_line(baseptr, row, col, base);
+        
+        diag_start_row = row + base - 1;
+        diag_start_col = col;
+        diag_end_row = row;
+        diag_end_col = col + height - 1;
+        plot_line(baseptr, diag_start_row, diag_start_col, diag_end_row, diag_end_col);
+        
+    } else if (direction == 1) {
+        plot_vertical_line(baseptr, row, col, height);
+        plot_horizontal_line(baseptr, row - base + 1, col, base);
+        
+        diag_start_row = row - base + 1;
+        diag_start_col = col;
+        diag_end_row = row;
+        diag_end_col = col + height - 1;
+        plot_line(baseptr, diag_start_row, diag_start_col, diag_end_row, diag_end_col);
+        
+    } else if (direction == 2) {
+        plot_vertical_line(baseptr, row, col - height + 1, height);
+        plot_horizontal_line(baseptr, row, col, base);
+        diag_start_row = row + base - 1;
+        diag_start_col = col;
+        diag_end_row = row;
+        diag_end_col = col - height + 1;
+        plot_line(baseptr, diag_start_row, diag_start_col, diag_end_row, diag_end_col);
+        
+    } else if (direction == 3) {
+        plot_vertical_line(baseptr, row, col - height + 1, height);
+        plot_horizontal_line(baseptr, row - base + 1, col, base);
+        
+        diag_start_row = row - base + 1;
+        diag_start_col = col;
+        diag_end_row = row;
+        diag_end_col = col - height + 1;
+        plot_line(baseptr, diag_start_row, diag_start_col, diag_end_row, diag_end_col);
     }
 }
 
