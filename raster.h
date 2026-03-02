@@ -149,7 +149,7 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
 
 UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height, UINT16 sprite_width, UINT16 *skip_x, UINT16 *skip_y);
 
-void plot_bitmap_8(UINT8 *base, INT16 row, INT16 col, UINT16 height, const UINT8 *bitmap_8);
+void plot_8bit_bitmap(UINT8 *base, INT16 row, INT16 col, UINT16 height, const UINT8 *bitmap_8);
 
 /*----- Function: plot_bitmap_16 -----
 
@@ -162,7 +162,7 @@ void plot_bitmap_8(UINT8 *base, INT16 row, INT16 col, UINT16 height, const UINT8
  OUTPUT: None
 */
 
-void plot_bitmap_16(UINT16 *base, INT16 row, INT16 col, UINT16 height, const UINT16 *bitmap);
+void plot_16bit_bitmap(UINT16 *base, INT16 row, INT16 col, UINT16 height, const UINT16 *bitmap);
 
 /*----- Function: plot_bitmap_32 -----
 
@@ -175,7 +175,7 @@ void plot_bitmap_16(UINT16 *base, INT16 row, INT16 col, UINT16 height, const UIN
  OUTPUT: None
 */
 
-void plot_bitmap_32(UINT32 *base, INT16 row, INT16 col, UINT16 height, const UINT32 *bitmap);
+void plot_32bit_bitmap(UINT32 *base, INT16 row, INT16 col, UINT16 height, const UINT32 *bitmap);
 
 /*----- Function: plot_character -----
 
@@ -214,68 +214,68 @@ void plot_string(UINT8 *base, INT16 row, INT16 col, char *ch);
 */
 
 static const UINT16 invader_bitmap[16] = {
-        0x0000,
-        0x0810,
-        0x0810,
-        0x0420,
-        0x0240,
-        0x1FF8,
-        0x2004,
-        0x4662,
-        0x4002,
-        0x43C2,
-        0x2424,
-        0x1008,
-        0x0FF0,
-        0x0240,
-        0x0E70,
-        0x0000,
+    0x0000,
+    0x0810,
+    0x0810,
+    0x0420,
+    0x0240,
+    0x1FF8,
+    0x2004,
+    0x4662,
+    0x4002,
+    0x43C2,
+    0x2424,
+    0x1008,
+    0x0FF0,
+    0x0240,
+    0x0E70,
+    0x0000,
 };
 
 static const UINT8 smiley_bitmap[8] = {
-        0x3C,
-        0x42,
-        0xA5,
-        0x81,
-        0xA5,
-        0x99,
-        0x42,
-        0x3C,
+    0x3C,
+    0x42,
+    0xA5,
+    0x81,
+    0xA5,
+    0x99,
+    0x42,
+    0x3C,
 };
 
 static const UINT32 testBM[32] = {
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
+    0xFFFFFFFF,
 };
 
 #endif
