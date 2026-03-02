@@ -1,11 +1,10 @@
 #include "raster.h"
+#include <stdio.h>
 #include <osbind.h>
-#include <linea.h>
 
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 400
-#define SCREEN_BYTES_PER_ROW 80
-#define LONGS_PER_SCREEN 8000
+#define BYTES_PER_SCREEN 32000 
+#define SCREEN_WIDTH 640 
+#define SCREEN_LENGTH 400
 
 
 void clear_screen(UINT32 *base){
@@ -419,57 +418,17 @@ void plot_bitmap_16(UINT16 *base, INT16 row, INT16 col, UINT16 height, const UIN
     }
 }
 
-void plot_bitmap_32(UINT32 *base, INT16 row, INT16 col, UINT16 height, const UINT32 *bitmap_32) {
-    UINT16 x_skip, y_skip, visible;
-    UINT16 byte_col, bit_shift, r;
-    UINT8 *base8 = (UINT8 *)base;
-	UINT8 b0, b1, b2, b3;
-    visible = clip_left_top_right_bottom(&row, &col, &height, 32, &x_skip, &y_skip);
-    if (visible == 0) { 
-		return;
-	}
-    bitmap_32 += y_skip;
-    byte_col = col >> 3;
-    bit_shift = col & 7;
+    int i = row;
 
-    for (r = 0; r < height; r++) {
-        UINT8 *dest = base8 + (UINT32)(row + r) * SCREEN_BYTES_PER_ROW + byte_col;
-        UINT32 src = bitmap_32[r];
+    for (i; i < width; i++) {
 
-        /*left cliping*/
-        if (x_skip != 0) {
-            src = src << x_skip;
-        }
+        UINT32 *start_byte_loc = base + i * 80 + (col >> 3);
+        UINT32 *end_byte_loc = base + i * 80 + ((col + length - 1) >> 3);
 
-        /*right cliping*/
-        if (visible < 32 - x_skip) {
-            UINT32 mask;
-	    mask = (UINT32)(0xFFFFFFFF << (32 - (UINT32)visible));
-            src &= mask;
-        }
+        UINT8 start_bit_location = i & 7;
+        UINT8 end_bit_location = ((i + (length - 1)) & 7); 
 
-        b0 = src >> 24;
-        b1 = src >> 16;
-        b2 = src >> 8;
-        b3 = src;
-
-        if (bit_shift == 0) {
-            dest[0] |= b0;
-            dest[1] |= b1;
-            dest[2] |= b2;
-            dest[3] |= b3;
-        } else {
-            dest[0] |= (b0 >> bit_shift);
-            dest[1] |= (b0 << (8 - bit_shift)) | (b1 >> bit_shift);
-            dest[2] |= (b1 << (8 - bit_shift)) | (b2 >> bit_shift);
-            dest[3] |= (b2 << (8 - bit_shift)) | (b3 >> bit_shift);
-            /*Write overflow byte*/
-            if (visible + bit_shift > 32 && byte_col + 4 < SCREEN_BYTES_PER_ROW) {
-                dest[4] |= (b3 << (8 - bit_shift));
-            }
-        }
-    }
-}
+        UINT8 *curr = start_byte_loc;
 
 
 void plot_character(UINT8 *base, INT16 row, INT16 col, char c) {
