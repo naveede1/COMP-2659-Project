@@ -2,9 +2,14 @@
 #include <stdio.h>
 #include <osbind.h>
 
+#define LONGS_PER_SCREEN 8000
+#define SCREEN_BYTES_PER_ROW 80
+#define SCREEN_HEIGHT 400
+
 #define BYTES_PER_SCREEN 32000 
 #define SCREEN_WIDTH 640 
 #define SCREEN_LENGTH 400
+
 
 
 void clear_screen(UINT32 *base){
