@@ -3,6 +3,9 @@
   "configurations": [
     {
       "name": "C/C++ Runner: Debug Session",
+      "includePath": [
+        "${workspaceFolder}/**",
+      ]
       "type": "cppdbg",
       "request": "launch",
       "args": [],
