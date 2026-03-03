@@ -15,12 +15,12 @@ void renderScore(Score score, UINT32 base) {
         plot_string(base, score.posY, score.posX, "HIGH SCORE");
     
         /*
-        score_int_to_string(score.highScore, highScore);
-        plot_string(base, score.posY + 15, score.posX + 16, highScore);
+        score_int_to_string(score.highScore, highScore); */
+        plot_string(base, score.posY + 15, score.posX + 16, "070981");
 
-        score_int_to_string(score.value, currScore);
-        plot_string(base, 186, 32, currScore);
-        */
+        /*score_int_to_string(score.value, currScore);*/
+        plot_string(base, score.posY + 17, score.posX - 62, "000100");
+        
     }
 }
 
