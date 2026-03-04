@@ -258,53 +258,61 @@ void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side)
     plot_vertical_line(base, row, right_col, side);
 }
 
-void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 height, UINT8 direction)
+void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col,
+                   UINT16 base, UINT16 height, UINT8 direction)
 {
-    UINT16 diag_start_row, diag_start_col;
-    UINT16 diag_end_row, diag_end_col;
+    INT16 r0, c0, r1, c1, r2, c2;
 
-    if (direction == 0)
+    if (direction == 0) /* right angle at (row,col), base to right, height down */
     {
-        plot_vertical_line(baseptr, row, col, height);
+        r0 = (INT16)row;
+        c0 = (INT16)col;
+        r1 = (INT16)row;
+        c1 = (INT16)(col + base - 1);
+        r2 = (INT16)(row + height - 1);
+        c2 = (INT16)col;
         plot_horizontal_line(baseptr, row, col, base);
-
-        diag_start_row = row + base - 1;
-        diag_start_col = col;
-        diag_end_row = row;
-        diag_end_col = col + height - 1;
-        plot_line(baseptr, diag_start_row, diag_start_col, diag_end_row, diag_end_col);
-    }
-    else if (direction == 1)
-    {
         plot_vertical_line(baseptr, row, col, height);
-        plot_horizontal_line(baseptr, row - base + 1, col, base);
-
-        diag_start_row = row - base + 1;
-        diag_start_col = col;
-        diag_end_row = row;
-        diag_end_col = col + height - 1;
-        plot_line(baseptr, diag_start_row, diag_start_col, diag_end_row, diag_end_col);
+        plot_line(baseptr, r1, c1, r2, c2);
     }
-    else if (direction == 2)
+    else if (direction == 1) /* right angle at (row,col), base to left, height down */
     {
-        plot_vertical_line(baseptr, row, col - height + 1, height);
+        r0 = (INT16)row;
+        c0 = (INT16)col;
+        r1 = (INT16)row;
+        c1 = (INT16)(col - (INT16)base + 1);
+        r2 = (INT16)(row + height - 1);
+        c2 = (INT16)col;
+
+        plot_horizontal_line(baseptr, row, (UINT16)(col - base + 1), base);
+        plot_vertical_line(baseptr, row, col, height);
+        plot_line(baseptr, r1, c1, r2, c2);
+    }
+    else if (direction == 2) /* right angle at (row,col), base to right, height up */
+    {
+        r0 = (INT16)row;
+        c0 = (INT16)col;
+        r1 = (INT16)row;
+        c1 = (INT16)(col + base - 1);
+        r2 = (INT16)(row - (INT16)height + 1);
+        c2 = (INT16)col;
+
         plot_horizontal_line(baseptr, row, col, base);
-        diag_start_row = row + base - 1;
-        diag_start_col = col;
-        diag_end_row = row;
-        diag_end_col = col - height + 1;
-        plot_line(baseptr, diag_start_row, diag_start_col, diag_end_row, diag_end_col);
+        plot_vertical_line(baseptr, (UINT16)(row - height + 1), col, height);
+        plot_line(baseptr, r1, c1, r2, c2);
     }
-    else if (direction == 3)
+    else if (direction == 3) /* right angle at (row,col), base to left, height up */
     {
-        plot_vertical_line(baseptr, row, col - height + 1, height);
-        plot_horizontal_line(baseptr, row - base + 1, col, base);
+        r0 = (INT16)row;
+        c0 = (INT16)col;
+        r1 = (INT16)row;
+        c1 = (INT16)(col - (INT16)base + 1);
+        r2 = (INT16)(row - (INT16)height + 1);
+        c2 = (INT16)col;
 
-        diag_start_row = row - base + 1;
-        diag_start_col = col;
-        diag_end_row = row;
-        diag_end_col = col - height + 1;
-        plot_line(baseptr, diag_start_row, diag_start_col, diag_end_row, diag_end_col);
+        plot_horizontal_line(baseptr, row, (UINT16)(col - base + 1), base);
+        plot_vertical_line(baseptr, (UINT16)(row - height + 1), col, height);
+        plot_line(baseptr, r1, c1, r2, c2);
     }
 }
 
