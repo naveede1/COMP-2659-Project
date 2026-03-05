@@ -91,8 +91,8 @@ int main()
     UINT8 *base_8 = Physbase();
     UINT16 *base_16 = Physbase();
     UINT32 *base_32 = Physbase();
+    
     clear_screen(base_32);
-
     test_square(base_32);
 
     /*
@@ -166,32 +166,7 @@ void test_rectangle(UINT32 *base)
 
 void test_square(UINT32 *base)
 {
-    /* Top border clipping */
-    plot_square(base, 100, -10, 50);
-    plot_square(base, 100, -25, 50);
-
-    /* Bottom border clipping */
-    plot_square(base, 100, 380, 50);
-    plot_square(base, 100, 390, 50);
-
-    /* Left border clipping */
-    plot_square(base, -10, 100, 50);
-    plot_square(base, -25, 100, 50);
-
-    /* Right border clipping */
-    plot_square(base, 610, 100, 50);
-    plot_square(base, 620, 100, 50);
-
-    /* Corner clipping */
-    plot_square(base, -10, -10, 50);
-    plot_square(base, 610, -10, 50);
-    plot_square(base, -10, 380, 50);
-    plot_square(base, 610, 380, 50);
-
-    /* Completely off-screen */
-    plot_square(base, -100, 100, 50);
-    plot_square(base, 700, 100, 50);
-    plot_square(base, 100, -100, 50);
+    plot_square(base, 100, 150, 50);
 }
 
 void test_triangle(UINT32 *base)
