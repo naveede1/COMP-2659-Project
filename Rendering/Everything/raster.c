@@ -56,18 +56,15 @@ void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 wi
                 right = (UINT8)(0xFF << (7 - end_bit));
                 mask = (UINT8)(left & right);
                 *curr &= (UINT8)~mask;
-            }
-            else if (curr == start) {
+            } else if (curr == start) {
                 UINT8 mask;
                 mask = (UINT8)(0xFF >> start_bit);
                 *curr &= (UINT8)~mask;
-            }
-            else if (curr == end) {
+            } else if (curr == end) {
                 UINT8 mask;
                 mask = (UINT8)(0xFF << (7 - end_bit));
                 *curr &= (UINT8)~mask;
-            }
-            else {
+            } else {
                 *curr = 0x00;
             }
             curr++;
