@@ -12,6 +12,8 @@ void plot_various_v_lines(UINT32 *base);
 void test_rectangle(UINT32 *base);
 void test_square(UINT32 *base);
 void test_triangle(UINT32 *base);
+void test_clip_square(UINT32 *base);
+void test_clip_triangle(UINT32 *base);
 void test_bitmap_8(UINT8 *base);
 void test_bitmap_16(UINT16 *base);
 void test_bitmap_32(UINT32 *base);
@@ -87,26 +89,8 @@ int main() {
     UINT8 *base_8 = Physbase();
     UINT16 *base_16 = Physbase();
     UINT32 *base_32 = Physbase();
-    
+        
     clear_screen(base_32);
-    test_square(base_32);
-
-    /*
-    test_clear_screen(base_32);
-    test_clear_region(base_32);
-    plot_various_pixels(base_8);
-    plot_border_pixels(base_8);
-    plot_various_h_lines(base_32);
-    plot_various_v_lines(base_32);
-    test_rectangle(base_32);
-    test_square(base_32);
-    test_triangle(base_32);
-    test_bitmap_8(base_8);
-    test_bitmap_16(base_16);
-    test_bitmap_32(base_32);
-    test_plot_char(base_8);
-    test_plot_string(base_8);
-    */
 
     return 0;
 }
@@ -130,7 +114,6 @@ void plot_various_pixels(UINT8 *base) {
 }
 
 void plot_border_pixels(UINT8 *base) {
-    /* Does not plot bottom border pixels */
     plot_pixel(base, 0, 0);
     plot_pixel(base, 639, 0);
     plot_pixel(base, 0, 398);
@@ -164,6 +147,30 @@ void test_triangle(UINT32 *base) {
     plot_triangle(base, 300, 200, 50, 40, 3);
 }
 
+void test_clip_square(UINT32 *base) {
+    plot_square(base, -25, -25, 50);
+    plot_square(base, -25, 615, 50);
+    plot_square(base, 375, -25, 50);
+    plot_square(base, 375, 615, 50);
+
+    plot_square(base, -25, 295, 50);
+    plot_square(base, 375, 295, 50);
+    plot_square(base, 175, -25, 50);
+    plot_square(base, 175, 615, 50);
+}
+
+void test_clip_triangle(UINT32 *base) {
+    plot_triangle(base, -10, -10, 80, 60, 0);
+    plot_triangle(base, -10, 620, 80, 60, 1);
+    plot_triangle(base, 390, -10, 80, 60, 2);
+    plot_triangle(base, 390, 620, 80, 60, 3);
+
+    plot_triangle(base, -10, 300, 80, 60, 0);
+    plot_triangle(base, 390, 300, 80, 60, 2);
+    plot_triangle(base, 180, -10, 80, 60, 2);
+    plot_triangle(base, 180, 620, 80, 60, 0);
+}
+
 void test_bitmap_8(UINT8 *base) {
     plot_bitmap_8(base, 100, 40, 8, smiley_bitmap);
 }
@@ -183,5 +190,5 @@ void test_plot_char(UINT8 *base) {
 
 void test_plot_string(UINT8 *base) {
     linea0();
-    plot_string(base, 0, 0, "Hello, world!");
+    plot_string(base, 0, 0, "Hello, World!");
 }

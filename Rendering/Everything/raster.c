@@ -249,7 +249,7 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
         r2 = (INT16)(row + height - 1);
         c2 = (INT16)col;
 
-        plot_horizontal_line(baseptr, row, (UINT16)(col - base + 1), base);
+        plot_horizontal_line(baseptr, row, (INT16)(col - base + 1), base);
         plot_vertical_line(baseptr, row, col, height);
         plot_line(baseptr, r1, c1, r2, c2);
     } else if (direction == 2) {
@@ -262,7 +262,7 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
         c2 = (INT16)col;
 
         plot_horizontal_line(baseptr, row, col, base);
-        plot_vertical_line(baseptr, (UINT16)(row - height + 1), col, height);
+        plot_vertical_line(baseptr, (INT16)(row - height + 1), col, height);
         plot_line(baseptr, r1, c1, r2, c2);
     } else if (direction == 3) {
         /* right angle at (row,col), base to left, height up */
@@ -273,8 +273,8 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
         r2 = (INT16)(row - (INT16)height + 1);
         c2 = (INT16)col;
 
-        plot_horizontal_line(baseptr, row, (UINT16)(col - base + 1), base);
-        plot_vertical_line(baseptr, (UINT16)(row - height + 1), col, height);
+        plot_horizontal_line(baseptr, row, (INT16)(col - base + 1), base);
+        plot_vertical_line(baseptr, (INT16)(row - height + 1), col, height);
         plot_line(baseptr, r1, c1, r2, c2);
     }
 }
