@@ -19,7 +19,7 @@
 
 /* Render Test Model 1 - Playing and Jumping */
 Model testModel1 = {
-{1, 306, 300, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0}, /* Jumpman*/
+{1, 306, 300, -3, 1, 3, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0}, /* Jumpman*/
 
 { {1, 176, 142, 0, 8, 0, 0}, /* Girder 1 */
 {1, 272, 106, 0, 3, 0, 0}, 
@@ -47,7 +47,7 @@ Model testModel1 = {
 {1, 272, 336, 1, 0, 0, 0, 0, 4, 1, 1, 2},
 {1, 356, 340, 0, 0, 0, 0, 0, 3, 0, 0, 0} }, /* Ladder 15 */ 
 
-{1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0}, /* Kong */
+{1, 110, 198, 1, 0, 0, 0, 0, 0, 0, 0, 0}, /* Kong */
 
 {1, 184, 336, 0, 0, 0, 0, 1, 0}, /* Oil */
 
@@ -81,7 +81,7 @@ Model testModel1 = {
 
 /* Render Test Model 2 -  Died to Barrel */
 Model testModel2 = {
-{1, 270, 215, 0, 0, 4, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0}, /* Jumpman*/
+{1, 270, 215, 0, 0, 4, 0, 0, -1, 0, 0, 0, 1, 0, 0, 0}, /* Jumpman*/
 
 { {1, 176, 142, 0, 8, 0, 0}, /* Girder 1 */
 {1, 272, 106, 0, 3, 0, 0}, 
@@ -109,7 +109,7 @@ Model testModel2 = {
 {1, 272, 336, 1, 0, 0, 0, 0, 4, 1, 1, 2},
 {1, 356, 340, 0, 0, 0, 0, 0, 3, 0, 0, 0} }, /* Ladder 15 */ 
 
-{1, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0}, /* Kong */
+{1, 110, 198, 4, 110, 142, 142, 150, 3, 6, 0, 0}, /* Kong */
 
 {1, 184, 336, 0, 0, 0, 0, 1, 0}, /* Oil */
 
@@ -126,7 +126,7 @@ Model testModel2 = {
 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0} }, /* Barrel 7 */ 
 
-{1, 205, 300, 0, 0, 0, 0, 0, 0}, /* Spirit */
+{1, 205, 300, 0, 3, 0, 205, 213, 1}, /* Spirit */
 
 { {0, 0, 200, 0, 0, 0, 0, 0}, /* Item 1 */
 {0, 0, 200, 0, 0, 1, 0, 0},  
@@ -143,7 +143,7 @@ Model testModel2 = {
 
 /* Render Test Model 1 - 3 - Victory */
 Model testModel3 = {
-{1, 298, 90, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0}, /* Jumpman*/
+{1, 298, 90, 0, 0, 0, 0, 0, -1, 1, 0, 0, 0, 0, 0, 0}, /* Jumpman*/
 
 { {1, 176, 142, 0, 8, 0, 0}, /* Girder 1 */
 {1, 272, 106, 0, 3, 0, 0}, 
@@ -171,14 +171,14 @@ Model testModel3 = {
 {1, 272, 336, 1, 0, 0, 0, 0, 4, 1, 1, 2},
 {1, 356, 340, 0, 0, 0, 0, 0, 3, 0, 0, 0} }, /* Ladder 15 */ 
 
-{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* Kong */
+{1, 110, 198, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* Kong */
 
 {1, 184, 336, 0, 0, 0, 0, 1, 0}, /* Oil */
 
 { {0, 190, 162, 0, 0, 0}, /* Hammer 1 */
 {0, 338, 296, 0, 0, 0} }, /* Hammer 2 */
 
-{1, 256, 74, 0, 0, 1}, /* Pauline */ 
+{1, 256, 74, 276, 316, 1}, /* Pauline */ 
 
 {{1, 227, 352, 0, 0, 0, 0, 0, 0, 0}, /* Barrel 1 */
 {1, 332, 316, 0, 0, 0, 0, 0, 0, 0},
@@ -246,27 +246,4 @@ void render(Model *model, UINT32 *base) {
         renderBarrel(model->barrels[i], base);        
     }
 
-}
-
-int main() {
-
-    UINT32 *base = Physbase(); 
-    Model *model; 
-
-    model = &testModel1;
-    render(model, base); /* Render Test Model 1 - Playing and Jumping */
-
-    Cnecin();
-
-    model = &testModel2;
-    render(model, base); /* Render Test Model 2 -  Died to Barrel */
-
-    Cnecin();
-
-    model = &testModel3;
-    render(model, base); /* Render Test Model 3 - Victory */
-
-    Cnecin();
-
-    return 0;
 }
