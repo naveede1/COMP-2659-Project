@@ -59,9 +59,9 @@ void testGirder(Girder *girder) {
     printf("\n");
 
     printf("This girder spans from ");
-    printf(girder->left);
+    printf(girder->colLeft);
     printf(" to ");
-    printf(girder->right);
+    printf(girder->colRight);
     printf("\n");
 }
 

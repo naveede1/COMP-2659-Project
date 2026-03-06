@@ -14,53 +14,11 @@ void renderScore(Score score, UINT32 base) {
 
         plot_string(base, score.posY, score.posX, "HIGH SCORE");
     
-        /*
-        score_int_to_string(score.highScore, highScore); */
+        /*score_int_to_string(score.highScore, highScore); */
         plot_string(base, score.posY + 15, score.posX + 16, "070981");
 
         /*score_int_to_string(score.value, currScore);*/
-        plot_string(base, score.posY + 17, score.posX - 62, "000100");
+        plot_string(base, score.posY + 17, score.posX - 62, "019600");
         
-    }
-}
-
-void score_int_to_string(INT32 value, char *buffer) {
-    INT32 temp;
-    INT16 i = 0;
-    INT16 j;
-    INT16 is_negative = 0;
-
-    if (value == 0)
-    {
-        buffer[0] = '0';
-        buffer[1] = '\0';
-        return;
-    }
-
-    if (value < 0)
-    {
-        is_negative = 1;
-        value = -value;
-    }
-
-    /* Convert digits (reversed order) */
-    while (value > 0)
-    {
-        temp = value % 10;
-        buffer[i++] = (char)('0' + temp);
-        value = value / 10;
-    }
-
-    if (is_negative)
-        buffer[i++] = '-';
-
-    buffer[i] = '\0';
-
-    /* Reverse the string */
-    for (j = 0; j < i / 2; j++)
-    {
-        char t = buffer[j];
-        buffer[j] = buffer[i - j - 1];
-        buffer[i - j - 1] = t;
     }
 }
