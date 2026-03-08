@@ -12,7 +12,7 @@ typedef signed long INT32;
 #define SPRITE_HEIGHT 32
 
 /*----- Function: clear_screen -----
-v
+
  PURPOSE: Clears the entire screen.
 
  INPUT: Address(UINT32*): to the start of the screen
@@ -60,19 +60,21 @@ void plot_pixel(UINT8 *base, UINT16 row, UINT16 col);
         Length: the lenth in pixels of the line
 
  OUTPUT: None
+
 */
 
 void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length);
 
 /*----- Function: plot_vertical_line -----
 
- PURPOSE: Plot a hoizontal line on the screen. The vertical line is specified by the topmost pixel of the line and the length of the line.
+ PURPOSE: Plot a vertical line on the screen. The vertical line is specified by the topmost pixel of the line and the length of the line.
 
  INPUT: Address(UINT32*): to the start of the screen
         Position(row,col): the coordinates of the topmost pixel of the vertical line
         Length: the lenth in pixels of the line
 
  OUTPUT: None
+
 */
 
 void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length);
@@ -86,6 +88,7 @@ void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length);
         Position(end_row,end_col): the coordinates of the end of the line
 
  OUTPUT: None
+
 */
 
 void plot_line(UINT32 *base, INT16 start_row, INT16 start_col, INT16 end_row, INT16 end_col);
@@ -100,6 +103,7 @@ void plot_line(UINT32 *base, INT16 start_row, INT16 start_col, INT16 end_row, IN
         Width: the width (number of columns) in pixels of the rectangle
 
  OUTPUT: None
+
 */
 
 void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width);
@@ -113,6 +117,7 @@ void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 
         Side: the lenth of each side, in pixels, of the square
 
  OUTPUT: None
+
 */
 
 void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side);
@@ -132,6 +137,7 @@ void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side);
 
 
  OUTPUT: None
+
 */
 
 void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 height, UINT8 direction);
@@ -145,6 +151,7 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
         Height: the lenth (number of rows) of the height in pixels of the bitmap
 
  OUTPUT: None
+
 */
 
 UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height, UINT16 sprite_width, UINT16 *skip_x, UINT16 *skip_y);
@@ -160,6 +167,7 @@ void plot_bitmap_8(UINT8 *base, INT16 row, INT16 col, UINT16 height, const UINT8
         Height: the lenth (number of rows) of the height in pixels of the bitmap
 
  OUTPUT: None
+
 */
 
 void plot_bitmap_16(UINT16 *base, INT16 row, INT16 col, UINT16 height, const UINT16 *bitmap);
@@ -173,6 +181,7 @@ void plot_bitmap_16(UINT16 *base, INT16 row, INT16 col, UINT16 height, const UIN
         Height: the lenth (number of rows) of the height in pixels of the bitmap
 
  OUTPUT: None
+
 */
 
 void plot_bitmap_32(UINT32 *base, INT16 row, INT16 col, UINT16 height, const UINT32 *bitmap);
@@ -186,6 +195,7 @@ void plot_bitmap_32(UINT32 *base, INT16 row, INT16 col, UINT16 height, const UIN
         ch(char): the character to be written to the screen
 
  OUTPUT: None
+
 */
 
 void plot_character(UINT8 *base, INT16 row, INT16 col, char ch);
@@ -199,19 +209,10 @@ void plot_character(UINT8 *base, INT16 row, INT16 col, char ch);
         ch(c-string): the string to be written to the screen
 
  OUTPUT: None
+
 */
 
 void plot_string(UINT8 *base, INT16 row, INT16 col, char *ch);
-
-/*----- Function: clip_right_bottom -----
-
- PURPOSE: Error Checking.
- INPUT: Position(row,col): the coordinates of the top left pixel of the bitmap
-        Height: the lenth (number of rows) in pixels of the bitmap
-        Sprite_width: the width (number of columns) in pixels of the bitmap
-
- OUTPUT: The number of visible columns (width) of the bitmap after clipping to the right edge.
-*/
 
 static const UINT32 testBM[32] = {
     0xFFFFFFFF,
