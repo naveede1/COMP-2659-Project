@@ -17,6 +17,7 @@ int main() {
     testKong(model->kong);
     Cnecin();
 
+
     model = &testModel2;
     render(model, base); /* Render Test Model 2 -  Died to Barrel */
     Cnecin();
@@ -25,6 +26,7 @@ int main() {
     testSpirit(model->spirit);
     Cnecin();
 
+
     model = &testModel3;
     render(model, base); /* Render Test Model 3 - Victory */
     Cnecin();
@@ -32,6 +34,6 @@ int main() {
     Cnecin();
     testLady(model->lady);
     Cnecin();
-
+   
     return 0;
 }
