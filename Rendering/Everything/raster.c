@@ -1,16 +1,18 @@
 #include "raster.h"
 #include <stdio.h>
 #include <osbind.h>
-#include <linea.h>
 
-#define BYTES_PER_SCREEN 32000
-#define SCREEN_WIDTH 640
-#define SCREEN_LENGTH 400
 #define LONGS_PER_SCREEN 8000
 #define SCREEN_BYTES_PER_ROW 80
 #define SCREEN_HEIGHT 400
 
-void clear_screen(UINT32 *base) {
+#define BYTES_PER_SCREEN 32000 
+#define SCREEN_WIDTH 640 
+#define SCREEN_LENGTH 400
+
+
+
+void clear_screen(UINT32 *base){
     int i;
     UINT32 *loc;
     i = 0;
