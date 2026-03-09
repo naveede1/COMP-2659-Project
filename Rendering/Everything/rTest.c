@@ -4,6 +4,8 @@
 #include <osbind.h>
 #include <stdio.h>
 
+
+/*
 int main() {
 
     UINT32 *base = Physbase(); 
@@ -11,7 +13,7 @@ int main() {
 
     model = &testModel1;
     render(model, base); /* Render Test Model 1 - Playing and Jumping */
-    Cnecin();
+ /* Cnecin();
     testMario(model->mario);
     Cnecin();
     testKong(model->kong);
@@ -20,7 +22,7 @@ int main() {
 
     model = &testModel2;
     render(model, base); /* Render Test Model 2 -  Died to Barrel */
-    Cnecin();
+/*  Cnecin();
     testMario(model->mario);
     Cnecin();
     testSpirit(model->spirit);
@@ -29,7 +31,7 @@ int main() {
 
     model = &testModel3;
     render(model, base); /* Render Test Model 3 - Victory */
-    Cnecin();
+/*  Cnecin();
     testMario(model->mario);
     Cnecin();
     testLady(model->lady);
@@ -37,3 +39,4 @@ int main() {
    
     return 0;
 }
+*/
