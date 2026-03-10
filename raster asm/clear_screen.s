@@ -1,3 +1,8 @@
+start:
+	move.w	#3,-(sp)
+	trap	#14
+	addq.l	#2,sp	
+
 ;----- SUBROUTINE: clear_screen -----
 ;
 ; PURPOSE: Clears the entire screen.
@@ -16,4 +21,12 @@ clear_screen:
 		clr 	d0
 		move.l	BASE_32(a6),a0
 
-		cmpi.w	#SCREEN_WIDTH,d0
+while:		cmpi.w	#SCREEN_WIDTH+1,d0
+		beq	end
+		move.b	#0,(a0)+
+		addq.w	#1,d0
+		bra	while			
+
+end:		movem.l	(sp)+,d0-d2/a0-a2
+		unlk	a6
+		rts
