@@ -1,7 +1,13 @@
+	xdef	clear_screen
+
 start:
-	move.w	#3,-(sp)
+	move.w	#2,-(sp)
 	trap	#14
-	addq.l	#2,sp	
+	addq.l	#2,sp
+	move.l	d0,a0
+
+	pea	(a0)
+	jsr	clear_screen		
 
 ;----- SUBROUTINE: clear_screen -----
 ;
