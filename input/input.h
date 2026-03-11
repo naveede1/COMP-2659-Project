@@ -3,9 +3,27 @@
 
 typedef enum { FALSE, TRUE } boolean;
 
+/*----- Function: has_input -----
+
+ PURPOSE: Returns true if there is pending input to be processed and false otherwise
+
+ INPUT: NONE
+
+ OUTPUT: TRUE for input proccessed
+         FALSE for no input proccessed
+
+*/
 boolean has_input();
 
-boolean get_input();
+/*----- Function: get_input -----
 
+ PURPOSE: Returns the next character to be processed
 
-#endif // INPUT_H
+ INPUT: 
+
+ OUTPUT:
+
+*/
+char get_input();
+
+#endif
