@@ -20,7 +20,7 @@ _clear_screen:
 
 while:		cmpi.w	#SCREEN_WIDTH+1,d0
 		beq	loop_end
-		move.b	#0,(a0)+
+		move.l	#0,(a0)+
 		addq.w	#1,d0
 		bra	while			
 
