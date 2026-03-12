@@ -16,6 +16,7 @@
 
 #include "model.h"
 #include "raster.c"
+#include "clock.c"
 
 #include <osbind.h>
 #include <stdio.h>
@@ -128,13 +129,65 @@ void render(Model *model, UINT32 *base) {
 
 int main() {
 
+    long nowTime;
+    long startTime = getTime();
+    long passedTime;
+
+    int gameRunning = 1;
+
     UINT32 *base = Physbase(); 
-    
+    UINT32 *base2 = Physbase();
+    UINT32 *printBase;
+    int currBase = 1;
+
     Model *model; 
     model = &testModel;
 
     render(model, base);
 
+    while (gameRunning == 1) {
+
+        nowTime = getTime();
+
+        passedTime = nowTime - startTime;
+
+        /* DOUBLE BUFFERING */
+
+        if(passedTime % 1 == 0) { /* Every Frame, swap the buffer*/
+
+            if (currBase == 1) {
+
+                currBase = 2;
+                printBase = base;
+
+            }
+            else {
+
+                currBase = 1;
+                printBase = base2;
+
+            }
+
+        } 
+    
+        if(passedTime % FRAMERULE == 0) {
+
+            clear_region(printBase, model->mario.posY, model->mario.posX, 16, 16);
+            model->mario.posX++;
+            renderMario(model->mario, printBase);
+
+        }
+
+        if (passedTime >= 150){
+
+            printf("GAME OVER \n");
+            gameRunning = 0;
+        
+        }
+         
+    }
+
     return 0;
 }
+
 
