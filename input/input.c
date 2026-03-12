@@ -13,3 +13,11 @@ boolean has_input() {
 char get_input() {
     return Cnecin();
 }
+
+boolean is_held() {
+    return FALSE;
+}
+
+boolean is_released() {
+    return FALSE;
+}

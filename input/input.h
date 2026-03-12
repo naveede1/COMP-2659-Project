@@ -5,20 +5,49 @@ typedef enum { FALSE, TRUE } boolean;
 
 /*----- Function: has_input -----
 
- PURPOSE: Returns true if there is pending input to be processed and false otherwise
+PURPOSE: Checks if there is an input processed
 
- INPUT: NONE
+INPUT: NONE
+
+OUTPUT: TRUE if input was processed
+        FALSE if no input was processed
 
 */
 boolean has_input();
 
 /*----- Function: get_input -----
 
- PURPOSE: Returns the next character to be processed
+PURPOSE: Get input processed
 
- INPUT: NONE
+INPUT: NONE
+
+OUTPUT: Character processed
 
 */
 char get_input();
+
+/*----- Function: is_held -----
+
+PURPOSE: Checks if the current input is being held
+
+INPUT: NONE
+
+OUTPUT: TRUE if the input processed was held
+        FALSE if not
+
+*/
+boolean is_held();
+
+/*----- Function: is_released -----
+
+PURPOSE: Check if the held input was released
+
+INPUT: NONE
+
+OUTPUT: TRUE if the held input was released
+        FALSE if the input is still being held
+
+*/
+boolean is_released();
 
 #endif
