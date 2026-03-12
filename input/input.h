@@ -9,9 +9,6 @@ typedef enum { FALSE, TRUE } boolean;
 
  INPUT: NONE
 
- OUTPUT: TRUE for input proccessed
-         FALSE for no input proccessed
-
 */
 boolean has_input();
 
@@ -19,9 +16,7 @@ boolean has_input();
 
  PURPOSE: Returns the next character to be processed
 
- INPUT: 
-
- OUTPUT:
+ INPUT: NONE
 
 */
 char get_input();

@@ -11,5 +11,5 @@ boolean has_input() {
 }
 
 char get_input() {
-    
+    return Cnecin();
 }
