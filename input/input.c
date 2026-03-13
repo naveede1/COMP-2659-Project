@@ -6,37 +6,31 @@ static boolean held = FALSE;
 static boolean released = FALSE;
 
 
-int main() {
-    while(1){
-        if(has_input()){
-            char input = get_input();
-            printf("Input: %c\n", input);
-            
-            if(is_held()) printf("held\n");
-            if(is_released()) printf("released\n");
-            if(input =='q') break;        
-        }
-    }
-    return 0;
-}
-
-boolean has_input(){
+boolean has_input() {
     return (Cconis() != 0) ? TRUE : FALSE;
 }
 
-char get_input() {    
-    held = TRUE;
+char get_input() {
+    long raw = Cnecin(); /* blocks; upper bytes = scan code */
+    held     = TRUE;
     released = FALSE;
-    return Cnecin();
+    /*https://freemint.github.io/tos.hyp/en/gemdos_chrinout.html#Cneci*/
+    /*since Cnecin return a long value have to isolate get the char val.*/
+    return raw & 0xFF;
 }
 
-boolean is_held(){
+boolean is_held() {
     return held;
 }
 
-boolean is_released(){
+/*
+ * Call once to consume a key-press event.
+ * First call after get_input() returns TRUE and flips state to released.
+ * Every call after that returns FALSE until the next get_input().
+ */
+boolean is_released() {
     if (held == TRUE) {
-        held = FALSE;
+        held     = FALSE;
         released = TRUE;
         return TRUE;
     }
