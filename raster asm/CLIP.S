@@ -6,20 +6,21 @@
 ;
 ; OUTPUT:
 
-SCREEN_HEIGHT           equ     400
-SCREEN_WIDTH            equ     640
+SCREEN_HEIGHT equ 400
+SCREEN_WIDTH equ 640
 
 ;----------------------------------------------------------------
 ; clip offsets
 ;----------------------------------------------------------------
-row_ptr         equ     8
-col_ptr         equ     12
-height_ptr      equ     16
-x_skip_ptr      equ     22
-y_skip_ptr      equ     26
+row_ptr equ     8
+col_ptr equ     12
+height_ptr equ  16
+sprite_width equ 20
+x_skip_ptr equ  22
+y_skip_ptr equ  26
 
-
-	xdef _clip_left_top_right_bottom
+        
+        xdef    _clip_left_top_right_bottom
 
 _clip_left_top_right_bottom:
         link    a6,#0
@@ -65,7 +66,7 @@ check_left:
         bge.s   check_right
         move.w  d1,d3
         neg.w   d3
-        move.w  20(a6),d4
+        move.w  sprite_width(a6),d4
         cmp.w   d4,d3
         bge.s   return_zero
         move.w  d3,(a3)
@@ -77,7 +78,7 @@ check_right:
 
         move.w  #SCREEN_WIDTH,d3
         sub.w   d1,d3
-        move.w  20(a6),d4
+        move.w  sprite_width(a6),d4
         move.w  (a3),d5
         sub.w   d5,d4
         cmp.w   d4,d3
