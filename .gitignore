@@ -1,4 +1,6 @@
 .vscode/
-.out
-.O
+*.out
+*.OUT
+*.o
+*.O
 TST_RAST
