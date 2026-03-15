@@ -31,7 +31,7 @@ lv16_r          equ     -12
 
 
 _plot_bitmap_16:
-        link    a6,#-12                         ; allocate 12 bytes of local storage
+        link    a6,#-12                         
         movem.l d0-d7/a0-a5,-(sp)               
 		
         ; Call clip_left_top_right_bottom(&row, &col, &height,
@@ -62,8 +62,8 @@ _plot_bitmap_16:
         adda.l  d0,a1                           ; advance by y_skip rows
         move.l  a1,p16_bitmap(a6)               ; save advanced pointer back to stack
 
-        ;   word_col  = col >> 4  (which word in the row)
-        ;   bit_shift = col & 15  (which bit within that word)
+        ;   word_col  = col >> 4  
+        ;   bit_shift = col & 15  
         move.w  p16_col(a6),d0
         move.w  d0,d1
         lsr.w   #4,d0
@@ -71,7 +71,7 @@ _plot_bitmap_16:
         andi.w  #15,d1
         move.w  d1,lv16_bit_shift(a6)          ; save bit shift
 
-        clr.w   lv16_r(a6)                     ; r = 0, start of row loop		
+        clr.w   lv16_r(a6)                     ; r = 0, loop_index	
  
 p16_row_loop:
         move.w  lv16_r(a6),d0
@@ -93,7 +93,7 @@ p16_row_loop:
         movea.l p16_bitmap(a6),a1
         move.w  lv16_r(a6),d0
         ext.l   d0
-        lsl.l   #1,d0                          ; multiply by 2 (bytes per word)
+        lsl.l   #1,d0                          ; multiply by 2
         move.w  0(a1,d0.l),d3                  ; d3 = bitmap[r]
 		
         ; Apply left clip: shift source left by x_skip bits
@@ -111,8 +111,8 @@ p16_right_clip:
         bge.s   p16_do_print
         move.w  #16,d6
         sub.w   d5,d6                          ; d6 = 16 - visible (bits to mask off)
-        move.w  #-1,d7                         ; d7 = 0xFFFF
-        lsl.w   d6,d7                          ; shift left to keep top 'visible' bits
+        move.w  #-1,d7                         
+        lsl.w   d6,d7                          
         and.w   d7,d3                          ; zero out right clipped bits
 
 p16_do_print:
@@ -125,7 +125,7 @@ p16_do_print:
 
 p16_unaligned:
         move.w  d3,d7
-        lsr.w   d6,d7                          ; shift right portion into place
+        lsr.w   d6,d7                          
         or.w    d7,(a0)                        ; write high part to current word
 
         move.w  lv16_visible(a6),d7
@@ -141,7 +141,7 @@ p16_unaligned:
         move.w  #16,d7
         sub.w   d6,d7                          ; d7 = 16 - bit_shift
         move.w  d3,d6
-        lsl.w   d7,d6                          ; shift left portion into place
+        lsl.w   d7,d6                          
         or.w    d6,2(a0)                       ; write low part to next word
 
 p16_next_row:
