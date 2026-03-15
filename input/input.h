@@ -1,7 +1,11 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+
 typedef enum { FALSE, TRUE } boolean;
+
+static boolean held = FALSE;
+static boolean released = FALSE;
 
 /*----- Function: has_input -----
 

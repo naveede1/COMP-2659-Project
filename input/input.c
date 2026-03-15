@@ -2,22 +2,30 @@
 #include "input.h"
 #include <osbind.h>
 
-int main() {
-    return 0;
-}
 
 boolean has_input() {
-    return (Cconis()) ? TRUE : FALSE;
+    return (Cconis() != 0) ? TRUE : FALSE;
 }
 
 char get_input() {
-    return Cnecin();
+    return (char)Cnecin(); /*Type cast to char*/
 }
 
 boolean is_held() {
-    return FALSE;
+    return held;
 }
 
 boolean is_released() {
-    return FALSE;
+    if (Cconis() != 0) {
+        /* If there is input, we consider it held as true*/
+        held = TRUE;
+        released = FALSE;
+    } else {
+        /* If there is no input, we check if the key was previously held*/
+        if (held) {
+            released = TRUE;
+            held = FALSE;
+        }
+    }
+    return released;
 }
