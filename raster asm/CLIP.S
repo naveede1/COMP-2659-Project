@@ -1,29 +1,27 @@
 ;----- SUBROUTINE: clip_left_top_right_bottom -----
 ;
-; PURPOSE: Clips a sprite to all four screen boundaries, adjusting its position,dimensions, and
+; PURPOSE: Clips a sprite to all four screen boundaries, adjusting its position, dimensions, and
 ;          bitmap offset to only render the visible portion.
 ;
-;INPUT: Position(row,col): Pointer to the top left row and column of the sprite
+;INPUT: Position(row, col): Pointer to the top left row and column of the sprite
 ;        height: Pointer to the height of the sprite in pixels
 ;        sprite_width: The width of the sprite in pixels
-;        skip_x:Pointer to the number of columns to skip in the bitmap
-;        skip_y:Pointer to the number of rows to skip in the bitmap
+;        skip_x: Pointer to the number of columns to skip in the bitmap
+;        skip_y: Pointer to the number of rows to skip in the bitmap
 ;
 ; OUTPUT: UINT16 bitmask of which edges were clipped (left, top, right, bottom)
-
-         
-
-SCREEN_HEIGHT equ 400
-SCREEN_WIDTH equ 640
+       
+SCREEN_HEIGHT 	equ 	400
+SCREEN_WIDTH 	equ 	640
 
 ; clip offsets
 
-row_ptr equ     8
-col_ptr equ     12
-height_ptr equ  16
-sprite_width equ 20
-x_skip_ptr equ  22
-y_skip_ptr equ  26
+row_ptr 	equ     8
+col_ptr 	equ     12
+height_ptr 	equ  	16
+sprite_width 	equ 	20
+x_skip_ptr 	equ  	22
+y_skip_ptr 	equ  	26
 
         
         xdef    _clip_left_top_right_bottom
@@ -31,6 +29,7 @@ y_skip_ptr equ  26
 _clip_left_top_right_bottom:
         link    a6,#0
         movem.l d1-d7/a0-a4,-(sp)
+
         ; Load pointers from stack
         movea.l row_ptr(a6),a0
         movea.l col_ptr(a6),a1
@@ -42,10 +41,13 @@ _clip_left_top_right_bottom:
         move.w  (a0),d0
         move.w  (a1),d1
         move.w  (a2),d2
+
         ; Clear skip values; will be set if clipping occurs
         clr.w   (a3)
         clr.w   (a4)
-; --- Clip Top ---
+
+	; --- Clip Top ---
+
         tst.w   d0                              ; is row < 0?
         bge.s   check_bottom
         move.w  d0,d3
@@ -58,6 +60,7 @@ _clip_left_top_right_bottom:
         clr.w   d0                              ; clamp row to 0
 
         ; --- Clip Bottom ---
+
 check_bottom:
         cmp.w   #SCREEN_HEIGHT,d0               ; if row >= screen height, sprite is fully off screen
         bge.s   return_zero
@@ -70,6 +73,7 @@ check_bottom:
         move.w  d2,(a2)
 
         ; --- Clip Left ---
+
 check_left:
         tst.w   d1                              ; is col < 0?
         bge.s   check_right
@@ -82,6 +86,7 @@ check_left:
         clr.w   d1                              ; clamp col to 0
 
         ; --- Clip Right ---
+
 check_right:
         cmp.w   #SCREEN_WIDTH,d1                ; if col >= screen width, sprite is fully off screen
         bge.s   return_zero
@@ -96,6 +101,7 @@ check_right:
         move.w  d4,d3                           ; clamp to visible width
 
         ; --- Write back clipped values, return visible width in d0 ---
+
 write_back:
         move.w  d0,(a0)                         ; write clipped row
         move.w  d1,(a1)                         ; write clipped col
