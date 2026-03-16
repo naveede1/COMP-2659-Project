@@ -8,7 +8,6 @@
 ;
 ; OUTPUT: None
 
-
         xdef    _plot_bitmap_32
         xdef    _clip_left_top_right_bottom
 
@@ -27,7 +26,6 @@ lv32_visible    equ     -6
 lv32_byte_col   equ     -8
 lv32_bit_shift  equ     -10
 lv32_r          equ     -12
-
 
 _plot_bitmap_32:
         link    a6,#-12                        
@@ -202,4 +200,4 @@ p32_done:
         movem.l (sp)+,d0-d7/a0-a5             
         unlk    a6                             
         rts
-		
+	
