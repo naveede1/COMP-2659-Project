@@ -20,10 +20,12 @@
 
 #include <osbind.h>
 #include <stdio.h>
+#include <string.h>
 
+#define FRAMERULE 12
 
 Model testModel = {
-{1, 306, 300, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0}, /* Jumpman*/
+{1, 306, 300, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316}, /* Jumpman*/
 
 { {1, 176, 142, 0, 8, 0, 0}, /* Girder 1 */
 {1, 272, 106, 0, 3, 0, 0}, 
@@ -35,21 +37,21 @@ Model testModel = {
 {1, 272, 368, 1, 8, 0, 0}, 
 {1, 176, 368, 0, 6, 0, 0} }, /* Girder 9*/
 
-{{1, 248, 78, 0, 0, 0, 0, 0, 8, 0, 0, 0}, /* Ladder 1 */
-{1, 264, 78, 0, 0, 0, 0, 0, 8, 0, 0, 0},
-{1, 312, 112, 0, 0, 0, 0, 0, 4, 0, 0, 0}, 
-{1, 272, 150, 1, 0, 0, 0, 0, 6, 1, 3, 2}, 
-{1, 360, 153, 0, 0, 0, 0, 0, 5, 0, 0, 0},
-{1, 208, 207, 0, 0, 0, 0, 0, 4, 0, 0, 0},
-{1, 248, 206, 0, 0, 0, 0, 0, 4, 0, 0, 0},
-{1, 344, 199, 1, 0, 0, 0, 0, 6, 1, 2, 3},
-{1, 256, 247, 1, 0, 0, 0, 0, 5, 1, 2, 2},
-{1, 320, 251, 0, 0, 0, 0, 0, 4, 0, 0, 0},
-{1, 360, 252, 0, 0, 0, 0, 0, 4, 0, 0, 0},
-{1, 208, 295, 0, 0, 0, 0, 0, 4, 0, 0, 0},
-{1, 288, 291, 0, 0, 0, 0, 0, 5, 0, 0, 0},
-{1, 272, 336, 1, 0, 0, 0, 0, 4, 1, 1, 2},
-{1, 356, 340, 0, 0, 0, 0, 0, 3, 0, 0, 0} }, /* Ladder 15 */ 
+{{1, 248, 78, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1}, /* Ladder 1 */
+{1, 264, 78, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1},
+{1, 312, 112, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1}, 
+{1, 272, 150, 1, 6, 1, 3, 2, 0, 0, 0, 0, 1}, 
+{1, 360, 153, 0, 5, 0, 0, 0, 0, 0, 0, 0, 1},
+{1, 208, 207, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
+{1, 248, 206, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
+{1, 344, 199, 1, 6, 1, 2, 3, 0, 0, 0, 0, 1},
+{1, 256, 247, 1, 5, 1, 2, 2, 0, 0, 0, 0, 1},
+{1, 320, 251, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
+{1, 360, 252, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
+{1, 208, 295, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
+{1, 288, 291, 0, 5, 0, 0, 0, 0, 0, 0, 0, 1},
+{1, 272, 336, 1, 4, 1, 1, 2, 0, 0, 0, 0, 1},
+{1, 356, 340, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1} }, /* Ladder 15 */ 
 
 {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0}, /* Kong */
 
@@ -83,13 +85,8 @@ Model testModel = {
 {1, 186, 48, 3}, /* Lives */ 
 };
 
-void render(Model *model, UINT32 *base) {
 
-    int i; /* Girder Counter */
-    int j; /* Ladder Counter */
-    int k; /* Barrel Counter */
-
-    clear_screen(base);
+void render(Model *model, UINT8 *base) {
 
     renderDK(model->kong, base);
     renderMario(model->mario, base);
@@ -100,15 +97,19 @@ void render(Model *model, UINT32 *base) {
     renderBStack(model->kong, base);
     renderOil(model->oil, base);
     
-    renderBonus(model->timer, base);
-    renderLives(model->lives, base);
-    renderScore(model->score, base);
-
     renderHammer(model->hammers[0], base);
     renderHammer(model->hammers[1], base);
     renderItem(model->items[0], base);
     renderItem(model->items[1], base);
     renderItem(model->items[2], base);
+
+}
+
+void renderLevel(Model *model, UINT8 *base) {
+
+    int i; /* Girder Counter */
+    int j; /* Ladder Counter */
+    int k; /* Barrel Counter */
 
     for (i = 0; i < 9; i++)
     {
@@ -125,9 +126,16 @@ void render(Model *model, UINT32 *base) {
         renderBarrel(model->barrels[i], base);        
     }
 
+    renderBonus(model->timer, base);
+    renderLives(model->lives, base);
+    renderScore(model->score, base);
+
 }
 
+
 int main() {
+    
+    UINT8 *screen = Physbase();
 
     long nowTime;
     long startTime = getTime();
@@ -135,59 +143,79 @@ int main() {
 
     int gameRunning = 1;
 
-    UINT32 *base = Physbase(); 
-    UINT32 *base2 = Physbase();
-    UINT32 *printBase;
-    int currBase = 1;
+    Model *model = &testModel;
 
-    Model *model; 
-    model = &testModel;
 
-    render(model, base);
+    /* Draw static level once */
+    clear_screen(screen);
+    renderLevel(model, screen);
 
-    while (gameRunning == 1) {
+    /* Safety checks */
+    if (model->mario.posX < 0){
+        model->mario.posX = 0;
+    } else if (model->mario.posY < 0) {
+        model->mario.posY = 0;
+    } else if (model->mario.posX > 624) {
+        model->mario.posX = 624;
+    } else if (model->mario.posY > 384) {
+        model->mario.posY = 384;
+    }
+
+
+    while (gameRunning) {
 
         nowTime = getTime();
-
         passedTime = nowTime - startTime;
 
-        /* DOUBLE BUFFERING */
-
-        if(passedTime % 1 == 0) { /* Every Frame, swap the buffer*/
-
-            if (currBase == 1) {
-
-                currBase = 2;
-                printBase = base;
-
+        if (passedTime % FRAMERULE == 0)
+        {
+            if (passedTime > 500)
+            {
+                printf("GAME OVER\n");
+                gameRunning = 0;
             }
-            else {
+            else
+            {
+                /* --- GAME LOGIC --- */
+            
+                clear_region(screen, model->mario.posY, model->mario.posX, 16, 16);
 
-                currBase = 1;
-                printBase = base2;
+                if (passedTime < 150)
+                {
+                    model->mario.state = 1;
+                    model->mario.direction = 1;
 
+                    /* Animation Handling */
+                    if (model->mario.walkFrame == 0){
+                        model->mario.walkFrame = 1;
+                    } else {
+                        model->mario.walkFrame = 0;
+                    }
+
+                    model->mario.posX += 1;
+                }
+                else
+                {
+                    model->mario.state = 2;
+
+                    /* Animation Handling */
+                    if (model->mario.climbFrame == 0){
+                        model->mario.climbFrame = 1;
+                    } else {
+                        model->mario.climbFrame = 0;
+                    }
+
+
+                    model->mario.posY -= 1;
+                }
+
+                updateMCollision(model->mario);
+
+                /* Draw sprite */
+                renderMario(model->mario, screen);
             }
-
-        } 
-    
-        if(passedTime % FRAMERULE == 0) {
-
-            clear_region(printBase, model->mario.posY, model->mario.posX, 16, 16);
-            model->mario.posX++;
-            renderMario(model->mario, printBase);
-
         }
-
-        if (passedTime >= 150){
-
-            printf("GAME OVER \n");
-            gameRunning = 0;
-        
-        }
-         
     }
 
     return 0;
 }
-
-

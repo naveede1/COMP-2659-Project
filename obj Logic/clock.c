@@ -1,6 +1,5 @@
 #include "clock.h"
 
-#define FRAMERULE 21
 
 UINT32 getTime() {
 
