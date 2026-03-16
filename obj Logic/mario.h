@@ -22,16 +22,22 @@ typedef struct { /* Structure for Jumpman */
     int state; /* Standing = 0, Walking = 1, Climbing = 2, Jumping = 3, Dead (Falling off screen) = 4 */ 
     int direction; /* Left = 0, Right = 1 */
     int climbing;   /* No = 0, Yes = 1 */
-    int climbDir;   /* -1 = up, 1 = down */
+    int climbDir;   /* 0 = up, 1 = down */
     int onGround; /* Is JumpMan Grounded? No = 0, Yes = 1 */ 
     int hammerActive; /* No = 0, Yes = 1 */
     float hammerTimer;
     int dead; /* Should I be falling offscreen? No = 0, Yes = 1 */
 
+    int walkFrame;
+    int climbFrame;
+
     /* (The Hammer swinging is a pain but we'll see if this works)*/
     int hammerFrame;        /* current animation frame */
     float hammerFrameTimer; /* time spent in current frame */
     int hammerHitActive;    /* 1 when swing can destroy barrels */
+
+    int leftB, rightB, topB, bottomB; /* Collider Bounds */
+    /* Note - Mario doesn't need an update check because he's top layer */
 
 } Mario;
 
