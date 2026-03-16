@@ -57,10 +57,10 @@ _clear_region:
 
         ; Check visible width (d0) and clipped height 
         tst.w   d0
-        beq.s   clear_done
+        beq     clear_done
         move.w  h_local(a6),d2
         tst.w   d2
-        beq.s   clear_done
+        beq     clear_done
 
         ; d6 = visible width
         move.w  d0,d6
@@ -96,6 +96,82 @@ _clear_region:
 
         clr.w   d5                              ; d5 = r = 0
 
+row_loop:
+        cmp.w   d2,d5
+        bge     clear_done 						; row is done 
+
+        move.w  d4,d6
+        add.w   d5,d6                           ; d6 = r0 + r
+        mulu    #SCREEN_BYTES_PER_ROW,d6
+        movea.l a0,a1
+        adda.l  d6,a1                           ; a1 = line
+
+        movea.l a1,a2
+        adda.w  d0,a2                           ; a2 = start
+
+        movea.l a1,a3
+        adda.w  d1,a3                           ; a3 = end
+
+        movea.l a2,a4                           ; a4 = curr
+
+byte_loop:
+        cmpa.l  a3,a4
+        bgt     byte_done
+
+        ; single byte: curr == start && curr == end 
+        cmpa.l  a2,a4
+        bne     not_single
+        cmpa.l  a3,a4
+        bne     not_single
+
+        ; right = 0xFF << (7 - end_bit), left = 0xFF >> start_bit
+        ; mask = left & right  ;  *curr &= ~mask
+        moveq   #7,d7
+        sub.b   end_bit_local(a6),d7            ; d7 = 7 - end_bit
+        move.b  #-1,d6
+        lsl.b   d7,d6                           ; d6 = right
+        move.b  #-1,d7
+        lsr.b   d3,d7                           ; d7 = left
+        and.b   d7,d6                           ; d6 = mask
+        not.b   d6
+        and.b   d6,(a4)
+        bra    next_byte
+
+not_single:
+        ; start byte only 
+        cmpa.l  a2,a4
+        bne	    not_start
+
+        move.b  #-1,d6
+        lsr.b   d3,d6                           ; d6 = 0xFF >> start_bit
+        not.b   d6
+        and.b   d6,(a4)
+        bra     next_byte
+
+not_start:
+        ; end byte only 
+        cmpa.l  a3,a4
+        bne     not_end
+
+        moveq   #7,d7
+        sub.b   end_bit_local(a6),d7            ; d7 = 7 - end_bit
+        move.b  #$FF,d6
+        lsl.b   d7,d6                           ; d6 = 0xFF << (7 - end_bit)
+        not.b   d6
+        and.b   d6,(a4)
+        bra     next_byte
+
+not_end:
+        ; interior byte
+        clr.b   (a4)
+
+next_byte:
+        addq.l  #1,a4
+        bra   byte_loop
+
+byte_done:
+        addq.w  #1,d5
+        bra   row_loop
 
 clear_done:
         movem.l (sp)+,d1-d7/a0-a4
