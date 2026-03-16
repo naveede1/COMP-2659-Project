@@ -10,7 +10,9 @@ char get_input() {
     return (char)Cnecin();
 }
 
+/* This function will not be used, but reference for a potential function in the fu */
 void is_held() {
+
     /*
 
     Case 1: Nothing in the buffer, so the user does not press an input or the key was released 
@@ -43,12 +45,4 @@ void is_held() {
             return;
         }
     }
-}
-
-/* 
-    I think this function will be removed as it is pretty useless with is_held() existing.
-    Additionally might change the name of is_held().
-*/
-boolean is_released() {
-    return FALSE;
 }

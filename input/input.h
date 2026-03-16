@@ -41,16 +41,4 @@ OUTPUT: TRUE if the input processed was held
 */
 void is_held();
 
-/*----- Function: is_released -----
-
-PURPOSE: Check if the held input was released
-
-INPUT: NONE
-
-OUTPUT: TRUE if the held input was released
-        FALSE if the input is still being held
-
-*/
-boolean is_released();
-
 #endif
