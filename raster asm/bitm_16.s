@@ -8,7 +8,6 @@
 ;
 ; OUTPUT: None
 
-
         xdef    _clip_left_top_right_bottom
         xdef    _plot_bitmap_16
 
@@ -21,14 +20,12 @@ p16_col         equ     14
 p16_height      equ     16
 p16_bitmap      equ     18
 
-
 lv16_x_skip     equ     -2
 lv16_y_skip     equ     -4
 lv16_visible    equ     -6
 lv16_word_col   equ     -8
 lv16_bit_shift  equ     -10
 lv16_r          equ     -12
-
 
 _plot_bitmap_16:
         link    a6,#-12                         
@@ -151,4 +148,5 @@ p16_next_row:
 p16_done:
         movem.l (sp)+,d0-d7/a0-a5             
         unlk    a6                             
-        rts                                    
+        rts
+                                  
