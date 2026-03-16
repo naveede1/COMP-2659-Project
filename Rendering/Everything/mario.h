@@ -19,7 +19,7 @@ typedef struct { /* Structure for Jumpman */
     int visible; /* No = 0, Yes = 1 */
     int posX, posY; /* Current Position */
     int deltX, deltY; /* Current Horizontal/Veritcal Velocity */ 
-    int state; /* Standing = 0, Walking = 1, Climbing = 2, Jumping = 3, Dead (Falling off screen) = 4 */ 
+    int state; /* Standing = 0, Walking = 1, Climbing = 2, Jumping = 3, Hit/Dead (Hit Anim then Fall Over) = 4 */ 
     int direction; /* Left = 0, Right = 1 */
     int climbing;   /* No = 0, Yes = 1 */
     int climbDir;   /* -1 = up, 1 = down */
