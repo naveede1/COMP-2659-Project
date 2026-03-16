@@ -142,6 +142,23 @@ void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side);
 
 void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 height, UINT8 direction);
 
+/*----- Function: clip_left_top_right_bottom -----
+
+ PURPOSE: Clips a sprite to all four screen boundaries, adjusting its position,
+          dimensions, and bitmap offset to only render the visible portion.
+
+ INPUT: Position(row,col): Pointer to the top left row and column of the sprite
+        height: Pointer to the height of the sprite in pixels
+        sprite_width: The width of the sprite in pixels
+        skip_x:Pointer to the number of columns to skip in the bitmap
+        skip_y:Pointer to the number of rows to skip in the bitmap
+
+ OUTPUT: UINT16 bitmask of which edges were clipped (left, top, right, bottom)
+ 
+*/
+
+UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height, UINT16 sprite_width, UINT16 *skip_x, UINT16 *skip_y);
+
 /*----- Function: plot_bitmap_8 -----
 
  PURPOSE: Plots a bitmap to the screen given by the top left pixel of the bitmap and the height of bitmap.
@@ -153,8 +170,6 @@ void plot_triangle(UINT32 *baseptr, UINT16 row, UINT16 col, UINT16 base, UINT16 
  OUTPUT: None
 
 */
-
-UINT16 clip_left_top_right_bottom(INT16 *row, INT16 *col, UINT16 *height, UINT16 sprite_width, UINT16 *skip_x, UINT16 *skip_y);
 
 void plot_bitmap_8(UINT8 *base, INT16 row, INT16 col, UINT16 height, const UINT8 *bitmap_8);
 
