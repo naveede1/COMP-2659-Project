@@ -1,41 +1,37 @@
 #include "rScore.h"
 
-char* intToString(int value) {
+#include <stdio.h>
 
-    static char score[7];  /* 6 digits + null terminator */
-    int divisor = 100000;  /* for 6-digit scores */
-    int i;
+char currScore[7];
+char highScore[7];
 
-    for (i = 0; i < 6; i++) {
-        int digit = value / divisor;
-        score[i] = '0' + digit;
-        value = value % divisor;
-        divisor /= 10;
-    }
-
-    score[6] = '\0'; /* null terminate the string */
-    return score;
+void longToStr(long val, char *str){
+	
+    int i = 5;
+    
+    while(i > -1){
+		str[i--] = val % 10 + '0';
+		val /= 10;
+	}
 }
 
 void renderScore(Score score, UINT32 base) {
-
-    char* highScore;
-    char* currScore;
     
     linea0();
 
     if (score.visible == 1){
 
-        printf("%s\n", intToString(score.value));
-
         plot_string(base, score.posY, score.posX, "HIGH SCORE");
         
-        currScore = intToString(score.value);
+        longToStr(score.value, currScore);
+        currScore[6] = '\0';
+
         plot_string(base, score.posY+16, score.posX-62, currScore);
+        
+        longToStr(score.highValue, highScore);
+        highScore[6] = '\0';
 
-        highScore = intToString(score.highValue);
         plot_string(base, score.posY+16, score.posX+16, highScore);
-
     }
 }
 

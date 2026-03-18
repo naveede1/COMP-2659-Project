@@ -5,8 +5,8 @@ typedef struct { /* Structure for the Score Counter */
 
     int visible; /* No = 0, Yes = 1 */
     int posX, posY; /* Current Position */
-    int value; /* Current Score */
-    int highValue; /* High Score */
+    long value; /* Current Score */
+    long highValue; /* High Score */
 
 } Score;
 
