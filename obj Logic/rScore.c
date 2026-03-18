@@ -5,9 +5,9 @@
 char currScore[7];
 char highScore[7];
 
-void longToStr(long val, char *str){
+void longToStr(long val, char *str){ /* Casts Long Values into Arrays of Chars */
 	
-    int i = 5;
+    int i = 5; /* Casts 6 digit numbers*/
     
     while(i > -1){
 		str[i--] = val % 10 + '0';

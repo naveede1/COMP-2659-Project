@@ -78,7 +78,7 @@ Model testModel = {
 
 {0, 288, 66, 0, 0, 0}, /* Heart */
 
-{1, 352, 78, 0, 0, 0, 0, 0}, /* Timer */
+{1, 352, 78, 5000, 0, 0, 0, 0}, /* Timer */
 
 {1, 240, 11, 1000, 70981}, /* Score */
 
@@ -126,10 +126,6 @@ void renderLevel(Model *model, UINT8 *base) {
         renderBarrel(model->barrels[i], base);        
     }
 
-    renderBonus(model->timer, base);
-    renderLives(model->lives, base);
-    renderScore(model->score, base);
-
 }
 
 
@@ -149,6 +145,9 @@ int main() {
     /* Draw static level once */
     clear_screen(screen);
     renderLevel(model, screen);
+    renderBonus(model->timer, screen);
+    renderLives(model->lives, screen);
+    renderScore(model->score, screen);
 
     /* Safety checks */
     if (model->mario.posX < 0){
@@ -167,9 +166,23 @@ int main() {
         nowTime = getTime();
         passedTime = nowTime - startTime;
 
+        if (passedTime % 750 == 0) {
+
+            model->timer.value -= 200;
+            clear_region(screen, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
+            renderBonus(model->timer, screen);
+
+            if (model->timer.value == 4600) { /* CHANGE BACK TO 0 AFTER TESTING */
+
+                printf("SKILL ISSUE - TIME GAME OVER\n");
+                gameRunning = 0;
+
+            }
+        }
+
         if (passedTime % FRAMERULE == 0)
         {
-            if (passedTime > 500)
+            if (passedTime > 100000)
             {
                 printf("GAME OVER\n");
                 gameRunning = 0;
@@ -180,8 +193,8 @@ int main() {
             
                 clear_region(screen, model->mario.posY, model->mario.posX, 16, 16);
 
-                if (passedTime < 150)
-                {
+                if (passedTime < 150) {
+
                     model->mario.state = 1;
                     model->mario.direction = 1;
 
@@ -193,20 +206,6 @@ int main() {
                     }
 
                     model->mario.posX += 1;
-                }
-                else
-                {
-                    model->mario.state = 2;
-
-                    /* Animation Handling */
-                    if (model->mario.climbFrame == 0){
-                        model->mario.climbFrame = 1;
-                    } else {
-                        model->mario.climbFrame = 0;
-                    }
-
-
-                    model->mario.posY -= 1;
                 }
 
                 updateMCollision(model->mario);
