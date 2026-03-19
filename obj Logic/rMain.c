@@ -72,9 +72,7 @@ Model testModel = {
 
 {1, 240, 352, 0, 0, 1, 0, 0, 0}, /* Spirit */
 
-{ {0, 0, 200, 0, 0, 0, 0, 0}, /* Item 1 */
-{0, 0, 200, 0, 0, 1, 0, 0},  
-{0, 0, 200, 0, 0, 2, 0, 0} },  /* Item 3 */
+{0, 0, 200, 0, 0, 0, 0, 0, 0}, /* Item */
 
 {0, 288, 66, 0, 0, 0}, /* Heart */
 
@@ -99,9 +97,7 @@ void render(Model *model, UINT8 *base) {
     
     renderHammer(model->hammers[0], base);
     renderHammer(model->hammers[1], base);
-    renderItem(model->items[0], base);
-    renderItem(model->items[1], base);
-    renderItem(model->items[2], base);
+    renderItem(model->item, base);
 
 }
 
@@ -128,6 +124,29 @@ void renderLevel(Model *model, UINT8 *base) {
 
 }
 
+int checkMCollision(int jmXleft, int jmYtop, int otherXleft, int otherYtop, int otherSize) { /* Returns 1 if the Object Collides with Mario, 0 if not*/
+
+    /* Set Marios Collider */
+    int jmXright = jmXleft + 15;
+    int jmYbottom = jmYtop + 15;
+
+    /* Set Other Objects Collider */
+    int otherXright = otherXleft + (otherSize - 1);
+    int otherYbottom = otherYtop + (otherSize - 1);
+    
+    /* Check for possible X position collision */
+    if ((jmXleft <= otherXleft <= jmXright) || (jmXleft <= otherXright <= jmXright)) {
+
+        /* Check for possible Y position collision */
+        if ((jmYtop <= otherYtop <= jmYbottom) || (jmYtop <= otherYbottom <= jmYbottom)) {
+
+            /* If both conditions are met, there's some form of overlap -> COLLISION! */
+            return 1;
+        }
+    }
+    /* If there's no X overlap, it doesnt matter if we check the Y */
+    return 0;
+}
 
 int main() {
     
@@ -138,6 +157,10 @@ int main() {
     long passedTime;
 
     int gameRunning = 1;
+
+    int itemSpawnCheck = 10;
+    int itemSpawned = 0;
+    int itemStartTimer;
 
     Model *model = &testModel;
 
@@ -160,7 +183,6 @@ int main() {
         model->mario.posY = 384;
     }
 
-
     while (gameRunning) {
 
         nowTime = getTime();
@@ -172,11 +194,11 @@ int main() {
             clear_region(screen, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
             renderBonus(model->timer, screen);
 
-            if (model->timer.value == 4600) { /* CHANGE BACK TO 0 AFTER TESTING */
+            if (model->timer.value == 0) {
 
                 printf("SKILL ISSUE - TIME GAME OVER\n");
                 gameRunning = 0;
-
+                /* ADD THE MARIO UPDATE RENDER FUNCTION HERE FOR THE HIT RENDER */
             }
         }
 
@@ -191,6 +213,43 @@ int main() {
             {
                 /* --- GAME LOGIC --- */
             
+                /* Item Logic */
+                if(itemSpawnCheck != 0) {
+                    if (passedTime % 1250 == 0) {
+                        itemSpawnCheck--;
+                    }
+                } else {
+
+                    spawnItem(model->item, 358, 300);
+                    itemSpawnCheck--; /* Ensure only one item spawns */
+                    itemStartTimer = getTime();
+                    itemSpawned = 1;
+                }
+
+                if (itemSpawned == 1) {
+
+                    if (passedTime % 15) {
+                        model->item.lifetime++; /* Increment the Lifetime Timer by 1 Sec */
+                    }
+
+                    if (checkMCollision(model->mario.posX, model->mario.posY, model->item.posX, model->item.posY, 16) == 1) {
+                        clear_region(screen, model->item.posY, model->item.posX, 16, 16);
+                        model->score.value += model->item.worth; /* Add Item points to Score */
+                        model->item.lifetime = 0;
+                        itemSpawned = 0;
+                        itemSpawnCheck = 25;
+                        model->item.visible = 0;
+                    } else {
+                        if(model->item.lifetime == model->item.maxLifetime) {
+                            model->item.lifetime = 0;
+                            itemSpawned = 0;
+                            itemSpawnCheck = 25;
+                            model->item.visible = 0;
+                        }
+                    }
+
+                }
+
                 clear_region(screen, model->mario.posY, model->mario.posX, 16, 16);
 
                 if (passedTime < 150) {
