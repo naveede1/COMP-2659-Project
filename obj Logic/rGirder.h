@@ -14,3 +14,5 @@ char girder_BM[8] = /* Piece together as needed to form the Girders */
 0X01,
 0xFF,
 };
+
+void renderGirder(Girder girder, UINT32 base);
