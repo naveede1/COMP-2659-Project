@@ -7,9 +7,9 @@
 #include "girder.h" 
 #include "rGirder.c" /* Changing this from .h to .c */
 #include "mario.h"
-#include "rMario.h"
+#include "rMario.c"
 
-void not_grounded() {
+void not_grounded(Girder girder, Mario mario, UINT32 *base) {
 
     /*
     
@@ -21,6 +21,11 @@ void not_grounded() {
     
     */
 
+    clear_screen(base);
+
+    renderGirder(girder, base);
+    renderMario(mario, base);
+
 }
 
 void grounded() {
@@ -31,10 +36,11 @@ int main() {
 
     UINT32 *base = Physbase();
 
-    Girder test_girder_1 = { 1, 192, 202, 0, 3, 0, 0};
+    Girder test_girder_1 = {1, 192, 202, 0, 3, 0, 0};
+    Mario test_mario_1 = {1, 218, 160, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316};
 
-    clear_screen(base);
-    renderGirder(test_girder_1, base);
+    not_grounded(test_girder_1, test_mario_1, base);
+    
 
     return 0;
 }
