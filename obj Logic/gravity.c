@@ -1,7 +1,7 @@
 /*
 
 TO DO:
-[] Move edges, width and heights to respective .h files 
+[X] Move edges(maybe), width and heights to respective .h files 
 [] Potentially make helper function that takes a single girder and return the displacement
    between Mario and the Girder
 [] Types file
@@ -40,13 +40,11 @@ boolean is_mario_grounded(Mario *mario, Model *model) {
 
     Girder *correct_girder; 
     int best_distance;
-    int distance;
+    int distance; /* posY difference */
 
-    int mario_height, mario_width;
     int mario_left_edge, mario_right_edge;
     int mario_bottom_edge; /* posY of Mario's Feet */
 
-    int girder_height, girder_width;
     int girder_left_edge, girder_right_edge, girder_top_edge;
 
     int i;
@@ -54,19 +52,15 @@ boolean is_mario_grounded(Mario *mario, Model *model) {
     correct_girder = NULL;
     best_distance = 100000;
 
-    mario_height, mario_width = 16;
     mario_left_edge = mario->posX;
-    mario_right_edge = mario->posX + mario_width;
-
-    girder_height, girder_width = 8;
-
-    mario_bottom_edge = mario->posY + mario_height;
+    mario_right_edge = mario->posX + mario->width;
+    mario_bottom_edge = mario->posY + mario->height;
 
     /* Checking each girder rendered */
     for (i = 0; i < 9; i++) {
         /* Check if Mario is within the horizontal range of the girder */
         girder_left_edge = model->girders[i].posX;
-        girder_right_edge = model->girders[i].posX + girder_width;
+        girder_right_edge = model->girders[i].posX + model->girders[i].width;
 
         if ((mario_left_edge >= girder_left_edge) && (mario_right_edge <= girder_right_edge)) {
             /* Check if Mario is above a girder */
@@ -85,7 +79,7 @@ boolean is_mario_grounded(Mario *mario, Model *model) {
 
     /* Snapping Mario to the slope of the girder */
     girder_top_edge = correct_girder->posY;
-    mario->posY = girder_top_edge - mario_height;
+    mario->posY = girder_top_edge - mario->height;
     
     return TRUE;
     

@@ -37,7 +37,11 @@ typedef struct { /* Structure for Jumpman */
     int hammerHitActive;    /* 1 when swing can destroy barrels */
 
     int leftB, rightB, topB, bottomB; /* Collider Bounds */
+
+    int width, height;
+
     /* Note - Mario doesn't need an update check because he's top layer */
+
 
 } Mario;
 
