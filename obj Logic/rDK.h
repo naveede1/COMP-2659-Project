@@ -363,4 +363,6 @@ UINT32 kong_throwRBM[SPRITE_HEIGHT] =
 0x003FFE1C,
 };
 
+
+
 void renderDK(Kong kong, UINT32 base); 

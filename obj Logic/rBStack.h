@@ -1,4 +1,5 @@
 #include "raster.h"
+#include "kong.h"
 
 #define SPRITE_HEIGHT 32
 
