@@ -1,11 +1,11 @@
 #include "stdio.h"
 #include <osbind.h>
-#include "raster.h"
+#include "raster.c" /* Changing this from .h to .c */
 
 #include "gravity.h"
 #include "model.h"
-#include "girder.h"
-#include "rGirder.h"
+#include "girder.h" 
+#include "rGirder.c" /* Changing this from .h to .c */
 #include "mario.h"
 #include "rMario.h"
 
@@ -21,8 +21,6 @@ void not_grounded() {
     
     */
 
-
-
 }
 
 void grounded() {
@@ -35,6 +33,7 @@ int main() {
 
     Girder test_girder_1 = { 1, 192, 202, 0, 3, 0, 0};
 
+    clear_screen(base);
     renderGirder(test_girder_1, base);
 
     return 0;
