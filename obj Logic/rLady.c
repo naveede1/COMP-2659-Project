@@ -1,6 +1,6 @@
 #include "rLady.h"
 
-void renderLady(Lady lady, UINT32 base) {
+void renderLady(Lady lady, UINT32 *base) {
     
     if (lady.visible == 1){
        if (lady.state == 0) {

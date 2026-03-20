@@ -1,6 +1,6 @@
 #include "rDK.h"
 
-void renderDK(Kong kong, UINT32 base) {
+void renderDK(Kong kong, UINT32 *base) {
 
     if (kong.visible == 1){
        

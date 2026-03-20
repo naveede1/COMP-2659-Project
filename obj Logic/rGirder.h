@@ -3,7 +3,7 @@
 
 #define SPRITE_HEIGHT 8
 
-char girder_BM[8] = /* Piece together as needed to form the Girders */
+UINT8 girder_BM[8] = /* Piece together as needed to form the Girders */
 {
 0xFF,
 0x10,

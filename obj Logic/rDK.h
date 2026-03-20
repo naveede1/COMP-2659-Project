@@ -365,4 +365,4 @@ UINT32 kong_throwRBM[SPRITE_HEIGHT] =
 
 
 
-void renderDK(Kong kong, UINT32 base); 
+void renderDK(Kong kong, UINT32 *base); 
