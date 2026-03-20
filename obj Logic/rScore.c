@@ -12,7 +12,7 @@ void renderScore(Score score, UINT32 *base) {
 
     if (score.visible == 1){
 
-        plot_string(base, score.posY, score.posX, "HIGH SCORE");
+        plot_string((UINT8 *)base, score.posY, score.posX, "HIGH SCORE");
     
         /*
         score_int_to_string(score.highScore, highScore);

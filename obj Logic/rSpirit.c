@@ -1,6 +1,6 @@
 #include "rSpirit.h"
 
-void renderSpirit(Spirit spirit, UINT32 *base) {
+void renderSpirit(Spirit spirit, UINT16 *base) {
     
     if (spirit.visible == 1){
        if (spirit.direction == 0) {

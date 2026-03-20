@@ -3,7 +3,7 @@
 
 #define SPRITE_HEIGHT 16
 
-int purse_BM[SPRITE_HEIGHT] = /* Pauline's Purse */
+UINT16 purse_BM[SPRITE_HEIGHT] = /* Pauline's Purse */
 {
 0x0000,
 0x0000,
@@ -23,7 +23,7 @@ int purse_BM[SPRITE_HEIGHT] = /* Pauline's Purse */
 0x0000,
 };
 
-int umbrella_BM[SPRITE_HEIGHT] = /* Pauline's Umbrella */
+UINT16 umbrella_BM[SPRITE_HEIGHT] = /* Pauline's Umbrella */
 {
 0x0180,
 0x07E0,
@@ -43,7 +43,7 @@ int umbrella_BM[SPRITE_HEIGHT] = /* Pauline's Umbrella */
 0x0000,
 };
 
-int hat_BM[SPRITE_HEIGHT] = /* Pauline's Hat */
+UINT16 hat_BM[SPRITE_HEIGHT] = /* Pauline's Hat */
 {
 0x0000,
 0x0000,

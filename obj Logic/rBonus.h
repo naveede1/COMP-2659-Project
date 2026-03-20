@@ -9,7 +9,7 @@
 
 /* plot_string(base, title_row + 15, title_col + 4, bonus); */
 
-long bonus_leftBM[SPRITE_HEIGHT] = /* Left Half of Bonus UI */
+UINT32 bonus_leftBM[SPRITE_HEIGHT] = /* Left Half of Bonus UI */
  /* plot_bitmap_32(base, title_row - 2, title_col - 4, 32, bonus_leftBM); */
 {
 0x70000000,
@@ -47,7 +47,7 @@ long bonus_leftBM[SPRITE_HEIGHT] = /* Left Half of Bonus UI */
 };
 
 
-long bonus_rightBM[SPRITE_HEIGHT] = /* Right Half of Bonus UI */
+UINT32 bonus_rightBM[SPRITE_HEIGHT] = /* Right Half of Bonus UI */
 /* plot_bitmap_32(base, title_row - 2, title_col + 28, 32, bonus_rightBM); */
 {
 0x000E0000,

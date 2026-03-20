@@ -5,7 +5,7 @@
 
 /* Every icon should be 9 cols away from each other */
 
-char lives_BM[8] = /* Lives Icons */
+UINT8 lives_BM[8] = /* Lives Icons */
 {
 0x7C,
 0xFF,

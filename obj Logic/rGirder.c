@@ -1,6 +1,6 @@
 #include "rGirder.h"
 
-void renderGirder(Girder girder, UINT32 *base) {
+void renderGirder(Girder girder, UINT8 *base) {
 
     if (girder.visible == 1){
         int currPosX = girder.posX;

@@ -1,6 +1,6 @@
 #include "rMario.h"
 
-void renderMario(Mario mario, UINT32 *base) {
+void renderMario(Mario mario, UINT16 *base) {
 
     if (mario.visible == 1){
 
@@ -27,7 +27,7 @@ void renderMario(Mario mario, UINT32 *base) {
     }
 }
 
-void renderMLeft(Mario mario, UINT32 *base) {
+void renderMLeft(Mario mario, UINT16 *base) {
 
     int currState = mario.state;
 
@@ -64,7 +64,7 @@ void renderMLeft(Mario mario, UINT32 *base) {
     }
 }
 
-void renderMRight(Mario mario, UINT32 *base) {
+void renderMRight(Mario mario, UINT16 *base) {
 
     int currState = mario.state;
 

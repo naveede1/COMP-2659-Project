@@ -1,6 +1,6 @@
 #include "rBarrel.h"
 
-void renderBarrel(Barrel barrel, UINT32 *base) {
+void renderBarrel(Barrel barrel, UINT16 *base) {
 
     if (barrel.visible == 1){
         int currPosX = barrel.posX;
