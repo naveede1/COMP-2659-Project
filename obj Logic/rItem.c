@@ -1,6 +1,6 @@
 #include "rItem.h"
 
-void renderItem(Item item, UINT32 base) {
+void renderItem(Item item, UINT32 *base) {
 
     if (item.visible == 1) {
         if (item.type == 0){

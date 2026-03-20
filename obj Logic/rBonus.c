@@ -1,6 +1,6 @@
 #include "rBonus.h"
 
-void renderBonus(Timer timer, UINT32 base) {
+void renderBonus(Timer timer, UINT32 *base) {
 
     if (timer.visible == 1){
 

@@ -1,6 +1,6 @@
 #include "rScore.h"
 
-void renderScore(Score score, UINT32 base) {
+void renderScore(Score score, UINT32 *base) {
 
     /*
     char highScore[12];

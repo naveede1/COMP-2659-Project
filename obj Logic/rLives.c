@@ -1,6 +1,6 @@
 #include "rLives.h"
 
-void renderLives(Lives lives, UINT32 base) {
+void renderLives(Lives lives, UINT32 *base) {
 
     int currPosX = lives.posX;
     int i;

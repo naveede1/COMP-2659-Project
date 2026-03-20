@@ -1,6 +1,6 @@
 #include "rHammer.h"
 
-void renderHammer(Hammer hammer, UINT32 base) {
+void renderHammer(Hammer hammer, UINT32 *base) {
 
     if (hammer.visible == 1) {
         if (hammer.state == 0){

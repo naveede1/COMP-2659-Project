@@ -1,6 +1,6 @@
 #include "rHeart.h"
 
-void renderHeart(Heart heart, UINT32 base) {
+void renderHeart(Heart heart, UINT32 *base) {
     
     if (heart.visible == 1){
        if (heart.broken == 0) {
