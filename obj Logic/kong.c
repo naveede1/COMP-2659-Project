@@ -19,7 +19,7 @@
 /* barrel spawn signals */
 #define NO_BARREL      0
 #define NORMAL_BARREL  1
-/*#define FIRE_BARREL    2*/
+
 
 void updateKong(Kong *kong, int canSpawnBarrel) {
     kong->stateTimer++;
@@ -96,19 +96,7 @@ static void kongSpawner(Kong *kong) {
 }
 
 static void finishThrow(Kong *kong) {
-    /*if (kong->spawnFireBarrel) {
-        kong->spawnBarrel = FIRE_BARREL;
-        kong->spawnFireBarrel = 0;
-    }   
-    else*/
-    /*As dicussed we are not going to have fire spirites so no point of having fire barrel as well*/   
     kong->spawnBarrel = NORMAL_BARREL;
     kong->state = KONG_IDLE;
     kong->stateTimer = 0;
 }
-
-/*
-void requestFireBarrel(Kong *kong) {
-    kong->spawnFireBarrel = 1;
-}
-    */
