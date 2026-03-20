@@ -16,7 +16,4 @@ typedef struct { /* Structure for Donkey Kong */
 
 } Kong;
 
-void updateKong(Kong *kong, float deltaTime);
-void requestFireBarrel(Kong *kong);
-
 #endif
