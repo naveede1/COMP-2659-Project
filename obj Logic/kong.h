@@ -46,8 +46,6 @@ void updateKong(Kong *kong, int canSpawnBarrel);
 
 void requestFireBarrel(Kong *kong);
 
-/*helper functions*/
-
 /*----- Function: kongAction -----
 
   PURPOSE: Decides whether Kong throws a barrel or mocks.
