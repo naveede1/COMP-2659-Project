@@ -13,8 +13,5 @@ typedef struct { /* Structure for the Oil Barrel */
 
 } Oil;
 
-void updateOil(Oil *oil, float deltaTime);
-void igniteOil(Oil *oil);
-void notifyFireSpiritDead(Oil *oil);
 
 #endif

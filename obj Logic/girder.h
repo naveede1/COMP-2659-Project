@@ -11,7 +11,4 @@ typedef struct { /* Structure for the Girders */
 
 } Girder;
 
-int isOnGirder(Girder *g, int x);
-int getGirderHeight(Girder *g, int x);
-
 #endif

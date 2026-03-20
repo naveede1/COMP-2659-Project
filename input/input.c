@@ -14,13 +14,11 @@ char get_input() {
 void is_held() {
 
     /*
-
     Case 1: Nothing in the buffer, so the user does not press an input or the key was released 
     Case 2: Input in buffer. Users current input == next input, therefore it is held
     Case 3: Input in buffer. Users current input != next input, therefore it is released
-
     */
-
+   
     char current_input;
     char next_input;
 
