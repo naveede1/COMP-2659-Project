@@ -24,7 +24,8 @@ void renderDK(Kong kong, UINT32 base) {
         }
         else {
             plot_bitmap_32(base, 110, 198, 32, kong_mockLBM);
-            plot_bitmap_32(base, 110, 230, 32, kong_mockRBM); 
+            plot_bitmap_32(base, 110, 230, 32, kong_mockRBM);
+ 
         }
     }
 } 
