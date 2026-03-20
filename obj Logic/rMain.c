@@ -143,8 +143,7 @@ int main() {
     long passedTime;
 
     int gameRunning = 1;
-
-    /*EARLY DECLEARATIONS AS GULAM WAS SCREAMING AT ME*/
+    
     int lastFrameTick = -1; /*Tracks the last frame tick to prevent duplicate updates*/
     int canSpawnBarrel = rand() % 10; /* Random number from 0 to 9 */
     Model *model = &testModel;
