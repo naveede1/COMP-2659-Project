@@ -1,6 +1,8 @@
 #ifndef BARREL_H
 #define BARREL_H
 
+typedef enum { FALSE, TRUE } boolean;
+
 typedef struct { /* Structure for the Barrels */
 
     int visible; /* No = 0, Yes = 1 */
@@ -10,6 +12,7 @@ typedef struct { /* Structure for the Barrels */
     int topL, bottomR; /* Bounds for Hurt Box*/
     int broken; /* No = 0, Yes = 1 */
     int type; /* Normal = 0, Fire = 1 */
+    int width, height; /* 16x16 */
 
 } Barrel;
 

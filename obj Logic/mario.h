@@ -14,6 +14,8 @@
 #define HAMMER_FRAME_TIME 0.15f
 #define HAMMER_TOTAL_FRAMES 4
 
+typedef enum { FALSE, TRUE } boolean;
+
 typedef struct { /* Structure for Jumpman */
 
     int visible; /* No = 0, Yes = 1 */
@@ -38,6 +40,8 @@ typedef struct { /* Structure for Jumpman */
 
     int leftB, rightB, topB, bottomB; /* Collider Bounds */
     /* Note - Mario doesn't need an update check because he's top layer */
+
+    int width, height; /* 16x16 */
 
 } Mario;
 

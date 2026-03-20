@@ -8,6 +8,7 @@ typedef struct { /* Structure for the Girders */
     int type; /* Flat = 0, / = 1, \ = 2 */
     int size; /* How many piece make it up */
     int colLeft, colRight; /* Allows for the drawing of a collider line (Makes it a platform for Jumpman, Barrels and Spirit) */
+    int width, height; /* 8x8 */
 
 } Girder;
 
