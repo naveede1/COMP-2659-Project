@@ -2,13 +2,15 @@
 
 TO DO:
 [X] Move edges(maybe), width and heights to respective .h files 
+[X] Gravity for Mario and barrel can be in there .c files
 [] Potentially make helper function that takes a single girder and return the displacement
    between Mario and the Girder
-[] Types file
-[] Figure out a place to put the gravity logic files
+[] Types file (No time)
 [] Clean up and condense code
 [] Rework, I belive grounded function only needs to take the model as a parameter
-[] Gravity for Mario and barrel can be in there .c files
+[] Look into the mario.c files with Aidan
+[] Add documentation for gravity functions after completion
+[] Have Aiden add documentation to functions being used and remove functions that are not being used
 
 */
 

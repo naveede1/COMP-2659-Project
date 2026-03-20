@@ -1,6 +1,8 @@
 #ifndef GIRDER_H
 #define GIRDER_H
 
+#include "model.h"
+
 typedef struct { /* Structure for the Girders */
 
     int visible; /* No = 0, Yes = 1 */
@@ -14,5 +16,8 @@ typedef struct { /* Structure for the Girders */
 
 int isOnGirder(Girder *g, int x);
 int getGirderHeight(Girder *g, int x);
+
+boolean is_barrel_grounded(Barrel *barrel, Model *model);
+void apply_gravity_barrel(Barrel barrel);
 
 #endif

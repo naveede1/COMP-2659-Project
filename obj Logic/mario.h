@@ -3,6 +3,7 @@
 
 #include "girder.h"
 #include "ladder.h"
+#include "model.h"
 
 #define GRAVITY 0.5f
 #define JUMP_FORCE -10
@@ -13,6 +14,8 @@
 #define HAMMER_DURATION 8.0f
 #define HAMMER_FRAME_TIME 0.15f
 #define HAMMER_TOTAL_FRAMES 4
+
+typedef enum { FALSE, TRUE } boolean;
 
 typedef struct { /* Structure for Jumpman */
 
@@ -49,6 +52,29 @@ void moveLeft(Mario *jm);
 void moveRight(Mario *jm);
 void jump(Mario *jm);
 void applyGravity(Mario *jm);
+
+/*----- Function: is_mario_grounded -----
+
+PURPOSE: Check if Mario is on a surface
+
+INPUT:
+
+OUTPUT: Return true if Mario is on a surface, otherwise false
+
+*/
+boolean is_mario_grounded(Mario *mario, Model *model);
+
+/*----- Function: apply_gravity_mario -----
+
+PURPOSE:  Increment the position if Mario is not on the grounded on a surface
+
+INPUT:
+
+OUTPUT:
+
+*/
+void apply_gravity_mario(Mario *mario);
+
 void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], int numLadders, float deltaTime);
 
 #endif
