@@ -51,4 +51,26 @@ void jump(Mario *jm);
 void applyGravity(Mario *jm);
 void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], int numLadders, float deltaTime);
 
+/*----- Function: is_mario_grounded -----
+
+PURPOSE: Check if Mario is on a surface
+
+INPUT:
+
+OUTPUT: Return true if Mario is on a surface, otherwise false
+
+*/
+boolean is_mario_grounded(Mario *mario, Model *model);
+
+/*----- Function: apply_gravity_mario -----
+
+PURPOSE:  Increment the position if Mario is not on the grounded on a surface
+
+INPUT:
+
+OUTPUT:
+
+*/
+void apply_gravity_mario(Mario *mario);
+
 #endif

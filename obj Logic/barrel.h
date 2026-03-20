@@ -20,5 +20,7 @@ void updateBarrel(Barrel *b, float deltaTime);
 void rollBarrel(Barrel *b);
 void sendDownLadder(Barrel *b);
 void breakBarrel(Barrel *b);
+boolean is_barrel_grounded(Barrel *barrel, Model *model);
+void apply_gravity_barrel(Barrel barrel);
 
 #endif
