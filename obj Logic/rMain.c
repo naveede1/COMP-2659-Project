@@ -17,6 +17,7 @@
 #include "model.h"
 #include "raster.c"
 #include "clock.c"
+#include "item.c"
 
 #include <osbind.h>
 #include <stdio.h>
@@ -25,7 +26,7 @@
 #define FRAMERULE 12
 
 Model testModel = {
-{1, 306, 300, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316}, /* Jumpman*/
+{1, 236, 352, 0, 0, 1, 1, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316}, /* Jumpman*/
 
 { {1, 176, 142, 0, 8, 0, 0}, /* Girder 1 */
 {1, 272, 106, 0, 3, 0, 0}, 
@@ -70,9 +71,9 @@ Model testModel = {
 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0} }, /* Barrel 7 */ 
 
-{1, 240, 352, 0, 0, 1, 0, 0, 0}, /* Spirit */
+{0, 240, 352, 0, 0, 1, 0, 0, 0}, /* Spirit */
 
-{0, 0, 200, 0, 0, 0, 0, 0, 0}, /* Item */
+{0, 358, 300, 0, 0, 2, 0, 0, 0}, /* Item */
 
 {0, 288, 66, 0, 0, 0}, /* Heart */
 
@@ -158,6 +159,9 @@ int main() {
 
     int gameRunning = 1;
 
+    int timerCounter = 0;
+    int timerReset = 0;
+
     int itemSpawnCheck = 10;
     int itemSpawned = 0;
     int itemStartTimer;
@@ -167,6 +171,7 @@ int main() {
 
     /* Draw static level once */
     clear_screen(screen);
+    render(model, screen);
     renderLevel(model, screen);
     renderBonus(model->timer, screen);
     renderLives(model->lives, screen);
@@ -188,13 +193,14 @@ int main() {
         nowTime = getTime();
         passedTime = nowTime - startTime;
 
+
         if (passedTime % 750 == 0) {
 
             model->timer.value -= 200;
             clear_region(screen, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
             renderBonus(model->timer, screen);
 
-            if (model->timer.value == 0) {
+            if (model->timer.value == 4800) {
 
                 printf("SKILL ISSUE - TIME GAME OVER\n");
                 gameRunning = 0;
@@ -212,21 +218,22 @@ int main() {
             else
             {
                 /* --- GAME LOGIC --- */
-            
-                /* Item Logic */
+               
+                /* Item Logic */ 
                 if(itemSpawnCheck != 0) {
-                    if (passedTime % 1250 == 0) {
+                    if (passedTime % 210 == 0) {
                         itemSpawnCheck--;
                     }
                 } else {
 
-                    spawnItem(model->item, 358, 300);
+                    spawnItem(model->item);
+                    renderItem(model->item, screen);
                     itemSpawnCheck--; /* Ensure only one item spawns */
                     itemStartTimer = getTime();
-                    itemSpawned = 1;
-                }
+                    itemSpawned = 1; 
+                } 
 
-                if (itemSpawned == 1) {
+                if (itemSpawned == 10) { /* Change back to 1 */
 
                     if (passedTime % 15) {
                         model->item.lifetime++; /* Increment the Lifetime Timer by 1 Sec */
@@ -235,10 +242,16 @@ int main() {
                     if (checkMCollision(model->mario.posX, model->mario.posY, model->item.posX, model->item.posY, 16) == 1) {
                         clear_region(screen, model->item.posY, model->item.posX, 16, 16);
                         model->score.value += model->item.worth; /* Add Item points to Score */
+                        if(model->item.type == 0) {
+                            model->item.type = 2; /* Reset back to least value */ 
+                        } else { 
+                            model->item.type--; /* Increment to next highest value */
+                        } 
                         model->item.lifetime = 0;
                         itemSpawned = 0;
                         itemSpawnCheck = 25;
                         model->item.visible = 0;
+                        printf("Item Picked UP!");
                     } else {
                         if(model->item.lifetime == model->item.maxLifetime) {
                             model->item.lifetime = 0;
@@ -247,12 +260,12 @@ int main() {
                             model->item.visible = 0;
                         }
                     }
-
+                    
                 }
 
                 clear_region(screen, model->mario.posY, model->mario.posX, 16, 16);
 
-                if (passedTime < 150) {
+                if (passedTime < 110) {
 
                     model->mario.state = 1;
                     model->mario.direction = 1;

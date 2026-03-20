@@ -13,6 +13,6 @@ typedef struct { /* Structure for Pauline's Items */
 
 } Item;
 
-void spawnItem(Item item, int x, int y);
+void spawnItem(Item item);
 
 #endif
