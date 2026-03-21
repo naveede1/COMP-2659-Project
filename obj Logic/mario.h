@@ -3,6 +3,7 @@
 
 #include "girder.h"
 #include "ladder.h"
+#include "model.h"
 
 #define GRAVITY 0.5f
 #define JUMP_FORCE -10

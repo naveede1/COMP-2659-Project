@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-#include "model.h"
 #include "mario.h"
 #include "girder.h"
 #include "ladder.h"
