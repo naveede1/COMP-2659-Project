@@ -71,6 +71,6 @@ INPUT:
 OUTPUT:
 
 */
-void apply_gravity_mario(Mario *mario);
+void apply_gravity_mario(Mario *mario, Girder *girders);
 
 #endif

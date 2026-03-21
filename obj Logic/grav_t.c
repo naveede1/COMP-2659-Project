@@ -14,14 +14,14 @@
 JUMPMAN TEST VALUES 
 
 {1, 306, 300, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316, 16, 16} (from rMain.c)
-{1, 180, 130, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316, 16, 16}
+{1, 180, 130, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316, 16, 16} (grounded)
 
 
 
 */
 
 Model testModel = {
-{1, 180, 130, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316, 16, 16}, /* Jumpman*/
+{1, 306, 300, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316, 16, 16}, /* Jumpman*/
 
 { {1, 176, 142, 0, 8, 0, 0, 8, 8}, /* Girder 1 */
 {1, 272, 106, 0, 3, 0, 0, 8, 8}, 
@@ -82,17 +82,7 @@ Model testModel = {
 {1, 186, 48, 3}, /* Lives */ 
 };
 
-void not_grounded(Model *model, UINT32 *base) {
-
-    /*
-    
-    Case 1: Mario is right above a girder
-            Expected behavior: return false
-
-    Case 2: Mario is above girders but none of them are right under him
-            Expected behavior: return false
-    
-    */
+void grounded(Model *model, UINT32 *base) {
 
     int i;
     boolean r_false;
@@ -127,7 +117,31 @@ void not_grounded(Model *model, UINT32 *base) {
 
 }
 
-void grounded() {
+void test_gravity(Model *model, UINT32 *base) {
+
+    int i;
+
+    clear_screen(base);
+
+    /* Render the level */
+    for (i = 0; i < 9; i++) {
+        renderGirder(model->girders[i], (UINT8 *)base);        
+    }
+
+    renderMario(model->mario, (UINT16 *)base);
+
+    sleep(1);
+
+    /* Apply gravity and re-render */
+    apply_gravity_mario(&model->mario, model->girders);
+
+    clear_screen(base);
+
+    for (i = 0; i < 9; i++) {
+        renderGirder(model->girders[i], (UINT8 *)base);        
+    }
+
+    renderMario(model->mario, (UINT16 *)base);
 
 }
 
@@ -139,7 +153,8 @@ int main() {
 
     /* Mario test_mario_1 = {1, 218, 160, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316}; */
 
-    not_grounded(&testModel, base);
+    grounded(&testModel, base);
+    /* test_gravity(&testModel, base); b */
     
     return 0;
 }
