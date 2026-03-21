@@ -60,7 +60,7 @@ INPUT:
 OUTPUT: Return true if Mario is on a surface, otherwise false
 
 */
-boolean is_mario_grounded(Mario *mario, Girder *griders[]);
+boolean is_mario_grounded(Mario *mario, Girder *girders);
 
 /*----- Function: apply_gravity_mario -----
 
