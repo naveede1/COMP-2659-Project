@@ -1,10 +1,8 @@
 #include <stdio.h>
 
 #include "mario.h"
-#include "girder.h"
-#include "ladder.h"
 
-boolean is_mario_grounded(Mario *mario, Model *model) {
+boolean is_mario_grounded(Mario *mario, Girder *girders[]) {
 
     /*
     
@@ -43,17 +41,17 @@ boolean is_mario_grounded(Mario *mario, Model *model) {
     /* Checking each girder rendered */
     for (i = 0; i < 9; i++) {
         /* Check if Mario is within the horizontal range of the girder */
-        girder_left_edge = model->girders[i].posX;
-        girder_right_edge = model->girders[i].posX + model->girders[i].width;
+        girder_left_edge = girders[i]->posX;
+        girder_right_edge = girders[i]->posX + girders[i]->width;
 
         if ((mario_left_edge >= girder_left_edge) && (mario_right_edge <= girder_right_edge)) {
             /* Check if Mario is above a girder */
-            girder_top_edge = model->girders[i].posY;
+            girder_top_edge = girders[i]->posY;
             if (mario_bottom_edge >= girder_top_edge) {
                 distance = girder_top_edge - mario_bottom_edge;
                 if (distance < best_distance) {
                     best_distance = distance;
-                    correct_girder = &model->girders[i];
+                    correct_girder = girders[i];
                 }
             }
         }

@@ -3,7 +3,6 @@
 
 #include "girder.h"
 #include "ladder.h"
-#include "model.h"
 
 #define GRAVITY 0.5f
 #define JUMP_FORCE -10
@@ -61,7 +60,7 @@ INPUT:
 OUTPUT: Return true if Mario is on a surface, otherwise false
 
 */
-boolean is_mario_grounded(Mario *mario, Model *model);
+boolean is_mario_grounded(Mario *mario, Girder *griders[]);
 
 /*----- Function: apply_gravity_mario -----
 
