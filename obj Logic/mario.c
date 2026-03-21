@@ -47,8 +47,8 @@ boolean is_mario_grounded(Mario *mario, Girder *girders) {
 
         if ((mario_left_edge >= girder_left_edge) && (mario_right_edge <= girder_right_edge)) {
             /* Check if Mario is above a girder */
-            if (girder_top_edge <= mario_bottom_edge) {
-                distance = mario_bottom_edge - girder_top_edge;
+            if (girder_top_edge >= mario_bottom_edge) {
+                distance = girder_top_edge - mario_bottom_edge;
                 if (distance < best_distance) {
                     best_distance = distance;
                     correct_girder = &girders[i];
@@ -61,9 +61,12 @@ boolean is_mario_grounded(Mario *mario, Girder *girders) {
 
     /* Snapping Mario to the slope of the girder */
     girder_top_edge = correct_girder->posX;
-    mario->posY = girder_top_edge - mario->height;
-    
-    return TRUE;
+    if ((girder_top_edge - mario_bottom_edge) <= 1) {
+        mario->posY = girder_top_edge - mario->height;
+        return TRUE;
+    }
+
+    return FALSE;
     
 }
 

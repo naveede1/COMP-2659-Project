@@ -15,8 +15,7 @@ JUMPMAN TEST VALUES
 
 {1, 306, 300, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316, 16, 16} (from rMain.c)
 {1, 180, 130, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316, 16, 16} (grounded)
-
-
+{1, 200, 306, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316, 16, 16} (grounded)
 
 */
 
@@ -112,36 +111,30 @@ void grounded(Model *model, UINT32 *base) {
         renderGirder(model->girders[i], (UINT8 *)base);        
     }
 
-    renderMario(model->mario, (UINT16 *)base);    
-
-
+    renderMario(model->mario, (UINT16 *)base);
 }
 
 void test_gravity(Model *model, UINT32 *base) {
 
     int i;
 
-    clear_screen(base);
+    while (!is_mario_grounded(&model->mario, model->girders)) {
 
-    /* Render the level */
-    for (i = 0; i < 9; i++) {
-        renderGirder(model->girders[i], (UINT8 *)base);        
+        apply_gravity_mario(&model->mario, model->girders);
+
+        clear_screen(base);
+
+        for (i = 0; i < 9; i++) {
+            renderGirder(model->girders[i], (UINT8 *)base);        
+        }
+
+        renderMario(model->mario, (UINT16 *)base);
+
+        sleep(1);
+
     }
 
-    renderMario(model->mario, (UINT16 *)base);
-
-    sleep(1);
-
-    /* Apply gravity and re-render */
-    apply_gravity_mario(&model->mario, model->girders);
-
-    clear_screen(base);
-
-    for (i = 0; i < 9; i++) {
-        renderGirder(model->girders[i], (UINT8 *)base);        
-    }
-
-    renderMario(model->mario, (UINT16 *)base);
+    printf("Jumpman is grounded.\n");
 
 }
 
@@ -153,8 +146,8 @@ int main() {
 
     /* Mario test_mario_1 = {1, 218, 160, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316}; */
 
-    grounded(&testModel, base);
-    /* test_gravity(&testModel, base); b */
+    /* grounded(&testModel, base); */
+    test_gravity(&testModel, base);
     
     return 0;
 }
