@@ -20,7 +20,7 @@ JUMPMAN TEST VALUES
 */
 
 Model testModel = {
-{1, 306, 300, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316, 16, 16}, /* Jumpman*/
+{1, 306, 200, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316, 16, 16}, /* Jumpman*/
 
 { {1, 176, 142, 0, 8, 0, 0, 8, 8}, /* Girder 1 */
 {1, 272, 106, 0, 3, 0, 0, 8, 8}, 
@@ -119,8 +119,11 @@ void test_gravity(Model *model, UINT32 *base) {
     int i;
 
     while (!is_mario_grounded(&model->mario, model->girders)) {
-
+        printf("Mario posY before gravity: %d\n", model->mario.posY);
         apply_gravity_mario(&model->mario, model->girders);
+        printf("Mario posY after gravity: %d\n", model->mario.posY);
+
+        sleep(2);
 
         clear_screen(base);
 

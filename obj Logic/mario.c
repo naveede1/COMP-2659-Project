@@ -32,7 +32,7 @@ boolean is_mario_grounded(Mario *mario, Girder *girders) {
     int i;
 
     correct_girder = NULL;
-    best_distance = 400;
+    best_distance = 2;
 
     mario_left_edge = mario->posX;
     mario_right_edge = mario->posX + mario->width;
@@ -45,9 +45,11 @@ boolean is_mario_grounded(Mario *mario, Girder *girders) {
         girder_right_edge = girders[i].posY + (girders[i].size * girders[i].width);
         girder_top_edge = girders[i].posX;
 
-        if ((mario_left_edge >= girder_left_edge) && (mario_right_edge <= girder_right_edge)) {
+        if ((girder_top_edge >= mario_bottom_edge - 1) && (girder_top_edge <= mario_bottom_edge + 1)) {
             /* Check if Mario is above a girder */
+            printf("Horizontal check passed for girder %d\n", i);
             if (girder_top_edge >= mario_bottom_edge) {
+                printf("Vertical check passed for girder %d, distance: %d\n", i, girder_top_edge - mario_bottom_edge);
                 distance = girder_top_edge - mario_bottom_edge;
                 if (distance < best_distance) {
                     best_distance = distance;
@@ -57,12 +59,19 @@ boolean is_mario_grounded(Mario *mario, Girder *girders) {
         }
     }
 
+    if (correct_girder != NULL) {
+        printf("Selected girder posX: %d, posY: %d, mario_bottom: %d\n", correct_girder->posX, correct_girder->posY, mario_bottom_edge);
+    }
+
     if (correct_girder == NULL) return FALSE;
+
+    printf("correct_girder posX: %d, posY: %d\n", correct_girder->posX, correct_girder->posY);
 
     /* Snapping Mario to the slope of the girder */
     girder_top_edge = correct_girder->posX;
     if ((girder_top_edge - mario_bottom_edge) <= 1) {
         mario->posY = girder_top_edge - mario->height;
+        printf("After snap: mario posY: %d, mario bottom: %d, girder top: %d\n", mario->posY, mario->posY + mario->height, girder_top_edge);
         return TRUE;
     }
 
@@ -71,7 +80,8 @@ boolean is_mario_grounded(Mario *mario, Girder *girders) {
 }
 
 void apply_gravity_mario(Mario *mario, Girder *girders) {
-    if (!is_mario_grounded(mario, girders)) {
-        mario->posY++;
+    mario->posY++;
+    if (is_mario_grounded(mario, girders)) {
+        return;
     }
 }
