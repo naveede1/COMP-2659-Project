@@ -36,6 +36,8 @@ void render_e(UINT16 *base, UINT16 row, UINT16 col, UINT16 *block);
 void render_y(UINT16 *base, UINT16 row, UINT16 col, UINT16 *block);
 void render_g(UINT16 *base, UINT16 row, UINT16 col, UINT16 *block);
 
+void render_menu_buttons(UINT32 *base);
+
 void render_title(UINT16 *base, UINT16 *block);
 
 #endif

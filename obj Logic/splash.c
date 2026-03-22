@@ -129,6 +129,15 @@ void render_g(UINT16 *base, UINT16 row, UINT16 col, UINT16 *block) {
     plot_bitmap_16(base, row+60, col+45, 14, block);
 }
 
+void render_menu_buttons(UINT32 *base) {
+    plot_rectangle(base, 300, 225, 20, 150);
+    plot_rectangle(base, 325, 225, 20, 150);
+
+    linea0();
+    plot_string((UINT8 *)base, 302, 270, "Player 1");
+    plot_string((UINT8 *)base, 327, 282, "Quit");
+}
+
 void render_title(UINT16 *base, UINT16 *block) {
 
     render_d(base, 60,  65,  block);
@@ -142,6 +151,8 @@ void render_title(UINT16 *base, UINT16 *block) {
     render_o(base, 180, 260, block);
     render_n(base, 180, 335, block);
     render_g(base, 180, 425, block);
+
+    render_menu_buttons((UINT32 *)base);
 }
 
 int main() {
@@ -149,13 +160,6 @@ int main() {
     
     clear_screen((UINT32 *)base);
     render_title(base, title_block);
-
-    plot_rectangle((UINT32 *)base, 300, 225, 20, 150);
-    plot_rectangle((UINT32 *)base, 325, 225, 20, 150);
-
-    linea0();
-    plot_string((UINT8 *)base, 302, 270, "Player 1");
-    plot_string((UINT8 *)base, 327, 282, "Quit");
 
     return 0;
 }
