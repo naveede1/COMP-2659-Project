@@ -1,6 +1,6 @@
 #include "rOil.h"
 
-void renderOil(Oil oil, UINT32 base) {
+void renderOil(Oil oil, UINT32 *base) {
 
     if (oil.visible == 1){
         if (oil.state == 0){

@@ -3,7 +3,7 @@
 
 #define SPRITE_HEIGHT 16
 
-int mario_walkInRightBM[SPRITE_HEIGHT] = /* Walking Right - Legs in */
+UINT16 mario_walkInRightBM[SPRITE_HEIGHT] = /* Walking Right - Legs in */
 {
 0x0780,
 0x0FF0,
@@ -23,7 +23,7 @@ int mario_walkInRightBM[SPRITE_HEIGHT] = /* Walking Right - Legs in */
 0x1EF0,
 };
 
-int mario_walkOutRightBM[SPRITE_HEIGHT] = /* Walking Right - Legs out */
+UINT16 mario_walkOutRightBM[SPRITE_HEIGHT] = /* Walking Right - Legs out */
 {
 0x0780,
 0x0FF0,
@@ -43,7 +43,7 @@ int mario_walkOutRightBM[SPRITE_HEIGHT] = /* Walking Right - Legs out */
 0x3800,
 };
 
-int mario_jumpRightBM[SPRITE_HEIGHT] = /* Jumping Right */
+UINT16 mario_jumpRightBM[SPRITE_HEIGHT] = /* Jumping Right */
 {
 0x0000,
 0x03C0,
@@ -63,7 +63,7 @@ int mario_jumpRightBM[SPRITE_HEIGHT] = /* Jumping Right */
 0x0600,
 };
 
-int mario_walkInLeftBM[SPRITE_HEIGHT] = /* Walking Left - Legs in */
+UINT16 mario_walkInLeftBM[SPRITE_HEIGHT] = /* Walking Left - Legs in */
 {
 0x01E0,
 0x0FF0,
@@ -83,7 +83,7 @@ int mario_walkInLeftBM[SPRITE_HEIGHT] = /* Walking Left - Legs in */
 0x0F78,
 };
 
-int mario_walkOutLeftBM[SPRITE_HEIGHT] = /* Walking Left - Legs out */
+UINT16 mario_walkOutLeftBM[SPRITE_HEIGHT] = /* Walking Left - Legs out */
 {
 0x01E0,
 0x0FF0,
@@ -103,7 +103,7 @@ int mario_walkOutLeftBM[SPRITE_HEIGHT] = /* Walking Left - Legs out */
 0x001C,
 };
 
-int mario_jumpLeftBM[SPRITE_HEIGHT] = /* Jumping Left */
+UINT16 mario_jumpLeftBM[SPRITE_HEIGHT] = /* Jumping Left */
 {
 0x0000,
 0x03C0,
@@ -123,7 +123,7 @@ int mario_jumpLeftBM[SPRITE_HEIGHT] = /* Jumping Left */
 0x0060,
 };
 
-int mario_climbLeftBM[SPRITE_HEIGHT] = /* Climbing - Left Foot Down */
+UINT16 mario_climbLeftBM[SPRITE_HEIGHT] = /* Climbing - Left Foot Down */
 {
 0x0038,
 0x07F8,
@@ -143,7 +143,7 @@ int mario_climbLeftBM[SPRITE_HEIGHT] = /* Climbing - Left Foot Down */
 0x07C0,
 };
 
-int mario_climbRightBM[SPRITE_HEIGHT] = /* Climbing - Right Foot Down */
+UINT16 mario_climbRightBM[SPRITE_HEIGHT] = /* Climbing - Right Foot Down */
 {
 0x1C00,
 0x1FE0,
@@ -163,7 +163,7 @@ int mario_climbRightBM[SPRITE_HEIGHT] = /* Climbing - Right Foot Down */
 0x03E0,
 };
 
-int mario_climbPullBM[SPRITE_HEIGHT] = /* Climbing - Pulling Himself Up */
+UINT16 mario_climbPullBM[SPRITE_HEIGHT] = /* Climbing - Pulling Himself Up */
 {
 0x0000,
 0x07F8,
@@ -183,7 +183,7 @@ int mario_climbPullBM[SPRITE_HEIGHT] = /* Climbing - Pulling Himself Up */
 0x03E0,
 };
 
-int mario_hitBM[SPRITE_HEIGHT] = /* Hit by something */
+UINT16 mario_hitBM[SPRITE_HEIGHT] = /* Hit by something */
 {
 0x03E0,
 0x07F0,
@@ -203,7 +203,7 @@ int mario_hitBM[SPRITE_HEIGHT] = /* Hit by something */
 0x1C0C,
 };
 
-int mario_deadBM[SPRITE_HEIGHT] = /* Dead with Halo */
+UINT16 mario_deadBM[SPRITE_HEIGHT] = /* Dead with Halo */
 {
 0x007C,
 0x0082,
@@ -223,7 +223,7 @@ int mario_deadBM[SPRITE_HEIGHT] = /* Dead with Halo */
 0xFFFE,
 };
 
-int mario_hammerUpLeftBM[SPRITE_HEIGHT] = /* Hammer Up, Facing Left */
+UINT16 mario_hammerUpLeftBM[SPRITE_HEIGHT] = /* Hammer Up, Facing Left */
 {
 0x00F0,
 0x0710,
@@ -243,7 +243,7 @@ int mario_hammerUpLeftBM[SPRITE_HEIGHT] = /* Hammer Up, Facing Left */
 0x000E,
 };
 
-int mario_hammerDownLeftBM[SPRITE_HEIGHT] = /* Hammer Down, Facing Left */
+UINT16 mario_hammerDownLeftBM[SPRITE_HEIGHT] = /* Hammer Down, Facing Left */
 {
 0x0000,
 0x03C0,
@@ -263,7 +263,7 @@ int mario_hammerDownLeftBM[SPRITE_HEIGHT] = /* Hammer Down, Facing Left */
 0x0780,
 };
 
-int mario_hammerUpRightBM[SPRITE_HEIGHT] = /* Hammer Up, Facing Right */
+UINT16 mario_hammerUpRightBM[SPRITE_HEIGHT] = /* Hammer Up, Facing Right */
 {
 0x0F00,
 0x08E0,
@@ -283,7 +283,7 @@ int mario_hammerUpRightBM[SPRITE_HEIGHT] = /* Hammer Up, Facing Right */
 0x7000,
 };
 
-int mario_hammerDownRightBM[SPRITE_HEIGHT] = /* Hammer Down, Facing Right */
+UINT16 mario_hammerDownRightBM[SPRITE_HEIGHT] = /* Hammer Down, Facing Right */
 {
 0x0000,
 0x03C0,
@@ -302,3 +302,6 @@ int mario_hammerDownRightBM[SPRITE_HEIGHT] = /* Hammer Down, Facing Right */
 0x81C0,
 0x01E0,
 };
+
+void renderMRight(Mario mario, UINT16 *base);
+void renderMLeft(Mario mario, UINT16 *base); 

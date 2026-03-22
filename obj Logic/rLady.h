@@ -3,7 +3,7 @@
 
 #define SPRITE_HEIGHT 32
 
-long lady_idleBM[SPRITE_HEIGHT] = 
+UINT32 lady_idleBM[SPRITE_HEIGHT] = 
 {
 0x00000000,
 0x00000000,
@@ -39,7 +39,7 @@ long lady_idleBM[SPRITE_HEIGHT] =
 0x00000E00,
 };
 
-long lady_winBM[SPRITE_HEIGHT] = 
+UINT32 lady_winBM[SPRITE_HEIGHT] = 
 {
 0x00000000,
 0x00000000,

@@ -1,6 +1,6 @@
 #include "rLadder.h"
 
-void renderLadder(Ladder ladder, UINT32 base) {
+void renderLadder(Ladder ladder, UINT8 *base) {
 
     
         

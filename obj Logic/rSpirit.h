@@ -3,7 +3,7 @@
 
 #define SPRITE_HEIGHT 16
 
-int spirit_LeftBM[SPRITE_HEIGHT] = /* Normal Left */
+UINT16 spirit_LeftBM[SPRITE_HEIGHT] = /* Normal Left */
 {
 0x0844,
 0x1400,
@@ -23,7 +23,7 @@ int spirit_LeftBM[SPRITE_HEIGHT] = /* Normal Left */
 0x0F80,
 };
 
-int spirit_RightBM[SPRITE_HEIGHT] = /* Normal Right */
+UINT16 spirit_RightBM[SPRITE_HEIGHT] = /* Normal Right */
 {
 0x2210,
 0x0028,

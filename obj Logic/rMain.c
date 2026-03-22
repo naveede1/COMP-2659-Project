@@ -17,11 +17,12 @@
 #include "model.h"
 #include "raster.c"
 #include "clock.c"
+#include "kong.c"
 
 #include <osbind.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <stdlib.h> /* for random */
 #define FRAMERULE 12
 
 Model testModel = {
@@ -53,7 +54,8 @@ Model testModel = {
 {1, 272, 336, 1, 4, 1, 1, 2, 0, 0, 0, 0, 1},
 {1, 356, 340, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1} }, /* Ladder 15 */ 
 
-{1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0}, /* Kong */
+/*visible, posX, posY, state, topL, bottomR, spawnX, spawnY, stateTimer, spawnBarrel, spawnFireBarrel*/
+{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* Kong */
 
 {1, 184, 336, 0, 0, 0, 0, 1, 0}, /* Oil */
 
@@ -86,16 +88,16 @@ Model testModel = {
 };
 
 
-void render(Model *model, UINT8 *base) {
+void render(Model *model, UINT16 *base) {
 
-    renderDK(model->kong, base);
+    renderDK(model->kong,(UINT32 *)base);
     renderMario(model->mario, base);
     renderHeart(model->heart, base);
-    renderLady(model->lady, base);
+    renderLady(model->lady,(UINT32 *) base);
     renderSpirit(model->spirit, base);
     
-    renderBStack(model->kong, base);
-    renderOil(model->oil, base);
+    renderBStack(model->kong, (UINT32 *)base);
+    renderOil(model->oil,(UINT32 *) base);
     
     renderHammer(model->hammers[0], base);
     renderHammer(model->hammers[1], base);
@@ -105,7 +107,7 @@ void render(Model *model, UINT8 *base) {
 
 }
 
-void renderLevel(Model *model, UINT8 *base) {
+void renderLevel(Model *model, UINT32 *base) {
 
     int i; /* Girder Counter */
     int j; /* Ladder Counter */
@@ -113,21 +115,21 @@ void renderLevel(Model *model, UINT8 *base) {
 
     for (i = 0; i < 9; i++)
     {
-        renderGirder(model->girders[i], base);        
+        renderGirder(model->girders[i], (UINT8 *)base);        
     }
 
     for (i = 0; i < 15; i++)
     {
-        renderLadder(model->ladders[i], base);        
+        renderLadder(model->ladders[i], (UINT8 *)base);        
     }
 
     for (i = 0; i < 7; i++)
     {
-        renderBarrel(model->barrels[i], base);        
+        renderBarrel(model->barrels[i], (UINT16 *)base);        
     }
 
     renderBonus(model->timer, base);
-    renderLives(model->lives, base);
+    renderLives(model->lives, (UINT8 *)base);
     renderScore(model->score, base);
 
 }
@@ -135,20 +137,22 @@ void renderLevel(Model *model, UINT8 *base) {
 
 int main() {
     
-    UINT8 *screen = Physbase();
-
+    UINT32 *screen = Physbase();
     long nowTime;
     long startTime = getTime();
     long passedTime;
 
     int gameRunning = 1;
-
+    
+    int lastFrameTick = -1; /*Tracks the last frame tick to prevent duplicate updates*/
+    int canSpawnBarrel = rand() % 10; /* Random number from 0 to 9 */
     Model *model = &testModel;
-
 
     /* Draw static level once */
     clear_screen(screen);
     renderLevel(model, screen);
+    renderDK(model->kong, screen);
+    renderBStack(model->kong, screen); /*rendering barrel stack besides DK*/
 
     /* Safety checks */
     if (model->mario.posX < 0){
@@ -166,10 +170,10 @@ int main() {
 
         nowTime = getTime();
         passedTime = nowTime - startTime;
-
-        if (passedTime % FRAMERULE == 0)
-        {
-            if (passedTime > 500)
+        
+        if (passedTime % FRAMERULE == 0 && passedTime != lastFrameTick) { 
+            lastFrameTick = passedTime; /* Because we want to update the game state only once per frame */
+            if (passedTime > 5000) /*Change 500 to 5000 to see all of the states*/
             {
                 printf("GAME OVER\n");
                 gameRunning = 0;
@@ -177,7 +181,13 @@ int main() {
             else
             {
                 /* --- GAME LOGIC --- */
-            
+                clear_region(screen, 110, 198, 32, 64); /* For DK (specific values as dk does not move rdk has this pos) */
+                /* Roll 0-9. Kong only throws a barrel when roll is 0 (1 in 10 chance).
+                 * kongAction guarantees a throw after 1  miss. */
+                updateKong(&model->kong, canSpawnBarrel);
+                /*Rendering Dk*/
+                renderDK(model->kong, screen);
+
                 clear_region(screen, model->mario.posY, model->mario.posX, 16, 16);
 
                 if (passedTime < 150)
@@ -212,7 +222,7 @@ int main() {
                 updateMCollision(model->mario);
 
                 /* Draw sprite */
-                renderMario(model->mario, screen);
+                renderMario(model->mario, (UINT16 *)screen);
             }
         }
     }
