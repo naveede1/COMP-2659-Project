@@ -150,5 +150,12 @@ int main() {
     clear_screen((UINT32 *)base);
     render_title(base, title_block);
 
+    plot_rectangle((UINT32 *)base, 300, 225, 20, 150);
+    plot_rectangle((UINT32 *)base, 325, 225, 20, 150);
+
+    linea0();
+    plot_string((UINT8 *)base, 302, 270, "Player 1");
+    plot_string((UINT8 *)base, 327, 282, "Quit");
+
     return 0;
 }
