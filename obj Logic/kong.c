@@ -21,7 +21,7 @@
 #define NORMAL_BARREL  1
 
 
-void updateKong(Kong *kong, int canSpawnBarrel) {
+int updateKong(Kong *kong, int canSpawnBarrel) {
     kong->stateTimer++;
     switch (kong->state) {
         case KONG_IDLE:
@@ -62,6 +62,8 @@ void updateKong(Kong *kong, int canSpawnBarrel) {
             kong->stateTimer = 0;
             break;
     }
+
+    return kong->state;
 }
 
 static void kongAction(Kong *kong, int canSpawnBarrel) {

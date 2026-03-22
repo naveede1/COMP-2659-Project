@@ -181,12 +181,17 @@ int main() {
             else
             {
                 /* --- GAME LOGIC --- */
-                clear_region(screen, 110, 198, 32, 64); /* For DK (specific values as dk does not move rdk has this pos) */
+                
+                
+                /* For DK (specific values as dk does not move rdk has this pos) */
                 /* Roll 0-9. Kong only throws a barrel when roll is 0 (1 in 10 chance).
                  * kongAction guarantees a throw after 1  miss. */
-                updateKong(&model->kong, canSpawnBarrel);
-                /*Rendering Dk*/
-                renderDK(model->kong, screen);
+                int oldDKstate = model->kong.state;
+                if (oldDKstate != updateKong(&model->kong, canSpawnBarrel)) {
+                    /*Re-Rendering Dk if he changes */
+                    clear_region(screen, 110, 198, 32, 64); 
+                    renderDK(model->kong, screen);
+                }
 
                 clear_region(screen, model->mario.posY, model->mario.posX, 16, 16);
 

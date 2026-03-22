@@ -32,7 +32,7 @@ typedef struct { /* Structure for Donkey Kong */
 
 */
 
-void updateKong(Kong *kong, int canSpawnBarrel);
+int updateKong(Kong *kong, int canSpawnBarrel);
 
 /*----- Function: requestFireBarrel -----
 
