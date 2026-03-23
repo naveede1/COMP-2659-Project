@@ -1,4 +1,5 @@
 #include "rBarrel.h"
+#include "raster.c"
 
 void renderBarrel(Barrel barrel, UINT16 *base) {
 
