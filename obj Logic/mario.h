@@ -22,7 +22,7 @@ typedef struct { /* Structure for Jumpman */
     int state; /* Standing = 0, Walking = 1, Climbing = 2, Jumping = 3, Dead (Falling off screen) = 4 */ 
     int direction; /* Left = 0, Right = 1 */
     int climbing;   /* No = 0, Yes = 1 */
-    int climbDir;   /* 0 = up, 1 = down */
+    int collideLadder;   /* No = 0, Yes = 1 */
     int onGround; /* Is JumpMan Grounded? No = 0, Yes = 1 */ 
     int hammerActive; /* No = 0, Yes = 1 */
     float hammerTimer;
