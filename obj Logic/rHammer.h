@@ -3,7 +3,7 @@
 
 #define SPRITE_HEIGHT 16
 
-int hammer_floatBM[SPRITE_HEIGHT] = /* Floating Hammer Item */
+UINT16 hammer_floatBM[SPRITE_HEIGHT] = /* Floating Hammer Item */
 {
 0x0000,
 0x0000,
@@ -23,7 +23,7 @@ int hammer_floatBM[SPRITE_HEIGHT] = /* Floating Hammer Item */
 0x0180,
 };
 
-int hammer_upBM[SPRITE_HEIGHT] = /* Held in Jumpman's Hand - Up */
+UINT16 hammer_upBM[SPRITE_HEIGHT] = /* Held in Jumpman's Hand - Up */
 /* Note: Left -  Place 15 Rows up and 2 Col right of Mario */
 /* Note: Right - Place 15 Rows up and 2 Col left of Mario */
 {
@@ -45,7 +45,7 @@ int hammer_upBM[SPRITE_HEIGHT] = /* Held in Jumpman's Hand - Up */
 0x0180,
 };
 
-int hammer_downLeftBM[SPRITE_HEIGHT] = /* Held in Jumpman's Hand - Down */
+UINT16 hammer_downLeftBM[SPRITE_HEIGHT] = /* Held in Jumpman's Hand - Down */
 /* Note: Place 2 Rows down and 15 Col left of Mario */
 {
 0x0000,
@@ -66,7 +66,7 @@ int hammer_downLeftBM[SPRITE_HEIGHT] = /* Held in Jumpman's Hand - Down */
 0x0000,
 };
 
-int hammer_downRighttBM[SPRITE_HEIGHT] = /* Held in Jumpman's Hand - Down */
+UINT16 hammer_downRightBM[SPRITE_HEIGHT] = /* Held in Jumpman's Hand - Down */
 /* Note: Place 2 Rows down and 15 Col Right of Mario */
 {
 0x0000,

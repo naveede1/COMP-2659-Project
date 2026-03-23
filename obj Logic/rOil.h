@@ -3,7 +3,7 @@
 
 #define SPRITE_HEIGHT 32
 
-long oil_unlitBM[SPRITE_HEIGHT] = /* Oil Barrel before being lit on fire */
+UINT32 oil_unlitBM[SPRITE_HEIGHT] = /* Oil Barrel before being lit on fire */
 {
 0x00000000,
 0x00000000,
@@ -39,7 +39,7 @@ long oil_unlitBM[SPRITE_HEIGHT] = /* Oil Barrel before being lit on fire */
 0x00BFFF00,
 };
 
-long oil_litBM[SPRITE_HEIGHT] = /* Oil Barrel after being lit on fire */
+UINT32 oil_litBM[SPRITE_HEIGHT] = /* Oil Barrel after being lit on fire */
 {
 0x00010000,
 0x00108400,

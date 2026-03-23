@@ -3,7 +3,7 @@
 
 #define SPRITE_HEIGHT 16
 
-int barrel_sidewaysBM[SPRITE_HEIGHT] =
+UINT16 barrel_sidewaysBM[SPRITE_HEIGHT] =
 {
 0x0000,
 0x0000,
@@ -23,7 +23,7 @@ int barrel_sidewaysBM[SPRITE_HEIGHT] =
 0x03C0,
 };
 
-int barrel_downBM[SPRITE_HEIGHT] =
+UINT16 barrel_downBM[SPRITE_HEIGHT] =
 {
 0x0000,
 0x0000,

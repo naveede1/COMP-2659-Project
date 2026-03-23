@@ -3,7 +3,7 @@
 
 #define SPRITE_HEIGHT 16
 
-int heart_fullBM[SPRITE_HEIGHT] = 
+UINT16 heart_fullBM[SPRITE_HEIGHT] = 
 {
 0x0000,
 0x0000,
@@ -23,7 +23,7 @@ int heart_fullBM[SPRITE_HEIGHT] =
 0x0100,
 };
 
-int heartbrokenBM[SPRITE_HEIGHT] =
+UINT16 heartbrokenBM[SPRITE_HEIGHT] =
 {
 0x0000,
 0x0000,

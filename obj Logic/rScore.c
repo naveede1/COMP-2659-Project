@@ -1,5 +1,4 @@
 #include "rScore.h"
-
 #include <stdio.h>
 
 char currScore[7];

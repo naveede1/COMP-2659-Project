@@ -1,5 +1,4 @@
 #include "rBonus.h"
-
 #include <stdio.h>
 
 char currTimer[5];
@@ -14,7 +13,7 @@ void intToStr(int val, char *str){ /* Casts Integer Value into an Array of Chars
 	}
 }
 
-void renderBonus(Timer timer, UINT32 base) {
+void renderBonus(Timer timer, UINT32 *base) {
 
     linea0();
 
