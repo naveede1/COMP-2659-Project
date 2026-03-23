@@ -13,3 +13,8 @@ void roll_barrel(Barrel *barrel) {
         barrel->posY++;
     }
 }
+
+void break_barrel(Barrel *barrel) {
+    barrel->broken = 1;
+    barrel->visible = 0;
+}

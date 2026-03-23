@@ -15,5 +15,6 @@ typedef struct { /* Structure for the Barrels */
 } Barrel;
 
 void roll_barrel(Barrel *barrel);
+void break_barrel(Barrel *barrel);
 
 #endif

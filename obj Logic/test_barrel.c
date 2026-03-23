@@ -15,12 +15,9 @@ int main() {
     clear_screen((UINT32 *)base);
 
     renderBarrel(t_barrel[0], base);
-
-    for (i = 0; i < 30; i++) {
-        roll_barrel(&t_barrel[0]);
-        clear_screen((UINT32 *)base);
-        renderBarrel(t_barrel[0], base);
-    }
+    break_barrel(&t_barrel[0]);
+    clear_screen((UINT32 *)base);
+    renderBarrel(t_barrel[0], base);
 
     return 0;
 }
