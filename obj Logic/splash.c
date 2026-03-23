@@ -1,4 +1,5 @@
 #include "splash.h"
+#include "input.c"
 
 void render_splash(UINT16 *base, UINT16 *block) {
     /* Test bit map */
@@ -155,11 +156,20 @@ void render_title(UINT16 *base, UINT16 *block) {
     render_menu_buttons((UINT32 *)base);
 }
 
-int main() {
-    UINT16 *base = Physbase();
+int splash_screen(UINT16 *base, UINT16 *block) {
     
+    int start_game;
     clear_screen((UINT32 *)base);
-    render_title(base, title_block);
+    render_title(base, block);
 
-    return 0;
+    while(!has_input()) {
+        char input;
+        input = get_input();
+
+        if (input == '\r') {
+            return 1;
+        } else if (input == 'q') {
+            return 0;
+        }
+    } 
 }

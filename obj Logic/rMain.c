@@ -13,9 +13,9 @@
 #include "rBonus.c"
 #include "rLives.c"
 #include "rScore.c"
+#include "splash.c"
 
 #include "model.h"
-#include "raster.c"
 #include "clock.c"
 #include "kong.c"
 
@@ -147,6 +147,8 @@ int main() {
     int lastFrameTick = -1; /*Tracks the last frame tick to prevent duplicate updates*/
     int canSpawnBarrel = rand() % 10; /* Random number from 0 to 9 */
     Model *model = &testModel;
+
+    splash_screen((UINT16 *)screen, title_block);
 
     /* Draw static level once */
     clear_screen(screen);
