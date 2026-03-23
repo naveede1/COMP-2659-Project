@@ -1,10 +1,4 @@
 #include "splash.h"
-#include "input.c"
-
-void render_splash(UINT16 *base, UINT16 *block) {
-    /* Test bit map */
-    plot_bitmap_16(base, 200, 200, 14, block);
-}
 
 void render_d(UINT16 *base, UINT16 row, UINT16 col, UINT16 *block) {
     /* Left vertical line */

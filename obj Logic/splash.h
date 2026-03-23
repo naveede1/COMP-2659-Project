@@ -5,6 +5,7 @@
 #include <linea.h>
 
 #include "raster.c"
+#include "input.c"
 
 UINT16 title_block[16] =
 {
@@ -39,5 +40,7 @@ void render_g(UINT16 *base, UINT16 row, UINT16 col, UINT16 *block);
 void render_menu_buttons(UINT32 *base);
 
 void render_title(UINT16 *base, UINT16 *block);
+
+int splash_screen(UINT16 *base, UINT16 *block);
 
 #endif
