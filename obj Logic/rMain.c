@@ -208,7 +208,7 @@ int main() {
             clear_region(screen, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
             renderBonus(model->timer, screen);
 
-            if (model->timer.value == 4800) {
+            if (model->timer.value == 4600) {
 
                 printf("SKILL ISSUE - TIME GAME OVER\n");
                 gameRunning = 0;
@@ -239,7 +239,7 @@ int main() {
 
                 clear_region(screen, model->mario.posY, model->mario.posX, 16, 16);
 
-                if (passedTime < 110) {
+                if (passedTime < 350) {
 
                     model->mario.state = 1;
                     model->mario.direction = 1;
@@ -251,13 +251,14 @@ int main() {
                         model->mario.walkFrame = 0;
                     }
 
-                    model->mario.posX += 1;
+                    model->mario.posX += 3;
                 }
 
                 updateMCollision(model->mario);
 
                 /* Draw sprite */
                 renderMario(model->mario, (UINT16 *)screen);
+                renderLevel(model, (UINT16 *)screen);
             }
         }
     }
