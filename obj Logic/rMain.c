@@ -17,6 +17,7 @@
 #include "model.h"
 #include "raster.c"
 #include "clock.c"
+#include "item.c"
 #include "kong.c"
 
 #include <osbind.h>
@@ -26,7 +27,7 @@
 #define FRAMERULE 12
 
 Model testModel = {
-{1, 306, 300, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316}, /* Jumpman*/
+{1, 236, 352, 0, 0, 1, 1, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316}, /* Jumpman*/
 
 { {1, 176, 142, 0, 8, 0, 0}, /* Girder 1 */
 {1, 272, 106, 0, 3, 0, 0}, 
@@ -72,17 +73,15 @@ Model testModel = {
 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0} }, /* Barrel 7 */ 
 
-{1, 240, 352, 0, 0, 1, 0, 0, 0}, /* Spirit */
+{0, 240, 352, 0, 0, 1, 0, 0, 0}, /* Spirit */
 
-{ {0, 0, 200, 0, 0, 0, 0, 0}, /* Item 1 */
-{0, 0, 200, 0, 0, 1, 0, 0},  
-{0, 0, 200, 0, 0, 2, 0, 0} },  /* Item 3 */
+{0, 358, 300, 0, 0, 2, 0, 0, 0}, /* Item */
 
 {0, 288, 66, 0, 0, 0}, /* Heart */
 
-{1, 352, 78, 0, 0, 0, 0, 0}, /* Timer */
+{1, 352, 78, 5000, 0, 0, 0, 0}, /* Timer */
 
-{1, 240, 11, 0, 981}, /* Score */
+{1, 240, 11, 1000, 70981}, /* Score */
 
 {1, 186, 48, 3}, /* Lives */ 
 };
@@ -101,9 +100,7 @@ void render(Model *model, UINT16 *base) {
     
     renderHammer(model->hammers[0], base);
     renderHammer(model->hammers[1], base);
-    renderItem(model->items[0], base);
-    renderItem(model->items[1], base);
-    renderItem(model->items[2], base);
+    renderItem(model->item, base);
 
 }
 
@@ -134,6 +131,29 @@ void renderLevel(Model *model, UINT32 *base) {
 
 }
 
+int checkMCollision(int jmXleft, int jmYtop, int otherXleft, int otherYtop, int otherSize) { /* Returns 1 if the Object Collides with Mario, 0 if not*/
+
+    /* Set Marios Collider */
+    int jmXright = jmXleft + 15;
+    int jmYbottom = jmYtop + 15;
+
+    /* Set Other Objects Collider */
+    int otherXright = otherXleft + (otherSize - 1);
+    int otherYbottom = otherYtop + (otherSize - 1);
+    
+    /* Check for possible X position collision */
+    if ((jmXleft <= otherXleft <= jmXright) || (jmXleft <= otherXright <= jmXright)) {
+
+        /* Check for possible Y position collision */
+        if ((jmYtop <= otherYtop <= jmYbottom) || (jmYtop <= otherYbottom <= jmYbottom)) {
+
+            /* If both conditions are met, there's some form of overlap -> COLLISION! */
+            return 1;
+        }
+    }
+    /* If there's no X overlap, it doesnt matter if we check the Y */
+    return 0;
+}
 
 int main() {
     
@@ -143,6 +163,14 @@ int main() {
     long passedTime;
 
     int gameRunning = 1;
+
+    int timerCounter = 0;
+    int timerReset = 0;
+
+    int itemSpawnCheck = 10;
+    int itemSpawned = 0;
+    int itemStartTimer;
+
     
     int lastFrameTick = -1; /*Tracks the last frame tick to prevent duplicate updates*/
     int canSpawnBarrel = rand() % 10; /* Random number from 0 to 9 */
@@ -150,7 +178,11 @@ int main() {
 
     /* Draw static level once */
     clear_screen(screen);
+    render(model, screen);
     renderLevel(model, screen);
+    renderBonus(model->timer, screen);
+    renderLives(model->lives, screen);
+    renderScore(model->score, screen);
     renderDK(model->kong, screen);
     renderBStack(model->kong, screen); /*rendering barrel stack besides DK*/
 
@@ -165,11 +197,24 @@ int main() {
         model->mario.posY = 384;
     }
 
-
     while (gameRunning) {
 
         nowTime = getTime();
         passedTime = nowTime - startTime;
+
+        if (passedTime % 750 == 0) {
+
+            model->timer.value -= 200;
+            clear_region(screen, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
+            renderBonus(model->timer, screen);
+
+            if (model->timer.value == 4800) {
+
+                printf("SKILL ISSUE - TIME GAME OVER\n");
+                gameRunning = 0;
+                /* ADD THE MARIO UPDATE RENDER FUNCTION HERE FOR THE HIT RENDER */
+            }
+        }
         
         if (passedTime % FRAMERULE == 0 && passedTime != lastFrameTick) { 
             lastFrameTick = passedTime; /* Because we want to update the game state only once per frame */
@@ -181,8 +226,7 @@ int main() {
             else
             {
                 /* --- GAME LOGIC --- */
-                
-                
+               
                 /* For DK (specific values as dk does not move rdk has this pos) */
                 /* Roll 0-9. Kong only throws a barrel when roll is 0 (1 in 10 chance).
                  * kongAction guarantees a throw after 1  miss. */
@@ -195,8 +239,8 @@ int main() {
 
                 clear_region(screen, model->mario.posY, model->mario.posX, 16, 16);
 
-                if (passedTime < 150)
-                {
+                if (passedTime < 110) {
+
                     model->mario.state = 1;
                     model->mario.direction = 1;
 
@@ -208,20 +252,6 @@ int main() {
                     }
 
                     model->mario.posX += 1;
-                }
-                else
-                {
-                    model->mario.state = 2;
-
-                    /* Animation Handling */
-                    if (model->mario.climbFrame == 0){
-                        model->mario.climbFrame = 1;
-                    } else {
-                        model->mario.climbFrame = 0;
-                    }
-
-
-                    model->mario.posY -= 1;
                 }
 
                 updateMCollision(model->mario);
