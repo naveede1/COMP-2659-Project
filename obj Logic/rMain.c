@@ -215,9 +215,7 @@ int main() {
                 /* ADD THE MARIO UPDATE RENDER FUNCTION HERE FOR THE HIT RENDER */
             }
         }
-
-        if (passedTime % FRAMERULE == 0)
-        {
+        
         if (passedTime % FRAMERULE == 0 && passedTime != lastFrameTick) { 
             lastFrameTick = passedTime; /* Because we want to update the game state only once per frame */
             if (passedTime > 5000) /*Change 500 to 5000 to see all of the states*/
