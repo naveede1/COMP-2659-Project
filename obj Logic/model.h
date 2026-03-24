@@ -37,7 +37,7 @@ typedef struct {
     Lady lady;
     Barrel barrels[7];
     Spirit spirit;
-    Item items[3];
+    Item item;
     Heart heart;
     Timer timer;
     Score score;

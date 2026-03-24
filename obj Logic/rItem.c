@@ -5,11 +5,9 @@ void renderItem(Item item, UINT16 *base) {
     if (item.visible == 1) {
         if (item.type == 0){
             plot_bitmap_16(base, item.posY, item.posX, 16, umbrella_BM);
-        }
-        else if (item.type == 1){
+        } else if (item.type == 1){
             plot_bitmap_16(base, item.posY, item.posX, 16, purse_BM);
-        }
-        else {
+        } else {
             plot_bitmap_16(base, item.posY, item.posX, 16, hat_BM);
         }
     }

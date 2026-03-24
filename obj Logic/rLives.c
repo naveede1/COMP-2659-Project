@@ -6,7 +6,7 @@ void renderLives(Lives lives, UINT8 *base) {
     int i;
 
     if (lives.visible == 1){
-        for (i = 0; i < lives.value; i++) {
+        for (i = 0; i < lives.count; i++) {
 
             plot_bitmap_8(base, lives.posY, currPosX, 8, lives_BM);
             currPosX += 10;

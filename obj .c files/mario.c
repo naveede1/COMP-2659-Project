@@ -9,7 +9,6 @@ void applyGravity(Mario *jm) {
 }
 
 /* Frame Update (Movement/Frame) */
-
 void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], int numLadders, float deltaTime) {
     
     applyGravity(jm);
@@ -133,3 +132,4 @@ void requestClimbDown(Mario *jm)
     jm->climbing = 1;
     jm->climbDir = 1;
 }
+
