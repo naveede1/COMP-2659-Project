@@ -24,6 +24,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h> /* for random */
+
+#define SCREEN_SIZE 32000
 #define FRAMERULE 12
 
 Model testModel = {
@@ -155,46 +157,59 @@ int checkMCollision(int jmXleft, int jmYtop, int otherXleft, int otherYtop, int 
     return 0;
 }
 
-int main() {
+void draw (Model *model, UINT16 *buffer) {
     
-    UINT32 *screen = Physbase();
+    render(model, buffer);
+    renderLevel(model, buffer);
+    renderDK(model->kong, buffer);
+    renderBStack(model->kong, buffer);
+    renderBonus(model->timer, buffer);
+    renderLives(model->lives, buffer);
+    renderScore(model->score, buffer);
+
+}
+
+int main() {
+
+    /* --- Allocate buffers --- */
+    UINT8 *raw1 = (UINT8 *)Malloc(SCREEN_SIZE + 256);
+    UINT8 *raw2 = (UINT8 *)Malloc(SCREEN_SIZE + 256);
+
+    UINT8 *screen1 = (UINT8 *)(((long)raw1 + 255) & 0xFFFFFF00);
+    UINT8 *screen2 = (UINT8 *)(((long)raw2 + 255) & 0xFFFFFF00);
+
+    UINT8 *front_buffer = Physbase();
+    UINT8 *back_buffer  = screen1;
+
     long nowTime;
     long startTime = getTime();
     long passedTime;
 
     int gameRunning = 1;
+    int lastFrameTick = -1;
 
-    int timerCounter = 0;
-    int timerReset = 0;
-
-    int itemSpawnCheck = 10;
-    int itemSpawned = 0;
-    int itemStartTimer;
-
-    
-    int lastFrameTick = -1; /*Tracks the last frame tick to prevent duplicate updates*/
-    int canSpawnBarrel = rand() % 10; /* Random number from 0 to 9 */
+    int canSpawnBarrel = rand() % 10;
     Model *model = &testModel;
 
-    /* Draw static level once */
-    clear_screen(screen);
-    render(model, screen);
-    renderLevel(model, screen);
-    renderBonus(model->timer, screen);
-    renderLives(model->lives, screen);
-    renderScore(model->score, screen);
-    renderDK(model->kong, screen);
-    renderBStack(model->kong, screen); /*rendering barrel stack besides DK*/
+    /* --- Draw initial frame into back buffer --- */
+    memset(back_buffer, 0, SCREEN_SIZE);
 
-    /* Safety checks */
-    if (model->mario.posX < 0){
-        model->mario.posX = 0;
-    } else if (model->mario.posY < 0) {
-        model->mario.posY = 0;
-    } else if (model->mario.posX > 624) {
-        model->mario.posX = 624;
-    } else if (model->mario.posY > 384) {
-        model->mario.posY = 384;
+    render(model, (UINT16 *)back_buffer);
+    renderLevel(model, (UINT16 *)back_buffer);
+    renderBonus(model->timer, (UINT16 *)back_buffer);
+    renderLives(model->lives, (UINT16 *)back_buffer);
+    renderScore(model->score, (UINT16 *)back_buffer);
+    renderDK(model->kong, (UINT16 *)back_buffer);
+    renderBStack(model->kong, (UINT16 *)back_buffer);
+
+    Vsync();
+    Setscreen(back_buffer, back_buffer, -1);
+
+    /* swap buffers */
+    {
+        UINT8 *temp = front_buffer;
+        front_buffer = back_buffer;
+        back_buffer = temp;
     }
 
     while (gameRunning) {
@@ -202,63 +217,48 @@ int main() {
         nowTime = getTime();
         passedTime = nowTime - startTime;
 
-        if (passedTime % 750 == 0) {
+        /* --- FRAME CONTROL --- */
+        if (passedTime % FRAMERULE == 0 && passedTime != lastFrameTick) {
 
-            model->timer.value -= 200;
-            clear_region(screen, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
-            renderBonus(model->timer, screen);
+            lastFrameTick = passedTime;
 
-            if (model->timer.value == 4600) {
+            /* --- CLEAR ENTIRE BACK BUFFER --- */
+            memset(back_buffer, 0, SCREEN_SIZE);
 
-                printf("SKILL ISSUE - TIME GAME OVER\n");
-                gameRunning = 0;
-                /* ADD THE MARIO UPDATE RENDER FUNCTION HERE FOR THE HIT RENDER */
-            }
-        }
-        
-        if (passedTime % FRAMERULE == 0 && passedTime != lastFrameTick) { 
-            lastFrameTick = passedTime; /* Because we want to update the game state only once per frame */
-            if (passedTime > 5000) /*Change 500 to 5000 to see all of the states*/
-            {
-                printf("GAME OVER\n");
+            /* --- GAME LOGIC --- */
+            if (passedTime > 5000) {
                 gameRunning = 0;
             }
-            else
-            {
-                /* --- GAME LOGIC --- */
-               
-                /* For DK (specific values as dk does not move rdk has this pos) */
-                /* Roll 0-9. Kong only throws a barrel when roll is 0 (1 in 10 chance).
-                 * kongAction guarantees a throw after 1  miss. */
-                int oldDKstate = model->kong.state;
-                if (oldDKstate != updateKong(&model->kong, canSpawnBarrel)) {
-                    /*Re-Rendering Dk if he changes */
-                    clear_region(screen, 110, 198, 32, 64); 
-                    renderDK(model->kong, screen);
-                }
 
-                clear_region(screen, model->mario.posY, model->mario.posX, 16, 16);
+            /* --- UPDATE DK --- */
+            updateKong(&model->kong, canSpawnBarrel);
 
-                if (passedTime < 350) {
 
-                    model->mario.state = 1;
-                    model->mario.direction = 1;
+            /* --- UPDATE MARIO --- */
+            if (passedTime < 350) {
 
-                    /* Animation Handling */
-                    if (model->mario.walkFrame == 0){
-                        model->mario.walkFrame = 1;
-                    } else {
-                        model->mario.walkFrame = 0;
-                    }
+                model->mario.state = 1;
+                model->mario.direction = 1;
 
-                    model->mario.posX += 3;
-                }
+                model->mario.walkFrame ^= 1; /* toggle */
 
-                updateMCollision(model->mario);
+                model->mario.posX += 3;
+            }
 
-                /* Draw sprite */
-                renderMario(model->mario, (UINT16 *)screen);
-                renderLevel(model, (UINT16 *)screen);
+            updateMCollision(model->mario);
+
+            /* --- RENDER EVERYTHING (FULL REDRAW) --- */
+            draw(model, (UINT16 *)back_buffer);
+            
+
+            /* --- SWAP BUFFERS --- */
+            Vsync();
+            Setscreen(back_buffer, back_buffer, -1);
+            
+            {               
+                UINT8 *temp = front_buffer;
+                front_buffer = back_buffer;
+                back_buffer = temp;
             }
         }
     }
