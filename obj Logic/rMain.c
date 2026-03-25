@@ -13,6 +13,7 @@
 #include "rBonus.c"
 #include "rLives.c"
 #include "rScore.c"
+#include "input.c"
 
 #include "model.h"
 #include "raster.c"
@@ -24,6 +25,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h> /* for random */
+
 #define FRAMERULE 12
 
 Model testModel = {
@@ -217,50 +219,60 @@ int main() {
         }
         
         if (passedTime % FRAMERULE == 0 && passedTime != lastFrameTick) { 
-            lastFrameTick = passedTime; /* Because we want to update the game state only once per frame */
-            if (passedTime > 5000) /*Change 500 to 5000 to see all of the states*/
-            {
-                printf("GAME OVER\n");
-                gameRunning = 0;
+        lastFrameTick = passedTime;
+
+        if (passedTime > 5000) {
+            printf("GAME OVER\n");
+            gameRunning = 0;
+        }
+        else {
+            int oldDKstate = model->kong.state;
+
+            if (oldDKstate != updateKong(&model->kong, canSpawnBarrel)) {
+                clear_region(screen, 110, 198, 32, 64); 
+                renderDK(model->kong, screen);
             }
-            else
-            {
-                /* --- GAME LOGIC --- */
-               
-                /* For DK (specific values as dk does not move rdk has this pos) */
-                /* Roll 0-9. Kong only throws a barrel when roll is 0 (1 in 10 chance).
-                 * kongAction guarantees a throw after 1  miss. */
-                int oldDKstate = model->kong.state;
-                if (oldDKstate != updateKong(&model->kong, canSpawnBarrel)) {
-                    /*Re-Rendering Dk if he changes */
-                    clear_region(screen, 110, 198, 32, 64); 
-                    renderDK(model->kong, screen);
-                }
 
-                clear_region(screen, model->mario.posY, model->mario.posX, 16, 16);
+            clear_region(screen, model->mario.posY, model->mario.posX, 16, 16);
 
-                if (passedTime < 110) {
+            model->mario.state = 0;
 
+            if (has_input()) {
+                char ch = get_input();
+
+                if (ch == 'a') {
+                    model->mario.posX -= 2;
+                    model->mario.direction = 0;
                     model->mario.state = 1;
-                    model->mario.direction = 1;
-
-                    /* Animation Handling */
-                    if (model->mario.walkFrame == 0){
-                        model->mario.walkFrame = 1;
-                    } else {
-                        model->mario.walkFrame = 0;
-                    }
-
-                    model->mario.posX += 1;
+                    model->mario.walkFrame = 1 - model->mario.walkFrame;
                 }
+                else if (ch == 'd') {
+                    model->mario.posX += 2;
+                    model->mario.direction = 1;
+                    model->mario.state = 1;
+                    model->mario.walkFrame = 1 - model->mario.walkFrame;
+                }
+                else if (ch == 'w') {
+                    model->mario.posY -= 2;
+                    model->mario.state = 2;
+                    model->mario.climbFrame = 1 - model->mario.climbFrame;
+                }
+                else if (ch == 's') {
+                    model->mario.posY += 2;
+                    model->mario.state = 2;
+                    model->mario.climbFrame = 1 - model->mario.climbFrame;
+                }
+                else if (ch == 'q') {
+                    gameRunning = 0;
+                }
+            }
 
-                updateMCollision(model->mario);
-
-                /* Draw sprite */
-                renderMario(model->mario, (UINT16 *)screen);
+            updateMCollision(model->mario);
+            renderMario(model->mario, (UINT16 *)screen);
             }
         }
+        
     }
-
+    
     return 0;
 }
