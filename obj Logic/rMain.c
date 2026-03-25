@@ -163,7 +163,6 @@ void draw (Model *model, UINT16 *buffer) {
     renderLevel(model, buffer);
     renderDK(model->kong, buffer);
     renderBStack(model->kong, buffer);
-    renderBonus(model->timer, buffer);
     renderLives(model->lives, buffer);
     renderScore(model->score, buffer);
 
@@ -184,6 +183,10 @@ int main() {
     long nowTime;
     long startTime = getTime();
     long passedTime;
+
+    /* For Demo */
+    int stepUpTick;
+    int deathTick;
 
     int gameRunning = 1;
     int lastFrameTick = -1;
@@ -217,6 +220,19 @@ int main() {
         nowTime = getTime();
         passedTime = nowTime - startTime;
 
+        if (passedTime % 750 == 0) {
+
+            model->timer.value -= 200;
+            clear_region((UINT8 *)back_buffer, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
+            renderBonus(model->timer, (UINT16 *)back_buffer);
+
+            if (model->timer.value == 4600) {
+
+                gameRunning = 0;
+                model->mario.state = 4;
+            }
+        }
+
         /* --- FRAME CONTROL --- */
         if (passedTime % FRAMERULE == 0 && passedTime != lastFrameTick) {
 
@@ -226,7 +242,7 @@ int main() {
             memset(back_buffer, 0, SCREEN_SIZE);
 
             /* --- GAME LOGIC --- */
-            if (passedTime > 5000) {
+            if (passedTime > 4000) {
                 gameRunning = 0;
             }
 
@@ -235,16 +251,7 @@ int main() {
 
 
             /* --- UPDATE MARIO --- */
-            if (passedTime < 350) {
-
-                model->mario.state = 1;
-                model->mario.direction = 1;
-
-                model->mario.walkFrame ^= 1; /* toggle */
-
-                model->mario.posX += 3;
-            }
-
+            
             updateMCollision(model->mario);
 
             /* --- RENDER EVERYTHING (FULL REDRAW) --- */
