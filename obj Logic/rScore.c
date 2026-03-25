@@ -14,7 +14,7 @@ void longToStr(long val, char *str){ /* Casts Long Values into Arrays of Chars *
 	}
 }
 
-void renderScore(Score score, UINT32 base) {
+void renderScore(Score score, UINT32 *base) {
     
     linea0();
 
