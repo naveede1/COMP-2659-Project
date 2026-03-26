@@ -14,23 +14,23 @@ void longToStr(long val, char *str){ /* Casts Long Values into Arrays of Chars *
 	}
 }
 
-void renderScore(Score score, UINT32 base) {
+void renderScore(Score score, UINT32 *base) {
     
     linea0();
 
     if (score.visible == 1){
 
-        plot_string(base, score.posY, score.posX, "HIGH SCORE");
+        plot_string((UINT8 *)base, score.posY, score.posX, "HIGH SCORE");
         
         longToStr(score.value, currScore);
         currScore[6] = '\0';
 
-        plot_string(base, score.posY+16, score.posX-62, currScore);
+        plot_string((UINT8 *)base, score.posY+16, score.posX-62, currScore);
         
         longToStr(score.highValue, highScore);
         highScore[6] = '\0';
 
-        plot_string(base, score.posY+16, score.posX+16, highScore);
+        plot_string((UINT8 *)base, score.posY+16, score.posX+16, highScore);
     }
 }
 

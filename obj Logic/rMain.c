@@ -130,7 +130,7 @@ void renderLevel(Model *model, UINT32 *base) {
 
     renderBonus(model->timer, base);
     renderLives(model->lives, (UINT8 *)base);
-    renderScore(model->score, base);
+    renderScore(model->score, (UINT32 *)base);
 
 }
 
@@ -158,13 +158,13 @@ int checkMCollision(int jmXleft, int jmYtop, int otherXleft, int otherYtop, int 
     return 0;
 }
 
-void draw (Model *model, UINT16 *buffer) {
+void draw (Model *model, UINT32 *buffer) {
     
-    render(model, buffer);
+    render(model,(UINT16 *)buffer);
     renderLevel(model, buffer);
-    renderDK(model->kong, buffer);
-    renderBStack(model->kong, buffer);
-    renderLives(model->lives, buffer);
+    renderDK(model->kong,buffer);
+    renderBStack(model->kong,buffer);
+    renderLives(model->lives, (UINT8 *)buffer);
     renderScore(model->score, buffer);
 
 }
@@ -245,12 +245,12 @@ int main() {
     memset(back_buffer, 0, SCREEN_SIZE);
 
     render(model, (UINT16 *)back_buffer);
-    renderLevel(model, (UINT16 *)back_buffer);
-    renderBonus(model->timer, (UINT16 *)back_buffer);
-    renderLives(model->lives, (UINT16 *)back_buffer);
-    renderScore(model->score, (UINT16 *)back_buffer);
-    renderDK(model->kong, (UINT16 *)back_buffer);
-    renderBStack(model->kong, (UINT16 *)back_buffer);
+    renderLevel(model, (UINT32 *)back_buffer);
+    renderBonus(model->timer, (UINT32 *)back_buffer);
+    renderLives(model->lives, (UINT8 *)back_buffer);
+    renderScore(model->score, (UINT32 *)back_buffer);
+    renderDK(model->kong, (UINT32 *)back_buffer);
+    renderBStack(model->kong, (UINT32 *)back_buffer);
 
     Vsync();
     Setscreen(back_buffer, back_buffer, -1);
@@ -270,8 +270,8 @@ int main() {
         if (passedTime % 750 == 0) {
 
             model->timer.value -= 200;
-            clear_region((UINT8 *)back_buffer, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
-            renderBonus(model->timer, (UINT16 *)back_buffer);
+            clear_region((UINT32 *)back_buffer, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
+            renderBonus(model->timer, (UINT32 *)back_buffer);
 
             if (model->timer.value == 4600) {
                 gameRunning = 0;
@@ -306,7 +306,7 @@ int main() {
             updateMCollision(model->mario);
 
             /* --- RENDER EVERYTHING (FULL REDRAW) --- */
-            draw(model, (UINT16 *)back_buffer);
+            draw(model, (UINT32 *)back_buffer);
             
             /* --- SWAP BUFFERS --- */
             Vsync();
