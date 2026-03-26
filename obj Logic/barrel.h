@@ -10,12 +10,11 @@ typedef struct { /* Structure for the Barrels */
     int topL, bottomR; /* Bounds for Hurt Box*/
     int broken; /* No = 0, Yes = 1 */
     int type; /* Normal = 0, Fire = 1 */
+    int direction; /* Left = 0, Right = 1 */
 
 } Barrel;
 
-void updateBarrel(Barrel *b, float deltaTime);
-void rollBarrel(Barrel *b);
-void sendDownLadder(Barrel *b);
-void breakBarrel(Barrel *b);
+void roll_barrel(Barrel *barrel);
+void break_barrel(Barrel *barrel);
 
 #endif
