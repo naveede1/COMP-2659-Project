@@ -13,19 +13,20 @@
 #include "rBonus.c"
 #include "rLives.c"
 #include "rScore.c"
-#include "input.c"
 
 #include "model.h"
 #include "raster.c"
 #include "clock.c"
 #include "item.c"
 #include "kong.c"
+#include "input.c"
 
 #include <osbind.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h> /* for random */
 
+#define SCREEN_SIZE 32000
 #define FRAMERULE 12
 
 Model testModel = {
@@ -157,46 +158,108 @@ int checkMCollision(int jmXleft, int jmYtop, int otherXleft, int otherYtop, int 
     return 0;
 }
 
-int main() {
+void draw (Model *model, UINT16 *buffer) {
     
-    UINT32 *screen = Physbase();
+    render(model, buffer);
+    renderLevel(model, buffer);
+    renderDK(model->kong, buffer);
+    renderBStack(model->kong, buffer);
+    renderLives(model->lives, buffer);
+    renderScore(model->score, buffer);
+
+}
+
+/* --- INPUT HANDLER --- 
+PURPOSE: To handle user input and update the model accordingly.
+
+INPUT: Model: Pointer to the game model struct, that has all game state information.
+       gameRunning: Pointer to the gameRunning variable.
+
+OUTPUT: None
+
+*/
+
+void inputHandler(Model *model, int *gameRunning) {
+    /* Until input is available */
+    if (has_input()) {
+    char input_val = get_input();
+    /* Handle input and update model accordingly */
+    /*If want to change the speed of mario change the value of the model->mario.posX =4  model->mario.posY = 4 */
+    if (input_val == 'a') {
+        model->mario.posX -= 4; 
+        model->mario.direction = 0;
+        model->mario.state = 1;
+        model->mario.walkFrame = 1 - model->mario.walkFrame;
+    }
+    else if (input_val == 'd') {
+        model->mario.posX += 4;
+        model->mario.direction = 1;
+        model->mario.posX += 1;
+        model->mario.state = 1;
+        model->mario.walkFrame = 1 - model->mario.walkFrame;
+    }
+    else if (input_val == 'w') {
+        model->mario.posY -= 4;
+        model->mario.state = 2;
+        model->mario.climbFrame = 1 - model->mario.climbFrame;
+    }
+    else if (input_val == 's') {
+        model->mario.posY += 4;
+        model->mario.state = 2;
+        model->mario.climbFrame = 1 - model->mario.climbFrame;
+    }
+    else if (input_val == 'q') {
+        *gameRunning = 0;
+    }
+    }
+
+}
+
+int main() {
+
+    /* --- Allocate buffers --- */
+    UINT8 *raw1 = (UINT8 *)Malloc(SCREEN_SIZE + 256);
+    UINT8 *raw2 = (UINT8 *)Malloc(SCREEN_SIZE + 256);
+
+    UINT8 *screen1 = (UINT8 *)(((long)raw1 + 255) & 0xFFFFFF00);
+    UINT8 *screen2 = (UINT8 *)(((long)raw2 + 255) & 0xFFFFFF00);
+
+    UINT8 *front_buffer = Physbase();
+    UINT8 *back_buffer  = screen1;
+
     long nowTime;
     long startTime = getTime();
     long passedTime;
 
+    /* For Demo */
+    int stepUpTick;
+    int deathTick;
+
     int gameRunning = 1;
+    int lastFrameTick = -1;
 
-    int timerCounter = 0;
-    int timerReset = 0;
-
-    int itemSpawnCheck = 10;
-    int itemSpawned = 0;
-    int itemStartTimer;
-
-    
-    int lastFrameTick = -1; /*Tracks the last frame tick to prevent duplicate updates*/
-    int canSpawnBarrel = rand() % 10; /* Random number from 0 to 9 */
+    int canSpawnBarrel = rand() % 10;
     Model *model = &testModel;
 
-    /* Draw static level once */
-    clear_screen(screen);
-    render(model, screen);
-    renderLevel(model, screen);
-    renderBonus(model->timer, screen);
-    renderLives(model->lives, screen);
-    renderScore(model->score, screen);
-    renderDK(model->kong, screen);
-    renderBStack(model->kong, screen); /*rendering barrel stack besides DK*/
+    /* --- Draw initial frame into back buffer --- */
+    memset(back_buffer, 0, SCREEN_SIZE);
 
-    /* Safety checks */
-    if (model->mario.posX < 0){
-        model->mario.posX = 0;
-    } else if (model->mario.posY < 0) {
-        model->mario.posY = 0;
-    } else if (model->mario.posX > 624) {
-        model->mario.posX = 624;
-    } else if (model->mario.posY > 384) {
-        model->mario.posY = 384;
+    render(model, (UINT16 *)back_buffer);
+    renderLevel(model, (UINT16 *)back_buffer);
+    renderBonus(model->timer, (UINT16 *)back_buffer);
+    renderLives(model->lives, (UINT16 *)back_buffer);
+    renderScore(model->score, (UINT16 *)back_buffer);
+    renderDK(model->kong, (UINT16 *)back_buffer);
+    renderBStack(model->kong, (UINT16 *)back_buffer);
+
+    Vsync();
+    Setscreen(back_buffer, back_buffer, -1);
+
+    /* swap buffers */
+    {
+        UINT8 *temp = front_buffer;
+        front_buffer = back_buffer;
+        back_buffer = temp;
     }
 
     while (gameRunning) {
@@ -207,72 +270,55 @@ int main() {
         if (passedTime % 750 == 0) {
 
             model->timer.value -= 200;
-            clear_region(screen, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
-            renderBonus(model->timer, screen);
+            clear_region((UINT8 *)back_buffer, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
+            renderBonus(model->timer, (UINT16 *)back_buffer);
 
-            if (model->timer.value == 4800) {
-
-                printf("SKILL ISSUE - TIME GAME OVER\n");
+            if (model->timer.value == 4600) {
                 gameRunning = 0;
-                /* ADD THE MARIO UPDATE RENDER FUNCTION HERE FOR THE HIT RENDER */
+                printf("Time's up! You lose!");
+                model->mario.state = 4;
             }
         }
-        
-        if (passedTime % FRAMERULE == 0 && passedTime != lastFrameTick) { 
-        lastFrameTick = passedTime;
 
-        if (passedTime > 5000) {
-            printf("GAME OVER\n");
-            gameRunning = 0;
-        }
-        else {
-            int oldDKstate = model->kong.state;
+        /* --- FRAME CONTROL --- */
+        if (passedTime % FRAMERULE == 0 && passedTime != lastFrameTick) {
 
-            if (oldDKstate != updateKong(&model->kong, canSpawnBarrel)) {
-                clear_region(screen, 110, 198, 32, 64); 
-                renderDK(model->kong, screen);
+            lastFrameTick = passedTime;
+
+            
+            /* --- CLEAR ENTIRE BACK BUFFER --- */
+            memset(back_buffer, 0, SCREEN_SIZE);
+
+            
+            inputHandler(model, &gameRunning);
+
+            /* --- GAME LOGIC --- */
+            if (passedTime > 4000) {
+                gameRunning = 0;
             }
 
-            clear_region(screen, model->mario.posY, model->mario.posX, 16, 16);
+            /* --- UPDATE DK --- */
+            updateKong(&model->kong, canSpawnBarrel);
 
-            model->mario.state = 0;
 
-            if (has_input()) {
-                char ch = get_input();
-
-                if (ch == 'a') {
-                    model->mario.posX -= 2;
-                    model->mario.direction = 0;
-                    model->mario.state = 1;
-                    model->mario.walkFrame = 1 - model->mario.walkFrame;
-                }
-                else if (ch == 'd') {
-                    model->mario.posX += 2;
-                    model->mario.direction = 1;
-                    model->mario.state = 1;
-                    model->mario.walkFrame = 1 - model->mario.walkFrame;
-                }
-                else if (ch == 'w') {
-                    model->mario.posY -= 2;
-                    model->mario.state = 2;
-                    model->mario.climbFrame = 1 - model->mario.climbFrame;
-                }
-                else if (ch == 's') {
-                    model->mario.posY += 2;
-                    model->mario.state = 2;
-                    model->mario.climbFrame = 1 - model->mario.climbFrame;
-                }
-                else if (ch == 'q') {
-                    gameRunning = 0;
-                }
-            }
-
+            /* --- UPDATE MARIO --- */
+            
             updateMCollision(model->mario);
-            renderMario(model->mario, (UINT16 *)screen);
+
+            /* --- RENDER EVERYTHING (FULL REDRAW) --- */
+            draw(model, (UINT16 *)back_buffer);
+            
+            /* --- SWAP BUFFERS --- */
+            Vsync();
+            Setscreen(back_buffer, back_buffer, -1);
+            
+            {               
+                UINT8 *temp = front_buffer;
+                front_buffer = back_buffer;
+                back_buffer = temp;
             }
         }
-        
     }
-    
+
     return 0;
 }
