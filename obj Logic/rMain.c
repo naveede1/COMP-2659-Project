@@ -190,27 +190,47 @@ void inputHandler(Model *model, int *gameRunning) {
         model->mario.direction = 0;
         model->mario.state = 1;
         model->mario.walkFrame = 1 - model->mario.walkFrame;
+        if(is_released()) {
+            return;
+        }
     }
     else if (input_val == 'd') {
         model->mario.posX += 4;
         model->mario.direction = 1;
-        model->mario.posX += 1;
         model->mario.state = 1;
         model->mario.walkFrame = 1 - model->mario.walkFrame;
+        if(is_released()) {
+            return;
+        }
     }
     else if (input_val == 'w') {
         model->mario.posY -= 4;
         model->mario.state = 2;
         model->mario.climbFrame = 1 - model->mario.climbFrame;
+        if(is_released()) {
+           return;
+        }
     }
     else if (input_val == 's') {
         model->mario.posY += 4;
         model->mario.state = 2;
         model->mario.climbFrame = 1 - model->mario.climbFrame;
+        if(is_released()) {
+            return;
+        }
     }
     else if (input_val == 'q') {
         *gameRunning = 0;
     }
+    else {
+        model->mario.state = 0;
+        return;
+    }
+    
+    }
+    else if (is_released()) {
+        model->mario.state = 0;
+        return;
     }
 
 }

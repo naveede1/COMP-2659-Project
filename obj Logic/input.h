@@ -6,6 +6,9 @@ typedef enum { FALSE, TRUE } boolean;
 static boolean held = FALSE;
 static boolean released = FALSE;
 
+
+boolean is_released();
+
 /*----- Function: has_input -----
 
 PURPOSE: Checks if there is an input processed
@@ -40,5 +43,6 @@ OUTPUT: TRUE if the input processed was held
 
 */
 void is_held();
+
 
 #endif
