@@ -19,6 +19,7 @@
 #include "clock.c"
 #include "item.c"
 #include "kong.c"
+#include "barrel.c"
 
 #include <osbind.h>
 #include <stdio.h>
@@ -67,9 +68,9 @@ Model testModel = {
 
 {1, 256, 74, 0, 0, 0}, /* Pauline */ 
 
-{ {1, 300, 314, 0, 0, 0, 0, 0, 0, 0}, /* Barrel 1 */
-{1, 316, 262, 0, 0, 1, 0, 0, 0, 0}, 
-{1, 246, 184, 0, 0, 0, 0, 0, 0, 0}, 
+{ {1, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* Barrel 1 */
+{1, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{1, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
@@ -182,7 +183,7 @@ int main() {
     UINT8 *back_buffer  = screen1;
 
     long nowTime;
-    long startTime = getTime();
+    volatile long startTime = getTime();
     long passedTime;
 
     /* For Demo */
@@ -221,13 +222,13 @@ int main() {
         nowTime = getTime();
         passedTime = nowTime - startTime;
 
-        if (passedTime % 750 == 0) {
+        if (passedTime % 2000 == 0) {
 
             model->timer.value -= 200;
             clear_region((UINT8 *)back_buffer, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
             renderBonus(model->timer, (UINT16 *)back_buffer);
 
-            if (model->timer.value == 4600) {
+            if (model->timer.value == 4000) {
 
                 gameRunning = 0;
                 model->mario.state = 4;
@@ -242,10 +243,6 @@ int main() {
             /* --- CLEAR ENTIRE BACK BUFFER --- */
             memset(back_buffer, 0, SCREEN_SIZE);
 
-            /* --- GAME LOGIC --- */
-            if (passedTime > 4000) {
-                gameRunning = 0;
-            }
 
             /* --- UPDATE DK --- */
             updateKong(&model->kong, canSpawnBarrel);
