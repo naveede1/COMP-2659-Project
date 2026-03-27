@@ -88,6 +88,7 @@ Model testModel = {
 {1, 186, 48, 3}, /* Lives */ 
 };
 
+int l = 0;
 
 void render(Model *model, UINT16 *base) {
 
@@ -253,6 +254,23 @@ int main() {
             /* --- UPDATE MARIO --- */
             
             updateMCollision(model->mario);
+
+            
+            /* --- UPDATE BARRELS --- */
+            if (model->kong.spawnBarrel == 1) {
+                model->kong.spawnBarrel = 0;
+                model->barrels[l].visible = 1;
+                model->barrels[l].posY = 126; 
+                model->barrels[l].posX = 254;
+                model->barrels[l].timeSpawned = nowTime;
+                l++;
+                if (l > 8) {
+                    l = 0; /* Reset the Barrel Counter*/
+                }
+            }
+
+            updateBarrels(model->barrels, nowTime);                      
+
 
             /* --- RENDER EVERYTHING (FULL REDRAW) --- */
             draw(model, (UINT16 *)back_buffer);
