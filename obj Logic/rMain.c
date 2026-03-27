@@ -181,8 +181,10 @@ OUTPUT: None
 
 void inputHandler(Model *model, int *gameRunning) {
     
-    model->mario.state = 0;
+    model->mario.state = 0; 
+
     if (has_input()) {
+        
         char input_val = get_input();
 
         while (has_input()) input_val = get_input();
