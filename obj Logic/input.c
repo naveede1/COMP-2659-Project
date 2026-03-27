@@ -10,10 +10,6 @@ char get_input() {
     return (char)Cnecin();
 }
 
-boolean is_released() {
-    return !has_input();
-}
-
 /* This function will not be used, but reference for a potential function in the fu */
 void is_held() {
 
@@ -37,7 +33,7 @@ void is_held() {
 
     while(TRUE) {
         printf("Waiting for next input...\n");
-        if (has_input() && is_released()) {
+        if (has_input()) {
             next_input = get_input();
             printf("Next input is: %c\n", next_input);
             if (current_input != next_input) {
@@ -46,7 +42,6 @@ void is_held() {
             }
         } else {
             printf("Input released.\n");
-            is_released();
             return;
         }
     }

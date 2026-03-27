@@ -180,59 +180,42 @@ OUTPUT: None
 */
 
 void inputHandler(Model *model, int *gameRunning) {
-    /* Until input is available */
-    if (has_input()) {
-    char input_val = get_input();
-    /* Handle input and update model accordingly */
-    /*If want to change the speed of mario change the value of the model->mario.posX =4  model->mario.posY = 4 */
-    if (input_val == 'a') {
-        model->mario.posX -= 4; 
-        model->mario.direction = 0;
-        model->mario.state = 1;
-        model->mario.walkFrame = 1 - model->mario.walkFrame;
-        if(is_released()) {
-            return;
-        }
-    }
-    else if (input_val == 'd') {
-        model->mario.posX += 4;
-        model->mario.direction = 1;
-        model->mario.state = 1;
-        model->mario.walkFrame = 1 - model->mario.walkFrame;
-        if(is_released()) {
-            return;
-        }
-    }
-    else if (input_val == 'w') {
-        model->mario.posY -= 4;
-        model->mario.state = 2;
-        model->mario.climbFrame = 1 - model->mario.climbFrame;
-        if(is_released()) {
-           return;
-        }
-    }
-    else if (input_val == 's') {
-        model->mario.posY += 4;
-        model->mario.state = 2;
-        model->mario.climbFrame = 1 - model->mario.climbFrame;
-        if(is_released()) {
-            return;
-        }
-    }
-    else if (input_val == 'q') {
-        *gameRunning = 0;
-    }
-    else {
-        model->mario.state = 0;
-        return;
-    }
     
-    }
-    else if (is_released()) {
-        model->mario.state = 0;
-        return;
-    }
+    model->mario.state = 0;
+    if (has_input()) {
+        char input_val = get_input();
 
+        while (has_input()) input_val = get_input();
+
+        /* Handle input and update model accordingly */
+        /*If want to change the speed of mario change the value of the model->mario.posX =4  model->mario.posY = 4 */
+        
+        if (input_val == 'a') {
+            model->mario.posX -= 4;
+            model->mario.direction = 0;
+            model->mario.state = 1;
+            model->mario.walkFrame = 1 - model->mario.walkFrame;
+        }
+        else if (input_val == 'd') {
+            model->mario.posX += 4;
+            model->mario.direction = 1;
+            model->mario.state = 1;
+            model->mario.walkFrame = 1 - model->mario.walkFrame;
+        }
+        else if (input_val == 'w') {
+            model->mario.posY -= 4;
+            model->mario.state = 2;
+            model->mario.climbFrame = 1 - model->mario.climbFrame;
+        }
+        else if (input_val == 's') {
+            model->mario.posY += 4;
+            model->mario.state = 2;
+            model->mario.climbFrame = 1 - model->mario.climbFrame;
+        }
+        else if (input_val == 'q') {
+            *gameRunning = 0;
+        }
+    }
 }
 
 int main() {
@@ -313,7 +296,7 @@ int main() {
             inputHandler(model, &gameRunning);
 
             /* --- GAME LOGIC --- */
-            if (passedTime > 4000) {
+            if (passedTime > 40000) {
                 gameRunning = 0;
             }
 
