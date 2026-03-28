@@ -35,7 +35,7 @@ typedef struct {
     Oil oil;
     Hammer hammers[2];
     Lady lady;
-    Barrel barrels[7];
+    Barrel barrels[9];
     Spirit spirit;
     Item item;
     Heart heart;
