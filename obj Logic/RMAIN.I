@@ -715,6 +715,9 @@ typedef struct {
     int colLeft, colRight;
 
 } Girder;
+
+int getGirderHeight(Girder *g, int x);
+int isOnGirder(Girder *g, int x);
 # 4 "./mario.h" 2
 # 1 "./ladder.h" 1
 
@@ -740,7 +743,7 @@ int isOnLadder(Ladder *ladder, int x, int y);
 int canClimb(Ladder *ladder);
 int barrelCanDescend(Ladder *ladder);
 # 5 "./mario.h" 2
-# 17 "./mario.h"
+# 18 "./mario.h"
 typedef struct {
 
     int visible;
@@ -749,6 +752,7 @@ typedef struct {
     int state;
     int direction;
     int climbing;
+    int climbDir;
     int collideLadder;
     int onGround;
     int hammerActive;
@@ -767,11 +771,13 @@ typedef struct {
 
 } Mario;
 
-void moveLeft(Mario *jm);
-void moveRight(Mario *jm);
-void jump(Mario *jm);
 void applyGravity(Mario *jm);
-void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], int numLadders, float deltaTime);
+void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], int numLadders);
+void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders);
+void updateClimbing(Mario *jm, Ladder ladders[], int numLadders);
+void updateHammer(Mario *jm);
+void requestClimbUp(Mario *jm);
+void requestClimbDown(Mario *jm);
 # 1 "./rMario.h" 2
 # 1 "./raster.h" 1
 # 2 "./rMario.h" 2
@@ -1191,12 +1197,12 @@ void renderMRight(Mario mario, UINT16 *base) {
     }
 }
 
-void updateMCollision(Mario mario) {
+void updateMCollision(Mario *mario) {
 
-    mario.leftB = mario.posX;
-    mario.rightB = mario.posX + 16;
-    mario.topB = mario.posY;
-    mario.bottomB = mario.posY + 16;
+    mario->leftB = mario->posX;
+    mario->rightB = mario->posX + 16;
+    mario->topB = mario->posY;
+    mario->bottomB = mario->posY + 16;
 
 }
 # 4 "rmain.c" 2
@@ -3539,10 +3545,200 @@ void is_held() {
     }
 }
 # 23 "rmain.c" 2
-# 1 "C:/c68/include/osbind.h" 1
+# 1 "./girder.c" 1
+# 1 "./girder.h" 1
+# 1 "./girder.c" 2
+
+
+int getGirderHeight(Girder *g, int x)
+{
+    int width;
+    int rise;
+
+    if (!g->visible)
+        return -1;
+
+    if (x < g->colLeft || x > g->colRight)
+        return -1;
+
+    width = g->colRight - g->colLeft;
+    rise = g->size - 1;
+
+    if (g->type == 0 || width == 0)
+        return g->posY;
+
+    if (g->type == 1)
+        return g->posY - rise + ((x - g->colLeft) * rise) / width;
+
+    return g->posY + ((x - g->colLeft) * rise) / width;
+}
+
+int isOnGirder(Girder *g, int x)
+{
+    if (!g->visible)
+        return 0;
+    return (x >= g->colLeft && x <= g->colRight) ? 1 : 0;
+}
+# 24 "rmain.c" 2
+# 1 "./mario.c" 1
+# 1 "./mario.h" 1
+# 1 "./mario.c" 2
+# 1 "./girder.h" 1
+# 2 "./mario.c" 2
+# 1 "./ladder.h" 1
+# 3 "./mario.c" 2
+
+
+
+void applyGravity(Mario *jm)
+{
+    if (jm->climbing) {
+        jm->deltY = 0;
+        return;
+    }
+
+    jm->deltY += 1 ;
+
+    if (jm->deltY > 10 )
+        jm->deltY = 10 ;
+}
+
+
+void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], int numLadders)
+{
+    if (jm->climbing) {
+        updateClimbing(jm, ladders, numLadders);
+    }
+    else {
+        applyGravity(jm);
+
+        jm->posX += jm->deltX;
+        jm->posY += jm->deltY;
+        jm->deltX = 0;
+
+        resolveGirderCollision(jm, girders, numGirders);
+    }
+
+    updateHammer(jm);
+}
+
+void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders)
+{
+    int i;
+    int height;
+    int onPlatform;
+    int marioCenterX;
+    int marioFeetY;
+
+    onPlatform = 0;
+    marioCenterX = jm->posX + 8;
+    marioFeetY = jm->posY + 15;
+
+    for (i = 0; i < numGirders; i++)
+    {
+        if (isOnGirder(&girders[i], marioCenterX))
+        {
+            height = getGirderHeight(&girders[i], marioCenterX);
+
+            if (height != -1 &&
+                marioFeetY >= height &&
+                marioFeetY <= height + jm->deltY + 1)
+            {
+                jm->posY = height - 15;
+                jm->deltY = 0;
+                jm->onGround = 1;
+                onPlatform = 1;
+                break;
+            }
+        }
+    }
+
+    if (!onPlatform)
+        jm->onGround = 0;
+}
+
+void updateClimbing(Mario *jm, Ladder ladders[], int numLadders)
+{
+    int i;
+    int onLadder;
+    int marioCenterX;
+
+    onLadder = 0;
+    marioCenterX = jm->posX + 8;
+
+    for (i = 0; i < numLadders; i++)
+    {
+        Ladder *ladder = &ladders[i];
+
+        if (!ladder->visible || ladder->broken)
+            continue;
+
+        if (marioCenterX >= ladder->posX - 5 &&
+            marioCenterX <= ladder->posX + 5 &&
+            jm->posY >= ladder->topB &&
+            jm->posY <= ladder->bottomB)
+        {
+            jm->posX = ladder->posX - 8;
+            jm->posY += jm->climbDir * 2;
+            jm->deltY = 0;
+            jm->onGround = 0;
+            onLadder = 1;
+            break;
+        }
+    }
+
+    if (!onLadder)
+        jm->climbing = 0;
+}
+
+void updateHammer(Mario *jm)
+{
+    if (!jm->hammerActive)
+        return;
+
+    jm->hammerTimer++;
+    jm->hammerFrameTimer++;
+
+    if (jm->hammerTimer >= 300 )
+    {
+        jm->hammerActive = 0;
+        jm->hammerTimer = 0;
+        jm->hammerFrame = 0;
+        jm->hammerHitActive = 0;
+        return;
+    }
+
+    if (jm->hammerFrameTimer >= 10 )
+    {
+        jm->hammerFrame++;
+        jm->hammerFrameTimer = 0;
+
+        if (jm->hammerFrame >= 4 )
+            jm->hammerFrame = 0;
+    }
+
+    jm->hammerHitActive = (jm->hammerFrame == 1 || jm->hammerFrame == 3) ? 1 : 0;
+
+    if (jm->state == 2)
+        jm->state = 0;
+}
+
+void requestClimbUp(Mario *jm)
+{
+    jm->climbing = 1;
+    jm->climbDir = -1;
+}
+
+void requestClimbDown(Mario *jm)
+{
+    jm->climbing = 1;
+    jm->climbDir = 1;
+}
 # 25 "rmain.c" 2
+# 1 "C:/c68/include/osbind.h" 1
+# 27 "rmain.c" 2
 # 1 "C:/c68/include/stdio.h" 1
-# 26 "rmain.c" 2
+# 28 "rmain.c" 2
 # 1 "C:/c68/include/string.h" 1
 # 25 "C:/c68/include/string.h"
  void *memcpy (void *dst, const void *src, size_t size) ;
@@ -3595,7 +3791,7 @@ void is_held() {
  int strnicmp ( const char *, const char *, size_t ) ;
  int strcmpi ( const char *, const char * ) ;
  int strncmpi ( const char *, const char *, size_t ) ;
-# 27 "rmain.c" 2
+# 29 "rmain.c" 2
 # 1 "C:/c68/include/stdlib.h" 1
 # 23 "C:/c68/include/stdlib.h"
 typedef char  wchar_t;
@@ -3663,7 +3859,7 @@ typedef struct {
  wchar_t *wcsncat (wchar_t *, const wchar_t *, size_t) ;
  int wcsncmp (const wchar_t *, const wchar_t *, size_t) ;
  wchar_t *wcsncpy (wchar_t *, const wchar_t *, size_t) ;
-# 28 "rmain.c" 2
+# 30 "rmain.c" 2
 
 
 
@@ -3745,6 +3941,29 @@ Model testModel = {
 {1, 186, 48, 3},
 };
 
+
+
+void initLadders(Ladder ladders[], int count)
+{
+    int i;
+    for (i = 0; i < count; i++)
+    {
+        ladders[i].topB    = ladders[i].posY;
+        ladders[i].bottomB = ladders[i].posY + (ladders[i].size * 8);
+        ladders[i].leftB   = ladders[i].posX - 4;
+        ladders[i].rightB  = ladders[i].posX + 4;
+    }
+}
+void initGirders(Girder girders[], int count)
+{
+    int i;
+    for (i = 0; i < count; i++)
+    {
+        girders[i].colLeft  = girders[i].posX;
+        girders[i].colRight = girders[i].posX + (girders[i].size * 8);
+    }
+}
+
 int l = 0;
 
 void render(Model *model, UINT16 *base) {
@@ -3825,7 +4044,7 @@ void draw (Model *model, UINT32 *buffer) {
     renderScore(model->score, buffer);
 
 }
-# 200 "rmain.c"
+# 225 "rmain.c"
 void inputHandler(Model *model, int *gameRunning) {
 
     model->mario.state = 0;
@@ -3840,24 +4059,24 @@ void inputHandler(Model *model, int *gameRunning) {
 
 
         if (input_val == 'a') {
-            model->mario.posX -= 4;
+            model->mario.deltX = -4;
             model->mario.direction = 0;
             model->mario.state = 1;
             model->mario.walkFrame = 1 - model->mario.walkFrame;
         }
         else if (input_val == 'd') {
-            model->mario.posX += 4;
+            model->mario.deltX = 4;
             model->mario.direction = 1;
             model->mario.state = 1;
             model->mario.walkFrame = 1 - model->mario.walkFrame;
         }
         else if (input_val == 'w') {
-            model->mario.posY -= 4;
+            requestClimbUp(&model->mario);
             model->mario.state = 2;
             model->mario.climbFrame = 1 - model->mario.climbFrame;
         }
         else if (input_val == 's') {
-            model->mario.posY += 4;
+            requestClimbDown(&model->mario);
             model->mario.state = 2;
             model->mario.climbFrame = 1 - model->mario.climbFrame;
         }
@@ -3892,6 +4111,9 @@ int main() {
 
     int canSpawnBarrel = rand() % 10;
     Model *model = &testModel;
+
+    initLadders(model->ladders, 15);
+    initGirders(model->girders, 9);
 
 
     memset(back_buffer, 0, 32000 );
@@ -3960,8 +4182,8 @@ int main() {
 
 
 
-            updateMCollision(model->mario);
-
+            updateMario(&model->mario, model->girders, 9, model->ladders, 15);
+            updateMCollision(&model->mario);
 
 
             if (model->kong.spawnBarrel == 1) {

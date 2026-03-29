@@ -21,6 +21,8 @@
 #include "kong.c"
 #include "barrel.c"
 #include "input.c"
+#include "girder.c"
+#include "mario.c"
 
 #include <osbind.h>
 #include <stdio.h>
@@ -105,6 +107,29 @@ Model testModel = {
 /* visible, posX, posY, count */
 {1, 186, 48, 3}, /* Lives */ 
 };
+
+
+
+void initLadders(Ladder ladders[], int count)
+{
+    int i;
+    for (i = 0; i < count; i++)
+    {
+        ladders[i].topB    = ladders[i].posY;
+        ladders[i].bottomB = ladders[i].posY + (ladders[i].size * 8);
+        ladders[i].leftB   = ladders[i].posX - 4;
+        ladders[i].rightB  = ladders[i].posX + 4;
+    }
+}
+void initGirders(Girder girders[], int count)
+{
+    int i;
+    for (i = 0; i < count; i++)
+    {
+        girders[i].colLeft  = girders[i].posX;
+        girders[i].colRight = girders[i].posX + (girders[i].size * 8);
+    }
+}
 
 int l = 0;
 
@@ -211,24 +236,24 @@ void inputHandler(Model *model, int *gameRunning) {
         /*If want to change the speed of mario change the value of the model->mario.posX =4  model->mario.posY = 4 */
         
         if (input_val == 'a') {
-            model->mario.posX -= 4;
+            model->mario.deltX = -4;
             model->mario.direction = 0;
             model->mario.state = 1;
             model->mario.walkFrame = 1 - model->mario.walkFrame;
         }
         else if (input_val == 'd') {
-            model->mario.posX += 4;
+            model->mario.deltX = 4;
             model->mario.direction = 1;
             model->mario.state = 1;
             model->mario.walkFrame = 1 - model->mario.walkFrame;
         }
         else if (input_val == 'w') {
-            model->mario.posY -= 4;
+            requestClimbUp(&model->mario);
             model->mario.state = 2;
             model->mario.climbFrame = 1 - model->mario.climbFrame;
         }
         else if (input_val == 's') {
-            model->mario.posY += 4;
+            requestClimbDown(&model->mario);
             model->mario.state = 2;
             model->mario.climbFrame = 1 - model->mario.climbFrame;
         }
@@ -263,6 +288,9 @@ int main() {
 
     int canSpawnBarrel = rand() % 10;
     Model *model = &testModel;
+
+    initLadders(model->ladders, 15);
+    initGirders(model->girders, 9);
 
     /* --- Draw initial frame into back buffer --- */
     memset(back_buffer, 0, SCREEN_SIZE);
@@ -331,8 +359,8 @@ int main() {
 
             /* --- UPDATE MARIO --- */
             
-            updateMCollision(model->mario);
-
+            updateMario(&model->mario, model->girders, 9, model->ladders, 15);
+            updateMCollision(&model->mario);
             
             /* --- UPDATE BARRELS --- */
             if (model->kong.spawnBarrel == 1) {
