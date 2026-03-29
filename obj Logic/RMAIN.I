@@ -3275,12 +3275,12 @@ int updateKong(Kong *kong, int canSpawnBarrel)
     switch (kong->state)
     {
     case 0 :
-        if (kong->stateTimer >= 18 )
+        if (kong->stateTimer >= 9 )
             kongAction(kong, canSpawnBarrel);
         break;
 
     case 1 :
-        if (kong->stateTimer >= 18 )
+        if (kong->stateTimer >= 5 )
         {
             kong->state = 2 ;
             kong->stateTimer = 0;
@@ -3288,21 +3288,22 @@ int updateKong(Kong *kong, int canSpawnBarrel)
         break;
 
     case 2 :
-        if (kong->stateTimer >= 18 )
+        if (kong->stateTimer >= 4 )
         {
+            kong->spawnBarrel = 1 ;
             kong->state = 3 ;
             kong->stateTimer = 0;
         }
         break;
 
     case 3 :
-        if (kong->stateTimer >= 18 )
+        if (kong->stateTimer >= 10 )
             finishThrow(kong);
         break;
 
     case 4 :
 
-        if (kong->stateTimer >= 18 )
+        if (kong->stateTimer >= 12 )
         {
             kong->state = 0 ;
             kong->stateTimer = 0;
@@ -3359,7 +3360,6 @@ static void kongSpawner(Kong *kong)
 
 static void finishThrow(Kong *kong)
 {
-    kong->spawnBarrel = 1 ;
     kong->state = 0 ;
     kong->stateTimer = 0;
 }
@@ -3876,6 +3876,8 @@ int main() {
     UINT8 *screen1 = (UINT8 *)(((long)raw1 + 255) & 0xFFFFFF00);
     UINT8 *screen2 = (UINT8 *)(((long)raw2 + 255) & 0xFFFFFF00);
 
+    UINT8 *original_screen = (void*)_trap_14_w((short)0x2) ;
+
     UINT8 *front_buffer = (void*)_trap_14_w((short)0x2) ;
     UINT8 *back_buffer  = screen1;
 
@@ -3995,6 +3997,12 @@ int main() {
             }
         }
     }
+
+    (void)_trap_14_w((short)0x25) ;
+    (void)_trap_14_wllw((short)0x5,(long)(original_screen),(long)original_screen,(short)(-1)) ;
+
+    (short)_trap_1_wl((short)0x49,(long)(raw1)) ;
+    (short)_trap_1_wl((short)0x49,(long)(raw2)) ;
 
     return 0;
 }

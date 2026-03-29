@@ -247,6 +247,8 @@ int main() {
     UINT8 *screen1 = (UINT8 *)(((long)raw1 + 255) & 0xFFFFFF00);
     UINT8 *screen2 = (UINT8 *)(((long)raw2 + 255) & 0xFFFFFF00);
 
+    UINT8 *original_screen = Physbase(); /* For resetting buffer at exit */
+
     UINT8 *front_buffer = Physbase();
     UINT8 *back_buffer  = screen1;
 
@@ -366,6 +368,12 @@ int main() {
             }
         }
     }
+
+    Vsync();
+    Setscreen(original_screen, original_screen, -1);
+
+    Mfree(raw1);
+    Mfree(raw2);
 
     return 0;
 }
