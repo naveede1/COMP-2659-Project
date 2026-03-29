@@ -275,12 +275,12 @@ int main() {
         if (passedTime % 750 == 0) {
 
             model->timer.value -= 200;
-            clear_region((UINT32 *)back_buffer, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
-            renderBonus(model->timer, (UINT32 *)back_buffer);
+            clear_region((UINT8 *)back_buffer, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
+            renderBonus(model->timer, (UINT16 *)back_buffer);
 
             if (model->timer.value == 4600) {
+
                 gameRunning = 0;
-                printf("Time's up! You lose!");
                 model->mario.state = 4;
             }
         }
