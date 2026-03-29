@@ -20,31 +20,17 @@ volatile unsigned char *PSG_reg_select = 0xFF8800;
 volatile unsigned char *PSG_reg_write = 0xFF8802;
 
 void write_psg(int reg, UINT8 val) {
-
-    /* 
-    
-    Add arguement check:
-
-    Only 16 registers and only byte values between 0-255
-    
-    */
-
-    *PSG_reg_select = reg;
-	*PSG_reg_write  = val;
+    if ((0 <= reg && reg <= 15) && (0 <= val && val <= 255)) {
+        *PSG_reg_select = reg;
+	    *PSG_reg_write  = val;
+    }
 }
 
 UINT8 read_psg(int reg) {
-
-    /* 
-    
-    Add arguement check:
-
-    Limited amount of registers, between 0-F which is 1-16 
-    
-    */
-
-    *PSG_reg_select = reg;
-    return *PSG_reg_select;
+    if ((0 <= reg) && (reg <= 15)){
+        *PSG_reg_select = reg;
+        return *PSG_reg_select;
+    }
 }
 
 void set_tone(int channel, int tuning) {
@@ -94,6 +80,12 @@ void set_volume(int channel, int volume) {
 }
 
 void enable_channels(int channel, int tone_on, int noise_on) {
+
+    /*
+    
+    Add arguement checks
+
+    */
 
     UINT8 reg_7_value;
     UINT8 tone;
