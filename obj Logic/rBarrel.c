@@ -7,10 +7,10 @@ void renderBarrel(Barrel barrel, UINT16 *base) {
         int currPosY = barrel.posY;
 
         if (barrel.state == 1){
-            plot_bitmap_16(base, currPosX, currPosY, 16, barrel_downBM);
+            plot_bitmap_16(base, currPosY, currPosX, 16, barrel_downBM);
         }
         else {
-            plot_bitmap_16(base, currPosX, currPosY, 16, barrel_sidewaysBM);
+            plot_bitmap_16(base, currPosY, currPosX, 16, barrel_sidewaysBM);
         }
     }
 }
