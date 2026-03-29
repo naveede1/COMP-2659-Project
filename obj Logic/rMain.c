@@ -20,6 +20,7 @@
 #include "item.c"
 #include "kong.c"
 #include "barrel.c"
+#include "input.c"
 
 #include <osbind.h>
 #include <stdio.h>
@@ -147,7 +148,7 @@ void renderLevel(Model *model, UINT32 *base) {
 
     renderBonus(model->timer, base);
     renderLives(model->lives, (UINT8 *)base);
-    renderScore(model->score, base);
+    renderScore(model->score, (UINT32 *)base);
 
 }
 
@@ -175,15 +176,66 @@ int checkMCollision(int jmXleft, int jmYtop, int otherXleft, int otherYtop, int 
     return 0;
 }
 
-void draw (Model *model, UINT16 *buffer) {
+void draw (Model *model, UINT32 *buffer) {
     
-    render(model, buffer);
+    render(model,(UINT16 *)buffer);
     renderLevel(model, buffer);
-    renderDK(model->kong, buffer);
-    renderBStack(model->kong, buffer);
-    renderLives(model->lives, buffer);
+    renderDK(model->kong,buffer);
+    renderBStack(model->kong,buffer);
+    renderLives(model->lives, (UINT8 *)buffer);
     renderScore(model->score, buffer);
 
+}
+
+/* --- INPUT HANDLER --- 
+PURPOSE: To handle user input and update the model accordingly.
+
+INPUT: Model: Pointer to the game model struct, that has all game state information.
+       gameRunning: Pointer to the gameRunning variable.
+
+OUTPUT: None
+
+*/
+
+void inputHandler(Model *model, int *gameRunning) {
+    
+    model->mario.state = 0; 
+
+    if (has_input()) {
+        
+        char input_val = get_input();
+
+        while (has_input()) input_val = get_input();
+
+        /* Handle input and update model accordingly */
+        /*If want to change the speed of mario change the value of the model->mario.posX =4  model->mario.posY = 4 */
+        
+        if (input_val == 'a') {
+            model->mario.posX -= 4;
+            model->mario.direction = 0;
+            model->mario.state = 1;
+            model->mario.walkFrame = 1 - model->mario.walkFrame;
+        }
+        else if (input_val == 'd') {
+            model->mario.posX += 4;
+            model->mario.direction = 1;
+            model->mario.state = 1;
+            model->mario.walkFrame = 1 - model->mario.walkFrame;
+        }
+        else if (input_val == 'w') {
+            model->mario.posY -= 4;
+            model->mario.state = 2;
+            model->mario.climbFrame = 1 - model->mario.climbFrame;
+        }
+        else if (input_val == 's') {
+            model->mario.posY += 4;
+            model->mario.state = 2;
+            model->mario.climbFrame = 1 - model->mario.climbFrame;
+        }
+        else if (input_val == 'q') {
+            *gameRunning = 0;
+        }
+    }
 }
 
 int main() {
@@ -217,12 +269,12 @@ int main() {
 
 
     render(model, (UINT16 *)back_buffer);
-    renderLevel(model, (UINT16 *)back_buffer);
-    renderBonus(model->timer, (UINT16 *)back_buffer);
-    renderLives(model->lives, (UINT16 *)back_buffer);
-    renderScore(model->score, (UINT16 *)back_buffer);
-    renderDK(model->kong, (UINT16 *)back_buffer);
-    renderBStack(model->kong, (UINT16 *)back_buffer);
+    renderLevel(model, (UINT32 *)back_buffer);
+    renderBonus(model->timer, (UINT32 *)back_buffer);
+    renderLives(model->lives, (UINT8 *)back_buffer);
+    renderScore(model->score, (UINT32 *)back_buffer);
+    renderDK(model->kong, (UINT32 *)back_buffer);
+    renderBStack(model->kong, (UINT32 *)back_buffer);
 
     Vsync();
     Setscreen(back_buffer, back_buffer, -1);
@@ -257,12 +309,21 @@ int main() {
 
             lastFrameTick = passedTime;
 
+            
             /* --- CLEAR ENTIRE BACK BUFFER --- */
             memset(back_buffer, 0, SCREEN_SIZE);
 
             /* ----- IMPORTANT: Put Input Code into the Asynch.c Event File ----- */
 
+            inputHandler(model, &gameRunning);
+          
             /* ----- IMPORTANT: Put the Update Code into the Synch.c Event File ----- */
+                    
+
+            /* --- GAME LOGIC --- */
+            if (passedTime > 40000) {
+                gameRunning = 0;
+            }
 
             /* --- UPDATE DK --- */
             updateKong(&model->kong, canSpawnBarrel);
@@ -292,9 +353,8 @@ int main() {
 
 
             /* --- RENDER EVERYTHING (FULL REDRAW) --- */
-            draw(model, (UINT16 *)back_buffer);
+            draw(model, (UINT32 *)back_buffer);
             
-
             /* --- SWAP BUFFERS --- */
             Vsync();
             Setscreen(back_buffer, back_buffer, -1);
