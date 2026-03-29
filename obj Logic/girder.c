@@ -2,30 +2,47 @@
 
 int getGirderHeight(Girder *g, int x)
 {
+    int left;
+    int right;
     int width;
-    int rise;
+    int offset;
 
     if (!g->visible)
         return -1;
 
-    if (x < g->colLeft || x > g->colRight)
+    left = g->posX;
+    right = g->posX + (g->size * 8) - 1;
+
+    if (x < left || x > right)
         return -1;
 
-    width = g->colRight - g->colLeft;
-    rise = g->size - 1;
+    width = right - left + 1;
+    offset = x - left;
 
-    if (g->type == 0 || width == 0)
+    if (g->type == 0) {
         return g->posY;
-
-    if (g->type == 1)
-        return g->posY - rise + ((x - g->colLeft) * rise) / width;
-
-    return g->posY + ((x - g->colLeft) * rise) / width;
+    }
+    else if (g->type == 1) {   /* / */
+        return g->posY - (offset * 8) / width;
+    }
+    else {                     /* \ */
+        return g->posY + (offset * 8) / width;
+    }
 }
 
 int isOnGirder(Girder *g, int x)
 {
+    int left;
+    int right;
+
     if (!g->visible)
         return 0;
-    return (x >= g->colLeft && x <= g->colRight) ? 1 : 0;
+
+    left = g->posX;
+    right = g->posX + (g->size * 8) - 1;
+
+    if (x >= left && x <= right)
+        return 1;
+
+    return 0;
 }

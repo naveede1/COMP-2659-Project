@@ -38,31 +38,42 @@ void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], 
 void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders)
 {
     int i;
-    int height;
     int onPlatform;
+    int marioLeftX;
+    int marioRightX;
     int marioCenterX;
     int marioFeetY;
 
     onPlatform = 0;
-    marioCenterX = jm->posX + 8;
+    marioLeftX = jm->posX + 2;
+    marioRightX = jm->posX + 13;
+    marioCenterX = (marioLeftX + marioRightX) / 2;
     marioFeetY = jm->posY + 15;
 
     for (i = 0; i < numGirders; i++)
     {
-        if (isOnGirder(&girders[i], marioCenterX))
-        {
-            height = getGirderHeight(&girders[i], marioCenterX);
+        int landingHeight;
 
-            if (height != -1 &&
-                marioFeetY >= height &&
-                marioFeetY <= height + jm->deltY + 1)
-            {
-                jm->posY = height - 15;
-                jm->deltY = 0;
-                jm->onGround = 1;
-                onPlatform = 1;
-                break;
-            }
+        if (!girders[i].visible)
+            continue;
+
+        if (!isOnGirder(&girders[i], marioCenterX))
+            continue;
+
+        landingHeight = getGirderHeight(&girders[i], marioCenterX);
+
+        if (landingHeight == -1)
+            continue;
+
+        if (jm->deltY >= 0 &&
+            marioFeetY >= landingHeight - 1 &&
+            marioFeetY <= landingHeight + jm->deltY + 2)
+        {
+            jm->posY = landingHeight - 15;
+            jm->deltY = 0;
+            jm->onGround = 1;
+            onPlatform = 1;
+            break;
         }
     }
 

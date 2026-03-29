@@ -45,7 +45,7 @@ Model testModel = {
 {1, 176, 234, 2, 13, 0, 0}, 
 {1, 192, 290, 1, 13, 0, 0}, 
 {1, 176, 322, 2, 13, 0, 0}, 
-{1, 272, 368, 1, 8, 0, 0}, 
+{1, 272, 368, 1, 8, 8, 8}, 
 {1, 176, 368, 0, 6, 0, 0} }, /* Girder 9*/
 
 /* visible, posY, posX, broken, size, topSize, bottomSize, skipped, leftB, rightB, topB, bottomB, update */
@@ -107,29 +107,6 @@ Model testModel = {
 /* visible, posX, posY, count */
 {1, 186, 48, 3}, /* Lives */ 
 };
-
-
-
-void initLadders(Ladder ladders[], int count)
-{
-    int i;
-    for (i = 0; i < count; i++)
-    {
-        ladders[i].topB    = ladders[i].posY;
-        ladders[i].bottomB = ladders[i].posY + (ladders[i].size * 8);
-        ladders[i].leftB   = ladders[i].posX - 4;
-        ladders[i].rightB  = ladders[i].posX + 4;
-    }
-}
-void initGirders(Girder girders[], int count)
-{
-    int i;
-    for (i = 0; i < count; i++)
-    {
-        girders[i].colLeft  = girders[i].posX;
-        girders[i].colRight = girders[i].posX + (girders[i].size * 8);
-    }
-}
 
 int l = 0;
 
@@ -289,8 +266,7 @@ int main() {
     int canSpawnBarrel = rand() % 10;
     Model *model = &testModel;
 
-    initLadders(model->ladders, 15);
-    initGirders(model->girders, 9);
+    
 
     /* --- Draw initial frame into back buffer --- */
     memset(back_buffer, 0, SCREEN_SIZE);
