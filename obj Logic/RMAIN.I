@@ -2501,12 +2501,12 @@ void renderBonus(Timer timer, UINT32 *base) {
     if (timer.visible == 1){
 
         linea0();
-        plot_string(base, timer.posY - 4, timer.posX, "BONUS");
+        plot_string((UINT8 *)base, timer.posY - 4, timer.posX, "BONUS");
 
         intToStr(timer.value, currTimer);
         currTimer[4] = '\0';
 
-        plot_string(base, timer.posY + 11, timer.posX + 4, currTimer);
+        plot_string((UINT8 *)base, timer.posY + 11, timer.posX + 4, currTimer);
 
         plot_bitmap_32(base, timer.posY - 2, timer.posX - 4, 32, bonus_leftBM);
         plot_bitmap_32(base, timer.posY - 2, timer.posX + 28, 32, bonus_rightBM);
@@ -2603,17 +2603,17 @@ void renderScore(Score score, UINT32 *base) {
 
     if (score.visible == 1){
 
-        plot_string(base, score.posY, score.posX, "HIGH SCORE");
+        plot_string((UINT8 *)base, score.posY, score.posX, "HIGH SCORE");
 
         longToStr(score.value, currScore);
         currScore[6] = '\0';
 
-        plot_string(base, score.posY+16, score.posX-62, currScore);
+        plot_string((UINT8 *)base, score.posY+16, score.posX-62, currScore);
 
         longToStr(score.highValue, highScore);
         highScore[6] = '\0';
 
-        plot_string(base, score.posY+16, score.posX+16, highScore);
+        plot_string((UINT8 *)base, score.posY+16, score.posX+16, highScore);
     }
 }
 # 15 "rmain.c" 2
@@ -3268,84 +3268,97 @@ void spawnItem(Item item) {
 
 UINT32 getTime();
 # 2 "./kong.c" 2
-# 24 "./kong.c"
-int updateKong(Kong *kong, int canSpawnBarrel) {
+# 23 "./kong.c"
+int updateKong(Kong *kong, int canSpawnBarrel)
+{
     kong->stateTimer++;
-    switch (kong->state) {
-        case 0 :
-            if (kong->stateTimer >= 18 )
-                kongAction(kong, canSpawnBarrel);
-            break;
+    switch (kong->state)
+    {
+    case 0 :
+        if (kong->stateTimer >= 18 )
+            kongAction(kong, canSpawnBarrel);
+        break;
 
-        case 1 :
-            if (kong->stateTimer >= 18 ) {
-                kong->state = 2 ;
-                kong->stateTimer = 0;
-            }
-            break;
+    case 1 :
+        if (kong->stateTimer >= 18 )
+        {
+            kong->state = 2 ;
+            kong->stateTimer = 0;
+        }
+        break;
 
-        case 2 :
-            if (kong->stateTimer >= 18 ){
-                kong->state = 3 ;
-                kong->stateTimer = 0;
-            }
-            break;
+    case 2 :
+        if (kong->stateTimer >= 18 )
+        {
+            kong->state = 3 ;
+            kong->stateTimer = 0;
+        }
+        break;
 
-        case 3 :
-            if (kong->stateTimer >= 18 )
-                finishThrow(kong);
-            break;
+    case 3 :
+        if (kong->stateTimer >= 18 )
+            finishThrow(kong);
+        break;
 
-        case 4 :
+    case 4 :
 
-            if (kong->stateTimer >= 18 ) {
-                kong->state = 0 ;
-                kong->stateTimer = 0;
-            }
-            break;
-
-        default:
-
+        if (kong->stateTimer >= 18 )
+        {
             kong->state = 0 ;
             kong->stateTimer = 0;
-            break;
+        }
+        break;
+
+    default:
+
+        kong->state = 0 ;
+        kong->stateTimer = 0;
+        break;
     }
 
     return kong->state;
 }
 
-static void kongAction(Kong *kong, int canSpawnBarrel) {
+static void kongAction(Kong *kong, int canSpawnBarrel)
+{
     static int missedThrows = 0;
     kong->stateTimer = 0;
 
-    if (missedThrows >= 1) {
+    if (missedThrows >= 1)
+    {
 
         missedThrows = 0;
         kongSpawner(kong);
         return;
     }
-    if (canSpawnBarrel == 0) {
+    if (canSpawnBarrel == 0)
+    {
 
         missedThrows = 0;
         kongSpawner(kong);
-    } else {
+    }
+    else
+    {
 
         missedThrows++;
         kongMock(kong);
     }
 }
 
-static void kongMock(Kong *kong) {
+static void kongMock(Kong *kong)
+{
     kong->state = 4 ;
     kong->stateTimer = 0;
 }
 
-static void kongSpawner(Kong *kong) {
+static void kongSpawner(Kong *kong)
+{
     kong->state = 1 ;
     kong->stateTimer = 0;
 }
 
-static void finishThrow(Kong *kong) {
+static void finishThrow(Kong *kong)
+{
     kong->spawnBarrel = 1 ;
     kong->state = 0 ;
     kong->stateTimer = 0;
@@ -3467,10 +3480,69 @@ void updateBarrels(Barrel barrel[], long nowTime) {
     return;
 }
 # 22 "rmain.c" 2
-# 1 "C:/c68/include/osbind.h" 1
-# 24 "rmain.c" 2
+# 1 "./input.c" 1
 # 1 "C:/c68/include/stdio.h" 1
+# 1 "./input.c" 2
+# 1 "./input.h" 1
+
+
+
+typedef enum { FALSE, TRUE } boolean;
+
+static boolean held = FALSE;
+static boolean released = FALSE;
+# 19 "./input.h"
+boolean has_input();
+# 30 "./input.h"
+char get_input();
+# 42 "./input.h"
+void is_held();
+# 2 "./input.c" 2
+# 1 "C:/c68/include/osbind.h" 1
+# 3 "./input.c" 2
+
+
+boolean has_input() {
+    return ((short)_trap_1_w((short)0x0B)  != 0) ? TRUE : FALSE;
+}
+
+char get_input() {
+    return (char)_trap_1_w((short)0x08) ;
+}
+
+
+void is_held() {
+# 24 "./input.c"
+    char current_input;
+    char next_input;
+
+
+    printf("Waiting for first input...\n");
+    while (!has_input());
+
+    current_input = get_input();
+    printf("First input is: %c\n", current_input);
+
+    while(TRUE) {
+        printf("Waiting for next input...\n");
+        if (has_input()) {
+            next_input = get_input();
+            printf("Next input is: %c\n", next_input);
+            if (current_input != next_input) {
+                printf("Input released, different character pressed.\n");
+                return;
+            }
+        } else {
+            printf("Input released.\n");
+            return;
+        }
+    }
+}
+# 23 "rmain.c" 2
+# 1 "C:/c68/include/osbind.h" 1
 # 25 "rmain.c" 2
+# 1 "C:/c68/include/stdio.h" 1
+# 26 "rmain.c" 2
 # 1 "C:/c68/include/string.h" 1
 # 25 "C:/c68/include/string.h"
  void *memcpy (void *dst, const void *src, size_t size) ;
@@ -3523,7 +3595,7 @@ void updateBarrels(Barrel barrel[], long nowTime) {
  int strnicmp ( const char *, const char *, size_t ) ;
  int strcmpi ( const char *, const char * ) ;
  int strncmpi ( const char *, const char *, size_t ) ;
-# 26 "rmain.c" 2
+# 27 "rmain.c" 2
 # 1 "C:/c68/include/stdlib.h" 1
 # 23 "C:/c68/include/stdlib.h"
 typedef char  wchar_t;
@@ -3591,7 +3663,7 @@ typedef struct {
  wchar_t *wcsncat (wchar_t *, const wchar_t *, size_t) ;
  int wcsncmp (const wchar_t *, const wchar_t *, size_t) ;
  wchar_t *wcsncpy (wchar_t *, const wchar_t *, size_t) ;
-# 27 "rmain.c" 2
+# 28 "rmain.c" 2
 
 
 
@@ -3715,7 +3787,7 @@ void renderLevel(Model *model, UINT32 *base) {
 
     renderBonus(model->timer, base);
     renderLives(model->lives, (UINT8 *)base);
-    renderScore(model->score, base);
+    renderScore(model->score, (UINT32 *)base);
 
 }
 
@@ -3743,15 +3815,56 @@ int checkMCollision(int jmXleft, int jmYtop, int otherXleft, int otherYtop, int 
     return 0;
 }
 
-void draw (Model *model, UINT16 *buffer) {
+void draw (Model *model, UINT32 *buffer) {
 
-    render(model, buffer);
+    render(model,(UINT16 *)buffer);
     renderLevel(model, buffer);
-    renderDK(model->kong, buffer);
-    renderBStack(model->kong, buffer);
-    renderLives(model->lives, buffer);
+    renderDK(model->kong,buffer);
+    renderBStack(model->kong,buffer);
+    renderLives(model->lives, (UINT8 *)buffer);
     renderScore(model->score, buffer);
 
+}
+# 200 "rmain.c"
+void inputHandler(Model *model, int *gameRunning) {
+
+    model->mario.state = 0;
+
+    if (has_input()) {
+
+        char input_val = get_input();
+
+        while (has_input()) input_val = get_input();
+
+
+
+
+        if (input_val == 'a') {
+            model->mario.posX -= 4;
+            model->mario.direction = 0;
+            model->mario.state = 1;
+            model->mario.walkFrame = 1 - model->mario.walkFrame;
+        }
+        else if (input_val == 'd') {
+            model->mario.posX += 4;
+            model->mario.direction = 1;
+            model->mario.state = 1;
+            model->mario.walkFrame = 1 - model->mario.walkFrame;
+        }
+        else if (input_val == 'w') {
+            model->mario.posY -= 4;
+            model->mario.state = 2;
+            model->mario.climbFrame = 1 - model->mario.climbFrame;
+        }
+        else if (input_val == 's') {
+            model->mario.posY += 4;
+            model->mario.state = 2;
+            model->mario.climbFrame = 1 - model->mario.climbFrame;
+        }
+        else if (input_val == 'q') {
+            *gameRunning = 0;
+        }
+    }
 }
 
 int main() {
@@ -3785,12 +3898,12 @@ int main() {
 
 
     render(model, (UINT16 *)back_buffer);
-    renderLevel(model, (UINT16 *)back_buffer);
-    renderBonus(model->timer, (UINT16 *)back_buffer);
-    renderLives(model->lives, (UINT16 *)back_buffer);
-    renderScore(model->score, (UINT16 *)back_buffer);
-    renderDK(model->kong, (UINT16 *)back_buffer);
-    renderBStack(model->kong, (UINT16 *)back_buffer);
+    renderLevel(model, (UINT32 *)back_buffer);
+    renderBonus(model->timer, (UINT32 *)back_buffer);
+    renderLives(model->lives, (UINT8 *)back_buffer);
+    renderScore(model->score, (UINT32 *)back_buffer);
+    renderDK(model->kong, (UINT32 *)back_buffer);
+    renderBStack(model->kong, (UINT32 *)back_buffer);
 
     (void)_trap_14_w((short)0x25) ;
     (void)_trap_14_wllw((short)0x5,(long)(back_buffer),(long)back_buffer,(short)(-1)) ;
@@ -3826,8 +3939,22 @@ int main() {
             lastFrameTick = passedTime;
 
 
+
             memset(back_buffer, 0, 32000 );
-# 268 "rmain.c"
+
+
+
+            inputHandler(model, &gameRunning);
+
+
+
+
+
+            if (passedTime > 40000) {
+                gameRunning = 0;
+            }
+
+
             updateKong(&model->kong, canSpawnBarrel);
 
 
@@ -3855,8 +3982,7 @@ int main() {
 
 
 
-            draw(model, (UINT16 *)back_buffer);
-
+            draw(model, (UINT32 *)back_buffer);
 
 
             (void)_trap_14_w((short)0x25) ;
