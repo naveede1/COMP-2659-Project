@@ -1,6 +1,9 @@
 #ifndef PSG_H
 #define PSG_H
 
+#include <osbind.h>
+#include <stdio.h>
+
 /* This will be removed later, plan on making a types file */
 typedef unsigned char UINT8;
 typedef unsigned short UINT16;
@@ -16,10 +19,10 @@ void write_psg(int reg, UINT8 val);
 
 /*----- Function: read_psg -----
 
-Useful for testing purposes, but unlikely to be used in either the music or effects modules
+Selects a register and then prints/reads back the value currently stored in it
 
 */
-void read_psg(int reg);
+UINT8 read_psg(int reg);
 
 /*----- Function: set_tone -----
 
