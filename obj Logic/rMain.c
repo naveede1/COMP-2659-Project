@@ -21,6 +21,9 @@
 #include "kong.c"
 #include "barrel.c"
 #include "input.c"
+#include "mario.c"
+#include "girder.c"
+
 
 #include <osbind.h>
 #include <stdio.h>
@@ -31,20 +34,20 @@
 #define FRAMERULE 12
 
 Model testModel = {
-/* visible, posX, posY, deltX, deltY, state, direction, climbing, collideLadder, onGround, hammerActive,
+/* visible, posX, posY, deltX, deltY, state, direction, climbDir, climbing, collideLadder, onGround, hammerActive,
     hammerTimer, dead, walkFrame, climbFrame, hammerFrame, hammerFrameTimer, hammerHitActive */
-{1, 236, 352, 0, 0, 1, 1, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316}, /* Jumpman*/
+{1, 210, 352, 0, 0, 1, 1, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316}, /* Jumpman*/
 
 /* visible, posY, posX, type, size, colLeft, colRight */
-{ {1, 176, 142, 0, 8, 0, 0}, /* Girder 1 */
-{1, 272, 106, 0, 3, 0, 0}, 
-{1, 304, 142, 2, 5, 0, 0}, 
-{1, 192, 202, 1, 13, 0, 0}, 
-{1, 176, 234, 2, 13, 0, 0}, 
-{1, 192, 290, 1, 13, 0, 0}, 
-{1, 176, 322, 2, 13, 0, 0}, 
-{1, 272, 368, 1, 8, 0, 0}, 
-{1, 176, 368, 0, 6, 0, 0} }, /* Girder 9*/
+{ {1, 176, 142, 0, 8,  142, 206},   /* colLeft=posY, colRight=posY+(size*8)-1 */
+  {1, 272, 106, 0, 3,  106, 129},
+  {1, 304, 142, 2, 5,  142, 181},
+  {1, 192, 202, 1, 13, 202, 305},
+  {1, 176, 234, 2, 13, 234, 337},
+  {1, 192, 290, 1, 13, 290, 393},
+  {1, 176, 322, 2, 13, 322, 425},
+  {1, 272, 368, 1, 8,  300, 500},
+  {1, 176, 368, 0, 6,  368, 500}},
 
 /* visible, posY, posX, broken, size, topSize, bottomSize, skipped, leftB, rightB, topB, bottomB, update */
 {{1, 248, 78, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1}, /* Ladder 1 */
@@ -209,26 +212,26 @@ void inputHandler(Model *model, int *gameRunning) {
 
         /* Handle input and update model accordingly */
         /*If want to change the speed of mario change the value of the model->mario.posX =4  model->mario.posY = 4 */
-        
+
         if (input_val == 'a') {
-            model->mario.posX -= 4;
+            model->mario.deltX = -MOVE_SPEED;
             model->mario.direction = 0;
             model->mario.state = 1;
             model->mario.walkFrame = 1 - model->mario.walkFrame;
         }
         else if (input_val == 'd') {
-            model->mario.posX += 4;
+            model->mario.deltX = MOVE_SPEED;
             model->mario.direction = 1;
             model->mario.state = 1;
             model->mario.walkFrame = 1 - model->mario.walkFrame;
         }
         else if (input_val == 'w') {
-            model->mario.posY -= 4;
+            requestClimbUp(&model->mario);
             model->mario.state = 2;
             model->mario.climbFrame = 1 - model->mario.climbFrame;
         }
         else if (input_val == 's') {
-            model->mario.posY += 4;
+            requestClimbDown(&model->mario);
             model->mario.state = 2;
             model->mario.climbFrame = 1 - model->mario.climbFrame;
         }
@@ -330,8 +333,8 @@ int main() {
 
 
             /* --- UPDATE MARIO --- */
-            
-            updateMCollision(model->mario);
+            updateMario(&model->mario, model->girders, 9, model->ladders, 15);
+            updateMCollision(&model->mario);
 
             
             /* --- UPDATE BARRELS --- */

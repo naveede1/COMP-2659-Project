@@ -4,13 +4,13 @@
 #include "girder.h"
 #include "ladder.h"
 
-#define GRAVITY 0.5f
+#define GRAVITY 1
 #define JUMP_FORCE -10
-#define MOVE_SPEED 3
-#define HAMMER_DURATION 8.0f
+#define MOVE_SPEED 4
+#define MAX_FALL_SPEED 1
 
-/* For Hammer swinging animation */
-#define HAMMER_DURATION 8.0f
+#define HAMMER_DURATION 8
+#define HAMMER_FRAME_TIME 1
 #define HAMMER_FRAME_TIME 0.15f
 #define HAMMER_TOTAL_FRAMES 4
 
@@ -22,6 +22,7 @@ typedef struct { /* Structure for Jumpman */
     int state; /* Standing = 0, Walking = 1, Climbing = 2, Jumping = 3, Dead (Falling off screen) = 4 */ 
     int direction; /* Left = 0, Right = 1 */
     int climbing;   /* No = 0, Yes = 1 */
+    int climbDir;   /* Up = -1, Down = 1 */
     int collideLadder;   /* No = 0, Yes = 1 */
     int onGround; /* Is JumpMan Grounded? No = 0, Yes = 1 */ 
     int hammerActive; /* No = 0, Yes = 1 */
@@ -40,10 +41,13 @@ typedef struct { /* Structure for Jumpman */
 
 } Mario;
 
-void moveLeft(Mario *jm);
-void moveRight(Mario *jm);
-void jump(Mario *jm);
+void requestClimbUp(Mario *jm);
+void requestClimbDown(Mario *jm);
+void updateClimbing(Mario *jm, Ladder ladders[], int numLadders);
 void applyGravity(Mario *jm);
-void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], int numLadders, float deltaTime);
+void updateHammer(Mario *jm);
+void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], int numLadders);
+void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders);
+void snapMarioToNearestGirder(Mario *jm, Girder girders[], int numGirders);
 
 #endif
