@@ -20,42 +20,43 @@ volatile unsigned char *PSG_reg_select = 0xFF8800;
 volatile unsigned char *PSG_reg_write = 0xFF8802;
 
 void write_psg(int reg, UINT8 val) {
-    if ((0 <= reg && reg <= 15) && (0 <= val && val <= 255)) {
+    if ((0 <= reg) && (reg <= 15)) {
         *PSG_reg_select = reg;
 	    *PSG_reg_write  = val;
+    } else {
+       printf("%d is a invalid register\n", reg);
     }
 }
 
 UINT8 read_psg(int reg) {
-    if ((0 <= reg) && (reg <= 15)){
+    if ((0 <= reg) && (reg <= 15)) {
         *PSG_reg_select = reg;
         return *PSG_reg_select;
     }
+
+    printf("%d is a invalid register\n", reg);
 }
 
 void set_tone(int channel, int tuning) {
+    if ((0 <= channel) && (channel <= 2)) {
+        int fine_tone;
+        int rough_tone;
 
-    /*
+        fine_tone = tuning & 0xFF;
+        rough_tone = tuning >> 8;
     
-    Add arguement checks
-    
-    */
-
-    int fine_tone;
-    int rough_tone;
-
-    fine_tone = tuning & 0xFF;
-    rough_tone = tuning >> 8;
-    
-    if (channel == 0) {
-        write_psg(0, fine_tone);
-        write_psg(1, rough_tone);
-    } else if (channel == 1) {
-        write_psg(2, fine_tone);
-        write_psg(3, rough_tone);
+        if (channel == 0) {
+            write_psg(0, fine_tone);
+            write_psg(1, rough_tone);
+        } else if (channel == 1) {
+            write_psg(2, fine_tone);
+            write_psg(3, rough_tone);
+        } else {
+            write_psg(4, fine_tone);
+            write_psg(5, rough_tone);
+        }
     } else {
-        write_psg(4, fine_tone);
-        write_psg(5, rough_tone);
+        printf("%d is not a valid channel.\n", channel);
     }
 
 }

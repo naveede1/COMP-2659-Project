@@ -7,4 +7,12 @@ void test_write_read_psg();
 void test_boundary_values();
 void test_invalid_register();
 
+void test_set_tone_fine();
+void test_set_coarse_and_fine();
+void test_set_tone_boundary_values();
+
+void test_set_volume_min();
+void test_set_volume_max();
+void test_set_volume_overflow();
+
 #endif
