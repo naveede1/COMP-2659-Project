@@ -3399,72 +3399,80 @@ void updateBarrels(Barrel barrel[], long nowTime) {
                 barrel[i].posY += 6;
                 barrel[i].dropTick = 2;
 
-            } else  if (spawnedTime >= 930 && spawnedTime < 2160) {
+            } else  if (spawnedTime >= 930 && spawnedTime < 1520) {
 
-                if (barrel[i].dropTick == 4) {
+                if (barrel[i].dropTick == 2) {
                     barrel[i].posY++;
                     barrel[i].dropTick = 0;
                 }
-                barrel[i].posX -= 4;
+                barrel[i].posX -= 8;
                 barrel[i].dropTick++;
 
-            } else if (spawnedTime >= 2160 && spawnedTime < 2350){
+            } else if (spawnedTime >= 1540 && spawnedTime < 1730){
 
                 barrel[i].posY += 4;
                 barrel[i].dropTick = 2;
 
-            } else if (spawnedTime >= 2350 && spawnedTime < 3560) {
+            } else if (spawnedTime >= 1730 && spawnedTime < 2340) {
 
-                if (barrel[i].dropTick == 4) {
+                if (barrel[i].dropTick == 2) {
                     barrel[i].posY++;
                     barrel[i].dropTick = 0;
                 }
-                barrel[i].posX += 4;
+                barrel[i].posX += 8;
                 barrel[i].dropTick++;
 
-            } else if (spawnedTime >= 3560 && spawnedTime < 3680){
+            } else if (spawnedTime >= 2340 && spawnedTime < 2360){
+
+                barrel[i].posX += 4;
+
+            } else if (spawnedTime >= 2360 && spawnedTime < 2480){
 
                 barrel[i].posY += 6;
                 barrel[i].dropTick = 2;
 
-            } else if (spawnedTime >= 3680 && spawnedTime < 4900) {
+            } else if (spawnedTime >= 2480 && spawnedTime < 3090) {
 
-                if (barrel[i].dropTick == 4) {
+                if (barrel[i].dropTick == 2) {
                     barrel[i].posY++;
                     barrel[i].dropTick = 0;
                 }
-                barrel[i].posX -= 4;
+                barrel[i].posX -= 8;
                 barrel[i].dropTick++;
 
-            } else if (spawnedTime >= 4900 && spawnedTime < 5090){
+            } else if (spawnedTime >= 3110 && spawnedTime < 3290){
 
                 barrel[i].posY += 4;
                 barrel[i].dropTick = 2;
 
-            } else if (spawnedTime >= 5090 && spawnedTime < 6320) {
+            } else if (spawnedTime >= 3290 && spawnedTime < 3900) {
 
-                if (barrel[i].dropTick == 4) {
+                if (barrel[i].dropTick == 2) {
                     barrel[i].posY++;
                     barrel[i].dropTick = 0;
                 }
-                barrel[i].posX += 4;
+                barrel[i].posX += 8;
                 barrel[i].dropTick++;
 
-            } else if (spawnedTime >= 6320 && spawnedTime < 6640){
+            } else if (spawnedTime >= 3900 && spawnedTime < 3920){
+
+                barrel[i].posX += 4;
+
+            } else if (spawnedTime >= 3920 && spawnedTime < 4240){
 
                 barrel[i].posY += 2;
                 barrel[i].dropTick = 2;
 
-            } else if (spawnedTime >= 6640 && spawnedTime < 7180) {
+            } else if (spawnedTime >= 4240 && spawnedTime < 4580) {
 
-                if (barrel[i].dropTick == 4) {
+                if (barrel[i].dropTick == 2) {
                     barrel[i].posY++;
                     barrel[i].dropTick = 0;
                 }
-                barrel[i].posX -= 4;
+                barrel[i].posX -= 8;
                 barrel[i].dropTick++;
 
-            } else if (spawnedTime > 7700) {
+            } else if (spawnedTime > 4960) {
 
                 barrel[i].visible = 0;
                 barrel[i].timeSpawned = 0;
