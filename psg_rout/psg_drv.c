@@ -220,3 +220,35 @@ void test_set_volume_overflow() {
     printf("----------------------------\n\n");    
 
 }
+
+void test_stop_sound_all() {
+
+    stop_sound();
+
+    printf("Channel A:\n");
+    printf("----------------------------\n"); 
+    printf("Value of register 8 is: %d\n", read_psg(8));
+    printf("----------------------------\n\n");
+
+    printf("Channel B:\n");
+    printf("----------------------------\n"); 
+    printf("Value of register 9 is: %d\n", read_psg(9));
+    printf("----------------------------\n\n");
+
+    printf("Channel C:\n");
+    printf("----------------------------\n"); 
+    printf("Value of register 10 is: %d\n", read_psg(10));
+    printf("----------------------------\n\n");
+}
+
+void test_stop_sound_when_stopped() {
+
+    /*
+    
+    Stop sound twice to ensure nothing unintended happens
+    
+    */
+
+    test_stop_sound_all();
+    test_stop_sound_all();
+}

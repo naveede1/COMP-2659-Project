@@ -15,4 +15,7 @@ void test_set_volume_min();
 void test_set_volume_max();
 void test_set_volume_overflow();
 
+void test_stop_sound_all();
+void test_stop_sound_when_stopped();
+
 #endif
