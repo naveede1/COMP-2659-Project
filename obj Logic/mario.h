@@ -5,7 +5,7 @@
 #include "ladder.h"
 
 #define GRAVITY 1
-#define JUMP_FORCE -5
+#define JUMP_FORCE -6
 #define MOVE_SPEED 4
 #define MAX_FALL_SPEED 10
 

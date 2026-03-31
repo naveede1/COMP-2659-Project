@@ -44,7 +44,7 @@ Model testModel = {
  colLeft = posX - (size - 1) / 2
  colRight = posX + (size - 1) / 2
 */
-{  {1, 176, 142, 0, 8,  176, 303}, /* Girder 1 */
+{ {1, 176, 142, 0, 8,  176, 303}, /* Girder 1 */
   {1, 272, 106, 0, 3,  272, 319},
   {1, 304, 142, 2, 5,  304, 383},
   {1, 192, 202, 1, 13, 192, 399},
@@ -308,8 +308,8 @@ int main() {
         if (passedTime % 2000 == 0) {
 
             model->timer.value -= 200;
-            clear_region((UINT8 *)back_buffer, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
-            renderBonus(model->timer, (UINT16 *)back_buffer);
+            clear_region((UINT32 *)back_buffer, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
+            renderBonus(model->timer, (UINT32 *)back_buffer);
 
             if (model->timer.value == 4000) {
 
@@ -346,7 +346,7 @@ int main() {
             /* --- UPDATE MARIO --- */
             updateMario(&model->mario, model->girders, 9, model->ladders, 15);
             updateMCollision(&model->mario);
-            /* pointer as it needs to write changes back to the actual Mario struct in the model*/
+            /* pointer as it needs to write changes back to the actual Mario struct in the model */
 
             
             /* --- UPDATE BARRELS --- */
