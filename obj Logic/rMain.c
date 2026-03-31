@@ -36,9 +36,14 @@
 Model testModel = {
 /* visible, posX, posY, deltX, deltY, state, direction, climbDir, climbing, collideLadder, onGround, hammerActive,
     hammerTimer, dead, walkFrame, climbFrame, hammerFrame, hammerFrameTimer, hammerHitActive */
-{1, 210, 102, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 194, 226, 336, 368}, /* Jumpman*/
+{1, 210, 352, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 194, 226, 336, 368}, /* Jumpman*/
 
 /* visible, posY, posX, type, size, colLeft, colRight */
+/*To Calculate colLeft and colRight 
+ using the formula:
+ colLeft = posX - (size - 1) / 2
+ colRight = posX + (size - 1) / 2
+*/
 {  {1, 176, 142, 0, 8,  176, 303}, /* Girder 1 */
   {1, 272, 106, 0, 3,  272, 319},
   {1, 304, 142, 2, 5,  304, 383},
@@ -201,8 +206,9 @@ OUTPUT: None
 */
 
 void inputHandler(Model *model, int *gameRunning) {
-    
-    model->mario.state = 0; 
+    /* only reset to standing if grounded and not climbing */
+    if (model->mario.onGround && !model->mario.climbing)
+        model->mario.state = 0;
 
     if (has_input()) {
         
@@ -214,6 +220,7 @@ void inputHandler(Model *model, int *gameRunning) {
         /*If want to change the speed of mario change the value of the model->mario.posX =4  model->mario.posY = 4 */
 
         if (input_val == 'a') {
+            /* detlX instead of posx because deltX is the velocity */
             model->mario.deltX = -MOVE_SPEED;
             model->mario.direction = 0;
             model->mario.state = 1;
@@ -234,6 +241,10 @@ void inputHandler(Model *model, int *gameRunning) {
             requestClimbDown(&model->mario);
             model->mario.state = 2;
             model->mario.climbFrame = 1 - model->mario.climbFrame;
+        }
+        else if (input_val == ' ') { /* Spacebar for Jumping */
+            requestJump(&model->mario);
+            model->mario.state = 3;
         }
         else if (input_val == 'q') {
             *gameRunning = 0;
@@ -335,6 +346,7 @@ int main() {
             /* --- UPDATE MARIO --- */
             updateMario(&model->mario, model->girders, 9, model->ladders, 15);
             updateMCollision(&model->mario);
+            /* pointer as it needs to write changes back to the actual Mario struct in the model*/
 
             
             /* --- UPDATE BARRELS --- */

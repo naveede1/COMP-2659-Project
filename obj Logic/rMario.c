@@ -110,8 +110,8 @@ void renderMRight(Mario mario, UINT16 *base) {
 void updateMCollision(Mario *mario) {
 
     mario->leftB = mario->posX;
-    mario->rightB = mario->posX + 15;
+    mario->rightB = mario->posX + 16;
     mario->topB = mario->posY;
-    mario->bottomB = mario->posY + 15;
+    mario->bottomB = mario->posY + 16;
 
 }
