@@ -18,4 +18,13 @@ void test_set_volume_overflow();
 void test_stop_sound_all();
 void test_stop_sound_when_stopped();
 
+void test_min_noise();
+void test_max_noise();
+void test_noise_overflow();
+
+void test_min_sustain_value();
+void test_max_sustain_value();
+void test_envelope_shape_boundaries();
+void test_envelope_sustain_boundaries();
+
 #endif

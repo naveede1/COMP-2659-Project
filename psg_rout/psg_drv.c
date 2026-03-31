@@ -252,3 +252,78 @@ void test_stop_sound_when_stopped() {
     test_stop_sound_all();
     test_stop_sound_all();
 }
+
+void test_min_noise() {
+    set_noise(10); /* Originally set to 0 */
+    printf("Current value in register 6: %d\n", read_psg(6));
+    set_noise(0);
+    printf("New value in register 6: %d\n", read_psg(6));
+}
+
+void test_max_noise() {
+    printf("Current value in register 6: %d\n", read_psg(6));
+    set_noise(31);
+    printf("New value in register 6: %d\n", read_psg(6));
+}
+
+void test_noise_overflow() {
+
+    /* 
+    
+    32 -> 0
+    33 -> 1
+    34 -> 2
+    
+    */
+
+    printf("Current value in register 6: %d\n", read_psg(6));
+    set_noise(34);
+    printf("New value in register 6: %d\n", read_psg(6));
+}
+
+void test_min_sustain_value() {
+    set_envelope(1, 600);
+    printf("Current value in register 11: %d\n", read_psg(11));
+    printf("Current value in register 12: %d\n", read_psg(12));
+
+    set_envelope(1, 0);
+    printf("Current value in register 11: %d\n", read_psg(11));
+    printf("Current value in register 12: %d\n", read_psg(12));
+}
+
+void test_max_sustain_value() {
+    set_envelope(1, 65535);
+    printf("Current value in register 11: %d\n", read_psg(11));
+    printf("Current value in register 12: %d\n", read_psg(12));
+}
+
+void test_envelope_shape_boundaries() {
+    set_envelope(-1, 600);
+    set_envelope(16, 600);
+}
+
+void test_envelope_sustain_boundaries() {
+
+    /*
+    
+    Because sustain is unsigned, make sure it wraps around
+    
+    */
+
+    set_envelope(1, -1);
+    printf("Current value in register 11: %d\n", read_psg(11));
+    printf("Current value in register 12: %d\n", read_psg(12));
+
+    set_envelope(1, 65536);
+    printf("Current value in register 11: %d\n", read_psg(11));
+    printf("Current value in register 12: %d\n", read_psg(12));
+}
+
+int main() {
+	long old_ssp = Super(0);
+
+    test_envelope_shape_boundaries();
+
+	Super(old_ssp);
+    return 0;
+}
