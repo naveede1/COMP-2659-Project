@@ -333,7 +333,6 @@ int main() {
 
 
             /* --- UPDATE MARIO --- */
-            updateMario(&model->mario, nowTime);
             updateMCollision(model->mario);
 
             

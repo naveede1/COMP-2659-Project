@@ -3547,10 +3547,18 @@ void is_held() {
     }
 }
 # 23 "rmain.c" 2
+# 1 "./mario.c" 1
+# 1 "./mario.h" 1
+# 1 "./mario.c" 2
+# 1 "./girder.h" 1
+# 2 "./mario.c" 2
+# 1 "./ladder.h" 1
+# 3 "./mario.c" 2
+# 24 "rmain.c" 2
 # 1 "C:/c68/include/osbind.h" 1
-# 25 "rmain.c" 2
-# 1 "C:/c68/include/stdio.h" 1
 # 26 "rmain.c" 2
+# 1 "C:/c68/include/stdio.h" 1
+# 27 "rmain.c" 2
 # 1 "C:/c68/include/string.h" 1
 # 25 "C:/c68/include/string.h"
  void *memcpy (void *dst, const void *src, size_t size) ;
@@ -3603,7 +3611,7 @@ void is_held() {
  int strnicmp ( const char *, const char *, size_t ) ;
  int strcmpi ( const char *, const char * ) ;
  int strncmpi ( const char *, const char *, size_t ) ;
-# 27 "rmain.c" 2
+# 28 "rmain.c" 2
 # 1 "C:/c68/include/stdlib.h" 1
 # 23 "C:/c68/include/stdlib.h"
 typedef char  wchar_t;
@@ -3671,7 +3679,7 @@ typedef struct {
  wchar_t *wcsncat (wchar_t *, const wchar_t *, size_t) ;
  int wcsncmp (const wchar_t *, const wchar_t *, size_t) ;
  wchar_t *wcsncpy (wchar_t *, const wchar_t *, size_t) ;
-# 28 "rmain.c" 2
+# 29 "rmain.c" 2
 
 
 
@@ -3833,7 +3841,7 @@ void draw (Model *model, UINT32 *buffer) {
     renderScore(model->score, buffer);
 
 }
-# 200 "rmain.c"
+# 201 "rmain.c"
 void inputHandler(Model *model, int *gameRunning) {
 
     model->mario.state = 0;
