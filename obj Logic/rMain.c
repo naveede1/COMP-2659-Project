@@ -36,18 +36,18 @@
 Model testModel = {
 /* visible, posX, posY, deltX, deltY, state, direction, climbDir, climbing, collideLadder, onGround, hammerActive,
     hammerTimer, dead, walkFrame, climbFrame, hammerFrame, hammerFrameTimer, hammerHitActive */
-{1, 210, 352, 0, 0, 1, 1, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316}, /* Jumpman*/
+{1, 210, 102, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 194, 226, 336, 368}, /* Jumpman*/
 
 /* visible, posY, posX, type, size, colLeft, colRight */
-{ {1, 176, 142, 0, 8,  142, 206},   /* colLeft=posY, colRight=posY+(size*8)-1 */
-  {1, 272, 106, 0, 3,  106, 129},
-  {1, 304, 142, 2, 5,  142, 181},
-  {1, 192, 202, 1, 13, 202, 305},
-  {1, 176, 234, 2, 13, 234, 337},
-  {1, 192, 290, 1, 13, 290, 393},
-  {1, 176, 322, 2, 13, 322, 425},
-  {1, 272, 368, 1, 8,  300, 500},
-  {1, 176, 368, 0, 6,  368, 500}},
+{  {1, 176, 142, 0, 8,  176, 303}, /* Girder 1 */
+  {1, 272, 106, 0, 3,  272, 319},
+  {1, 304, 142, 2, 5,  304, 383},
+  {1, 192, 202, 1, 13, 192, 399},
+  {1, 176, 234, 2, 13, 176, 383},
+  {1, 192, 290, 1, 13, 192, 399},
+  {1, 176, 322, 2, 13, 176, 383},
+  {1, 272, 368, 1, 8,  272, 399},
+  {1, 176, 368, 0, 6,  176, 319} }, /* Girder 9 */
 
 /* visible, posY, posX, broken, size, topSize, bottomSize, skipped, leftB, rightB, topB, bottomB, update */
 {{1, 248, 78, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1}, /* Ladder 1 */

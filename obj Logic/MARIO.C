@@ -73,8 +73,10 @@ void snapMarioToNearestGirder(Mario *jm, Girder girders[], int numGirders)
 void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders)
 {
     int i;
-    int marioCenterX = jm->posX + 8;  /* horizontal center */
-    int marioFeetY   = jm->posY + 15; /* vertical bottom   */
+    int marioCenterX = jm->posX + 8;
+    int marioFeetY   = jm->posY + 15;
+    int bestHeight   = 32000;
+    int bestIndex    = -1;
 
     jm->onGround = 0;
 
@@ -93,15 +95,25 @@ void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders)
         if (landingHeight == -1)
             continue;
 
+        /* Only consider girders Mario is falling onto from above */
         if (jm->deltY >= 0 &&
             marioFeetY >= landingHeight - 2 &&
             marioFeetY <= landingHeight + MAX_FALL_SPEED + 1)
         {
-            jm->posY     = landingHeight - 15;
-            jm->deltY    = 0;
-            jm->onGround = 1;
-            break;
+            /* Pick the girder whose surface is closest to Mario's feet */
+            if (landingHeight < bestHeight)
+            {
+                bestHeight = landingHeight;
+                bestIndex  = i;
+            }
         }
+    }
+
+    if (bestIndex != -1)
+    {
+        jm->posY     = bestHeight - 15;
+        jm->deltY    = 0;
+        jm->onGround = 1;
     }
 }
 
