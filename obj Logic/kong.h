@@ -19,6 +19,7 @@ typedef struct { /* Structure for Donkey Kong */
 
 } Kong;
 
+
 /*----- Function: updateKong -----
 
   PURPOSE: Updates Kong's state machine each game tick.
@@ -32,7 +33,7 @@ typedef struct { /* Structure for Donkey Kong */
 
 */
 
-int updateKong(Kong *kong, int canSpawnBarrel);
+void updateKong(Kong *kong, int canSpawnBarrel);
 
 /*----- Function: requestFireBarrel -----
 
