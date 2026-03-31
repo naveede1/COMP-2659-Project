@@ -114,6 +114,20 @@ Model testModel = {
 {1, 186, 48, 3}, /* Lives */ 
 };
 
+/* ----- Async Events ----- */
+
+
+
+/* ----- Synch Events ----- */
+
+
+
+/* ----- Cond Events ----- */
+
+
+
+/* ------------------------ */
+
 int l = 0;
 
 void render(Model *model, UINT16 *base) {
