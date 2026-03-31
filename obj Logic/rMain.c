@@ -13,6 +13,7 @@
 #include "rBonus.c"
 #include "rLives.c"
 #include "rScore.c"
+#include "psg.h"
 
 #include "model.h"
 #include "raster.c"
@@ -21,6 +22,8 @@
 #include "kong.c"
 #include "barrel.c"
 #include "input.c"
+#include "music.c"
+#include "psg.c"
 
 #include <osbind.h>
 #include <stdio.h>
@@ -286,6 +289,8 @@ int main() {
         back_buffer = temp;
     }
 
+    start_music();
+
     while (gameRunning) {
 
         nowTime = getTime();
@@ -318,6 +323,10 @@ int main() {
             inputHandler(model, &gameRunning);
           
             /* ----- IMPORTANT: Put the Update Code into the Synch.c Event File ----- */
+
+            /* ----- UPDATE MUSIC ----- */
+
+            update_music(passedTime);
                     
 
             /* --- GAME LOGIC --- */
