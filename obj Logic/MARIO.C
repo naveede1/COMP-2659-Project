@@ -33,9 +33,9 @@ void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], 
 void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders) {
     int i, landingHeight;
     int marioCenterX = jm->posX + 8;  /* horizontal center of Mario */
-    int marioFeetY   = jm->posY + 15; /* bottom edge of Mario */
-    int bestHeight   = 32000; /* tracks closest surface found */
-    int bestIndex    = -1;
+    int marioFeetY = jm->posY + 15; /* bottom edge of Mario */
+    int bestHeight = 32000; /* tracks closest surface found */
+    int bestIndex = -1;
 
     jm->onGround = 0; /* assume airborne until a girder is found */
 
@@ -68,9 +68,9 @@ void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders) {
 
     /* snap Mario to the closest girder surface found */
     if (bestIndex != -1) {
-        jm->posY     = bestHeight - 15; /* place feet on surface */
-        jm->deltY    = 0;               /* stop falling */
-        jm->onGround = 1;               /* mark as grounded */
+        jm->posY = bestHeight - 15; /* place feet on surface */
+        jm->deltY = 0; /* stop falling */
+        jm->onGround = 1; /* mark as grounded */
     }
 }
 
@@ -79,8 +79,7 @@ void updateClimbing(Mario *jm, Ladder ladders[], int numLadders) {
     int onLadder = 0;
     int marioCenterX = jm->posX + 8;
 
-    for (index = 0; index < numLadders; index++)
-    {
+    for (index = 0; index < numLadders; index++) {
         Ladder *ladder = &ladders[index];
 
         if (!ladder->visible || ladder->broken)
@@ -92,11 +91,11 @@ void updateClimbing(Mario *jm, Ladder ladders[], int numLadders) {
             jm->posY >= ladder->topB &&
             jm->posY <= ladder->bottomB) {
 
-            jm->posX     = ladder->posX - 8;    /* centre Mario on ladder  */
-            jm->posY    += jm->climbDir * 2;    /* move up or down 2px */
-            jm->deltY    = 0;                   /* cancel gravity */
-            jm->onGround = 0;                   /* not on ground */
-            onLadder     = 1;
+            jm->posX = ladder->posX - 8; /* centre Mario on ladder  */
+            jm->posY += jm->climbDir * 2; /* move up or down 2px */
+            jm->deltY = 0; /* cancel gravity */
+            jm->onGround = 0; /* not on ground */
+            onLadder = 1;
             break;
         }
     }
@@ -169,7 +168,7 @@ void requestJump(Mario *jm) {
     if (!jm->onGround)
         return; /* cannot jump while airborne or climbing */
 
-    jm->deltY    = JUMP_FORCE; /* launch upward */
-    jm->onGround = 0;          /* no longer grounded */
-    jm->state    = 3;          /* state 3 = jumping */
+    jm->deltY = JUMP_FORCE; /* launch upward */
+    jm->onGround = 0; /* no longer grounded */
+    jm->state = 3; /* state 3 = jumping */
 }

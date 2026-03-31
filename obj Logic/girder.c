@@ -1,9 +1,9 @@
 #include "girder.h"
 
-int getGirderHeight(Girder *g, int x)
-{
+int getGirderHeight(Girder *g, int x) {
+    
     int width, offset;
-    int left  = g->posY;                       /* horizontal left edge of girder  */
+    int left  = g->posY;  /* horizontal left edge of girder  */
     int right = g->posY + (g->size * 16) - 1; /* horizontal right edge of girder */
 
     if (!g->visible)
@@ -20,7 +20,7 @@ int getGirderHeight(Girder *g, int x)
        calculate how far up or down the slope the surface sits at
        that point, proportional to the total width */
     width  = right - left + 1; /* total horizontal width in pixels */
-    offset = x - left;         /* how far x is from the left edge */
+    offset = x - left; /* how far x is from the left edge */
 
     if (g->type == 1)           /* / slope — surface rises left to right */
         return g->posX - (offset * g->size) / width;
@@ -28,9 +28,8 @@ int getGirderHeight(Girder *g, int x)
         return g->posX + (offset * g->size) / width;
 }
 
-int isOnGirder(Girder *g, int x)
-{
-    int left  = g->posY;                       /* horizontal left edge  */
+int isOnGirder(Girder *g, int x) {
+    int left  = g->posY; /* horizontal left edge  */
     int right = g->posY + (g->size * 16) - 1; /* horizontal right edge */
 
     if (!g->visible)

@@ -42,16 +42,22 @@ typedef struct { /* Structure for Jumpman */
 } Mario;
 
 /*------ Function: requestClimbUp -----
+
 PURPOSE: Sets Mario's climbing state to climbing and climb direction to up. Called when the player presses the climb up key.
+
 INPUT: Mario *jm: Pointer to the Mario struct
+
 OUTPUT: None
 
  */
 void requestClimbUp(Mario *jm);
 /* ------ Function: requestClimbDown -----
- * Requests Mario to climb down a ladder.
- * INPUT: Mario *jm: Pointer to the Mario struct
- * OUTPUT: None
+
+PURPOSE: Sets Mario's climbing state to climbing and climb direction to down. Called when the player presses the climb down key.
+
+  INPUT: Mario *jm: Pointer to the Mario struct
+ 
+  OUTPUT: None
  */
 void requestClimbDown(Mario *jm);
 
@@ -66,9 +72,13 @@ OUTPUT: None
  */
 
 void updateClimbing(Mario *jm, Ladder ladders[], int numLadders);
+
 /* ------ Function: applyGravity -----
+
 PURPOSE: Applies gravity to Mario, accelerating him downwards if he is not on the ground
+
 INPUT: Mario *jm: Pointer to the Mario struct
+
 OUTPUT: None
  
 */
@@ -79,6 +89,7 @@ void applyGravity(Mario *jm);
 void updateHammer(Mario *jm, float deltaTime);
 
 /*----- Function: updateMario -----
+
 PURPOSE: Updates Mario's position and state based on his velocity, gravity, and collisions with girders and ladders. Should be called once per frame.
 
 INPUT: Mario *jm: Pointer to the Mario struct
@@ -93,10 +104,13 @@ OUTPUT: None
 void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], int numLadders);
 
 /*----- Function: resolveGirderCollision -----
+
 PURPOSE: Resolves collision between Mario and a girder.
+
 INPUT: Mario *jm: Pointer to the Mario struct
          Girder girders[]: Array of girder structs
          int numGirders: Number of girders in the array
+
 OUTPUT: None
 */
 void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders);
