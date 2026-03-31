@@ -53,4 +53,19 @@ Silences all PSG sound production
 */
 void stop_sound();
 
+/*----- Function: set_noise -----
+
+Loads the noise register with the given tuning.
+
+*/
+void set_noise(int tuning);
+
+/*----- Function: set_envelope -----
+
+Loads the PSG envelope control registers with the given envelope shape and 16-bit
+sustain.
+
+*/
+void set_envelope(int shape, unsigned int sustain);
+
 #endif

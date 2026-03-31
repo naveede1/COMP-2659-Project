@@ -4,9 +4,6 @@
 
 TO DO:
 
-    **Each function must validate its input parameters. If an input value is out-of-range, 
-    the function must ignore the request.
-
     **Change typings to UINT8 where needed
 
     **According to Parker using write_psg is slower then just:
@@ -62,52 +59,47 @@ void set_tone(int channel, int tuning) {
 }
 
 void set_volume(int channel, int volume) {
+    if ((0 <= channel) && (channel <= 2)) {
+        volume = volume & 0x0F;
 
-    /*
-    
-    Add arguement checks
-
-    */
-
-    volume = volume & 0x0F;
-
-    if (channel == 0) {
-        write_psg(8, volume);
-    } else if (channel == 1) {
-        write_psg(9, volume);
+        if (channel == 0) {
+            write_psg(8, volume);
+        } else if (channel == 1) {
+            write_psg(9, volume);
+        } else {
+            write_psg(10, volume);
+        }        
     } else {
-        write_psg(10, volume);
+        printf("%d is not a valid channel.\n", channel);
     }
 }
 
 void enable_channels(int channel, int tone_on, int noise_on) {
+    if ((0 <= channel) && (channel <= 2)) {
+        UINT8 reg_7_value;
+        UINT8 tone;
+        UINT8 noise;
 
-    /*
-    
-    Add arguement checks
+        reg_7_value = read_psg(7);
 
-    */
+        tone &= ~(1 << channel); /* Tone bit position depending on the channel */
+        noise &= ~(1 << (channel + 3)); /* Noise bit position depending on the channel */
 
-    UINT8 reg_7_value;
-    UINT8 tone;
-    UINT8 noise;
+        /* Set tone bit */
+        if (tone_on == 0) {
+            reg_7_value |= (1 << channel);
+        }
 
-    reg_7_value = read_psg(7);
+        /* Set tone bit */
+        if (noise_on == 0) {
+            reg_7_value |= (1 << (channel + 3));
+        }
 
-    tone &= ~(1 << channel); /* Tone bit position depending on the channel */
-    noise &= ~(1 << (channel + 3)); /* Noise bit position depending on the channel */
+        write_psg(7, reg_7_value);  
 
-    /* Set tone bit */
-    if (tone_on == 0) {
-        reg_7_value |= (1 << channel);
+    } else {
+        printf("%d is not a valid channel.\n", channel);
     }
-
-    /* Set tone bit */
-    if (noise_on == 0) {
-        reg_7_value |= (1 << (channel + 3));
-    }
-
-    write_psg(7, reg_7_value);
 }
 
 void stop_sound() {
