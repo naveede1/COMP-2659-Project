@@ -107,3 +107,40 @@ void stop_sound() {
     write_psg(9, 0);
     write_psg(10, 0);  
 }
+
+void set_noise(int tuning) {
+    tuning = tuning & 0x1F;
+    write_psg(6, tuning);
+}
+
+void set_envelope(int shape, unsigned int sustain) {    
+    int fine_adjustment;
+    int rough_adjustment;
+
+    shape = shape & 0x0F; /* Shape: CONT:ATT:ALT:HOLD */
+
+    fine_adjustment = sustain & 0xFF;
+    rough_adjustment = sustain >> 8;
+
+    write_psg(11, fine_adjustment);
+    write_psg(12, rough_adjustment);
+    write_psg(13, shape);
+}
+
+int main() {
+	long old_ssp = Super(0);
+
+    printf("Value in register 11: %d\n", read_psg(11));
+    printf("Value in register 12: %d\n", read_psg(12));
+    printf("Value in register 13: %d\n", read_psg(13));
+
+    set_envelope(5, 300);
+
+    printf("New value in register 11: %d\n", read_psg(11));
+    printf("New value in register 12: %d\n", read_psg(12));
+    printf("New value in register 13: %d\n", read_psg(13));
+
+	Super(old_ssp);
+
+    return 0;
+}
