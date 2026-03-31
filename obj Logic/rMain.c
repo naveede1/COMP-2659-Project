@@ -21,6 +21,7 @@
 #include "kong.c"
 #include "barrel.c"
 #include "input.c"
+#include "mario.c"
 
 #include <osbind.h>
 #include <stdio.h>
@@ -332,7 +333,7 @@ int main() {
 
 
             /* --- UPDATE MARIO --- */
-            
+            updateMario(&model->mario, nowTime);
             updateMCollision(model->mario);
 
             
