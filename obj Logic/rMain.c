@@ -148,11 +148,6 @@ int main() {
     int canSpawnBarrel = rand() % 10; /* Random number from 0 to 9 */
     Model *model = &testModel;
 
-    if (splash_screen((UINT16 *)screen, title_block) == 0 ) {
-        printf("Exited game.\n");
-        return 0; /* Quit menu screen/game */
-    } 
-
     /* Draw static level once */
     clear_screen(screen);
     renderLevel(model, screen);
