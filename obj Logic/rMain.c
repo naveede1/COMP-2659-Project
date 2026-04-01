@@ -21,6 +21,8 @@
 #include "kong.c"
 #include "barrel.c"
 #include "input.c"
+#include "music.c"
+#include "psg.c"
 #include "mario.c"
 #include "girder.c"
 
@@ -323,6 +325,8 @@ int main() {
         back_buffer = temp;
     }
 
+    start_music();
+
     while (gameRunning) {
 
         nowTime = getTime();
@@ -355,6 +359,10 @@ int main() {
             inputHandler(model, &gameRunning);
           
             /* ----- IMPORTANT: Put the Update Code into the Synch.c Event File ----- */
+
+            /* ----- UPDATE MUSIC ----- */
+
+            update_music(passedTime);
                     
 
             /* --- GAME LOGIC --- */
