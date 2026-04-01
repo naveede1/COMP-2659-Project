@@ -149,21 +149,3 @@ void render_title(UINT16 *base, UINT16 *block) {
 
     render_menu_buttons((UINT32 *)base);
 }
-
-int splash_screen(UINT16 *base, UINT16 *block) {
-    
-    int start_game;
-    clear_screen((UINT32 *)base);
-    render_title(base, block);
-
-    while(!has_input()) {
-        char input;
-        input = get_input();
-
-        if (input == '\r') {
-            return 1;
-        } else if (input == 'q') {
-            return 0;
-        }
-    } 
-}

@@ -5,7 +5,6 @@
 #include <linea.h>
 
 #include "raster.c"
-#include "input.c"
 
 UINT16 title_block[16] =
 {
