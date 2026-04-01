@@ -13,14 +13,18 @@
 #include "rBonus.c"
 #include "rLives.c"
 #include "rScore.c"
+#include "splash.c"
 
 #include "model.h"
-#include "raster.c"
 #include "clock.c"
 #include "item.c"
 #include "kong.c"
 #include "barrel.c"
 #include "input.c"
+#include "music.c"
+#include "psg.c"
+#include "mario.c"
+#include "girder.c"
 #include "mario.c"
 
 #include <osbind.h>
@@ -32,20 +36,25 @@
 #define FRAMERULE 12
 
 Model testModel = {
-/* visible, posX, posY, deltX, deltY, state, direction, climbing, collideLadder, onGround, hammerActive,
+/* visible, posX, posY, deltX, deltY, state, direction, climbDir, climbing, collideLadder, onGround, hammerActive,
     hammerTimer, dead, walkFrame, climbFrame, hammerFrame, hammerFrameTimer, hammerHitActive */
-{1, 236, 352, 0, 0, 1, 1, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316}, /* Jumpman*/
+{1, 210, 352, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 194, 226, 336, 368}, /* Jumpman*/
 
 /* visible, posY, posX, type, size, colLeft, colRight */
-{ {1, 176, 142, 0, 8, 0, 0}, /* Girder 1 */
-{1, 272, 106, 0, 3, 0, 0}, 
-{1, 304, 142, 2, 5, 0, 0}, 
-{1, 192, 202, 1, 13, 0, 0}, 
-{1, 176, 234, 2, 13, 0, 0}, 
-{1, 192, 290, 1, 13, 0, 0}, 
-{1, 176, 322, 2, 13, 0, 0}, 
-{1, 272, 368, 1, 8, 0, 0}, 
-{1, 176, 368, 0, 6, 0, 0} }, /* Girder 9*/
+/*To Calculate colLeft and colRight 
+ using the formula:
+ colLeft = posX - (size - 1) / 2
+ colRight = posX + (size - 1) / 2
+*/
+{ {1, 176, 142, 0, 8,  176, 303}, /* Girder 1 */
+  {1, 272, 106, 0, 3,  272, 319},
+  {1, 304, 142, 2, 5,  304, 383},
+  {1, 192, 202, 1, 13, 192, 399},
+  {1, 176, 234, 2, 13, 176, 383},
+  {1, 192, 290, 1, 13, 192, 399},
+  {1, 176, 322, 2, 13, 176, 383},
+  {1, 272, 368, 1, 8,  272, 399},
+  {1, 176, 368, 0, 6,  176, 319} }, /* Girder 9 */
 
 /* visible, posY, posX, broken, size, topSize, bottomSize, skipped, leftB, rightB, topB, bottomB, update */
 {{1, 248, 78, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1}, /* Ladder 1 */
@@ -199,8 +208,9 @@ OUTPUT: None
 */
 
 void inputHandler(Model *model, int *gameRunning) {
-    
-    model->mario.state = 0; 
+    /* only reset to standing if grounded and not climbing */
+    if (model->mario.onGround && !model->mario.climbing)
+        model->mario.state = 0;
 
     if (has_input()) {
         
@@ -210,33 +220,56 @@ void inputHandler(Model *model, int *gameRunning) {
 
         /* Handle input and update model accordingly */
         /*If want to change the speed of mario change the value of the model->mario.posX =4  model->mario.posY = 4 */
-        
+
         if (input_val == 'a') {
-            model->mario.posX -= 4;
+            /* detlX instead of posx because deltX is the velocity */
+            model->mario.deltX = -MOVE_SPEED;
             model->mario.direction = 0;
             model->mario.state = 1;
             model->mario.walkFrame = 1 - model->mario.walkFrame;
         }
         else if (input_val == 'd') {
-            model->mario.posX += 4;
+            model->mario.deltX = MOVE_SPEED;
             model->mario.direction = 1;
             model->mario.state = 1;
             model->mario.walkFrame = 1 - model->mario.walkFrame;
         }
         else if (input_val == 'w') {
-            model->mario.posY -= 4;
+            requestClimbUp(&model->mario);
             model->mario.state = 2;
             model->mario.climbFrame = 1 - model->mario.climbFrame;
         }
         else if (input_val == 's') {
-            model->mario.posY += 4;
+            requestClimbDown(&model->mario);
             model->mario.state = 2;
             model->mario.climbFrame = 1 - model->mario.climbFrame;
+        }
+        else if (input_val == ' ') { /* Spacebar for Jumping */
+            requestJump(&model->mario);
+            model->mario.state = 3;
         }
         else if (input_val == 'q') {
             *gameRunning = 0;
         }
     }
+}
+
+int splash_screen(UINT16 *base, UINT16 *block) {
+    
+    int start_game;
+    clear_screen((UINT32 *)base);
+    render_title(base, block);
+
+    while(!has_input()) {
+        char input;
+        input = get_input();
+
+        if (input == '\r') {
+            return 1;
+        } else if (input == 'q') {
+            return 0;
+        }
+    } 
 }
 
 int main() {
@@ -267,6 +300,11 @@ int main() {
     int canSpawnBarrel = rand() % 10;
     Model *model = &testModel;
 
+    if (splash_screen((UINT16 *)front_buffer, title_block) == 0 ) {
+        printf("Exited game.\n");
+        return 0; /* Quit menu screen/game */
+    }
+
     /* --- Draw initial frame into back buffer --- */
     memset(back_buffer, 0, SCREEN_SIZE);
 
@@ -289,6 +327,8 @@ int main() {
         back_buffer = temp;
     }
 
+    start_music();
+
     while (gameRunning) {
 
         nowTime = getTime();
@@ -297,8 +337,8 @@ int main() {
         if (passedTime % 2000 == 0) {
 
             model->timer.value -= 200;
-            clear_region((UINT8 *)back_buffer, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
-            renderBonus(model->timer, (UINT16 *)back_buffer);
+            clear_region((UINT32 *)back_buffer, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
+            renderBonus(model->timer, (UINT32 *)back_buffer);
 
             if (model->timer.value == 4000) {
 
@@ -321,6 +361,10 @@ int main() {
             inputHandler(model, &gameRunning);
           
             /* ----- IMPORTANT: Put the Update Code into the Synch.c Event File ----- */
+
+            /* ----- UPDATE MUSIC ----- */
+
+            update_music(passedTime);
                     
 
             /* --- GAME LOGIC --- */
@@ -333,7 +377,9 @@ int main() {
 
 
             /* --- UPDATE MARIO --- */
-            updateMCollision(model->mario);
+            updateMario(&model->mario, model->girders, 9, model->ladders, 15);
+            updateMCollision(&model->mario);
+            /* pointer as it needs to write changes back to the actual Mario struct in the model */
 
             
             /* --- UPDATE BARRELS --- */

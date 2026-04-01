@@ -20,7 +20,7 @@
 #define NO_BARREL 0
 #define NORMAL_BARREL 1
 
-int updateKong(Kong *kong, int canSpawnBarrel)
+void updateKong(Kong *kong, int canSpawnBarrel)
 {
     kong->stateTimer++;
     switch (kong->state)
@@ -68,7 +68,6 @@ int updateKong(Kong *kong, int canSpawnBarrel)
         break;
     }
 
-    return kong->state;
 }
 
 static void kongAction(Kong *kong, int canSpawnBarrel)
