@@ -23,6 +23,7 @@
 #include "input.c"
 #include "mario.c"
 #include "girder.c"
+#include "hammer.c"
 
 
 #include <osbind.h>
@@ -79,7 +80,7 @@ Model testModel = {
 
 /* visible, posX, posY, state */
 { {1, 190, 162, 0}, /* Hammer 1 */
-{1, 338, 296, 0} }, /* Hammer 2 */
+{1, 328, 326, 0} }, /* Hammer 2 */
 
 /* visible, posX, posY, state */
 {1, 256, 74, 0}, /* Pauline */ 
@@ -116,16 +117,68 @@ Model testModel = {
 
 /* ----- Async Events ----- */
 
+void handle_async_events(Model *model, int *gameRunning) {
+    /* only reset to standing if grounded and not climbing */
+    if (model->mario.onGround && !model->mario.climbing)
+        model->mario.state = 0;
 
+    if (has_input()) {
+        
+        char input_val = get_input();
+
+        while (has_input()) input_val = get_input();
+
+        /* Handle input and update model accordingly */
+        /*If want to change the speed of mario change the value of the model->mario.posX =4  model->mario.posY = 4 */
+
+        if (input_val == 'a') {
+            /* deltX instead of posx because deltX is the velocity */
+            model->mario.deltX = -MOVE_SPEED;
+            model->mario.direction = 0;
+            model->mario.state = 1;
+            model->mario.walkFrame = 1 - model->mario.walkFrame;
+        }
+        else if (input_val == 'd') {
+            model->mario.deltX = MOVE_SPEED;
+            model->mario.direction = 1;
+            model->mario.state = 1;
+            model->mario.walkFrame = 1 - model->mario.walkFrame;
+        }
+        else if (input_val == 'w') {
+            if (model->mario.collideLadder == 1) {
+                requestClimbUp(&model->mario);
+                model->mario.state = 2;
+                model->mario.climbFrame = 1 - model->mario.climbFrame;
+                model->mario.onGround = 0; /* no longer grounded */
+            }
+        }
+        else if (input_val == 's') {
+            if (model->mario.collideLadder == 1) {
+                requestClimbDown(&model->mario);
+                model->mario.state = 2;
+                model->mario.climbFrame = 1 - model->mario.climbFrame;
+                model->mario.onGround = 0; /* not grounded */
+            }
+        }
+        else if (input_val == ' ') { /* Spacebar for Jumping */
+            requestJump(&model->mario);
+            model->mario.state = 3;
+        }
+        else if (input_val == 'q') {
+            *gameRunning = 0;
+        }
+    }
+}
 
 /* ----- Synch Events ----- */
 
 
 
 /* ----- Cond Events ----- */
+void handle_cond_events(Model *model, int *gameRunning) {
+    checkHammer(&model->mario, model->hammers);
 
-
-
+}
 /* ------------------------ */
 
 int l = 0;
@@ -174,30 +227,6 @@ void renderLevel(Model *model, UINT32 *base) {
 
 }
 
-int checkMCollision(int jmXleft, int jmYtop, int otherXleft, int otherYtop, int otherSize) { /* Returns 1 if the Object Collides with Mario, 0 if not*/
-
-    /* Set Marios Collider */
-    int jmXright = jmXleft + 15;
-    int jmYbottom = jmYtop + 15;
-
-    /* Set Other Objects Collider */
-    int otherXright = otherXleft + (otherSize - 1);
-    int otherYbottom = otherYtop + (otherSize - 1);
-    
-    /* Check for possible X position collision */
-    if ((jmXleft <= otherXleft <= jmXright) || (jmXleft <= otherXright <= jmXright)) {
-
-        /* Check for possible Y position collision */
-        if ((jmYtop <= otherYtop <= jmYbottom) || (jmYtop <= otherYbottom <= jmYbottom)) {
-
-            /* If both conditions are met, there's some form of overlap -> COLLISION! */
-            return 1;
-        }
-    }
-    /* If there's no X overlap, it doesnt matter if we check the Y */
-    return 0;
-}
-
 void draw (Model *model, UINT32 *buffer) {
     
     render(model,(UINT16 *)buffer);
@@ -219,54 +248,8 @@ OUTPUT: None
 
 */
 
-void inputHandler(Model *model, int *gameRunning) {
-    /* only reset to standing if grounded and not climbing */
-    if (model->mario.onGround && !model->mario.climbing)
-        model->mario.state = 0;
 
-    if (has_input()) {
-        
-        char input_val = get_input();
-
-        while (has_input()) input_val = get_input();
-
-        /* Handle input and update model accordingly */
-        /*If want to change the speed of mario change the value of the model->mario.posX =4  model->mario.posY = 4 */
-
-        if (input_val == 'a') {
-            /* detlX instead of posx because deltX is the velocity */
-            model->mario.deltX = -MOVE_SPEED;
-            model->mario.direction = 0;
-            model->mario.state = 1;
-            model->mario.walkFrame = 1 - model->mario.walkFrame;
-        }
-        else if (input_val == 'd') {
-            model->mario.deltX = MOVE_SPEED;
-            model->mario.direction = 1;
-            model->mario.state = 1;
-            model->mario.walkFrame = 1 - model->mario.walkFrame;
-        }
-        else if (input_val == 'w') {
-            requestClimbUp(&model->mario);
-            model->mario.state = 2;
-            model->mario.climbFrame = 1 - model->mario.climbFrame;
-        }
-        else if (input_val == 's') {
-            requestClimbDown(&model->mario);
-            model->mario.state = 2;
-            model->mario.climbFrame = 1 - model->mario.climbFrame;
-        }
-        else if (input_val == ' ') { /* Spacebar for Jumping */
-            requestJump(&model->mario);
-            model->mario.state = 3;
-        }
-        else if (input_val == 'q') {
-            *gameRunning = 0;
-        }
-    }
-}
-
-int main() {
+int runGame() {
 
     /* --- Allocate buffers --- */
     UINT8 *raw1 = (UINT8 *)Malloc(SCREEN_SIZE + 256);
@@ -343,15 +326,9 @@ int main() {
 
             /* ----- IMPORTANT: Put Input Code into the Asynch.c Event File ----- */
 
-            inputHandler(model, &gameRunning);
+            handle_async_events(model, &gameRunning);
           
             /* ----- IMPORTANT: Put the Update Code into the Synch.c Event File ----- */
-                    
-
-            /* --- GAME LOGIC --- */
-            if (passedTime > 40000) {
-                gameRunning = 0;
-            }
 
             /* --- UPDATE DK --- */
             updateKong(&model->kong, canSpawnBarrel);
@@ -380,6 +357,7 @@ int main() {
 
             /* ----- IMPORTANT: Put Conditional Events (if this then that) into Cond.c Event File ----- */
 
+            handle_cond_events(model, &gameRunning);
 
             /* --- RENDER EVERYTHING (FULL REDRAW) --- */
             draw(model, (UINT32 *)back_buffer);
@@ -387,14 +365,24 @@ int main() {
             /* --- SWAP BUFFERS --- */
             Vsync();
             Setscreen(back_buffer, back_buffer, -1);
-            
             {               
                 UINT8 *temp = front_buffer;
                 front_buffer = back_buffer;
                 back_buffer = temp;
             }
+
+            Mfree(raw1);
+            Mfree(raw2);
         }
     }
 
     return 0;
+}
+
+int main() {
+
+    runGame();
+
+    return 0;
+
 }

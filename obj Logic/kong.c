@@ -11,9 +11,9 @@
 /*Duration of each state in 70Hz clock ticks.
    These are set low for faster testing - increase for final game */
 #define IDLE_TICKS 18
-#define GRAB_TICKS 18
-#define HOLD_TICKS 18
-#define THROW_TICKS 18
+#define GRAB_TICKS 8
+#define HOLD_TICKS 6
+#define THROW_TICKS 12
 #define MOCK_TICKS 18
 
 /* barrel spawn signals */

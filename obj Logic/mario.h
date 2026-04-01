@@ -4,16 +4,6 @@
 #include "girder.h"
 #include "ladder.h"
 
-#define GRAVITY 1
-#define JUMP_FORCE -6
-#define MOVE_SPEED 4
-#define MAX_FALL_SPEED 10
-
-#define HAMMER_DURATION 8.0f
-#define HAMMER_FRAME_TIME 1
-#define HAMMER_FRAME_TIME 0.15f
-#define HAMMER_TOTAL_FRAMES 4
-
 typedef struct { /* Structure for Jumpman */
 
     int visible; /* No = 0, Yes = 1 */
@@ -26,7 +16,7 @@ typedef struct { /* Structure for Jumpman */
     int collideLadder;   /* No = 0, Yes = 1 */
     int onGround; /* Is JumpMan Grounded? No = 0, Yes = 1 */ 
     int hammerActive; /* No = 0, Yes = 1 */
-    long hammerTimer;
+    int hammerTimer; /* How long Jumpman has left in his Hammer powerup */
     int dead; /* Should I be falling offscreen? No = 0, Yes = 1 */
 
     int walkFrame;
@@ -86,17 +76,17 @@ OUTPUT: None
 void applyGravity(Mario *jm);
 
 
-void updateHammer(Mario *jm, float deltaTime);
+void updateHammer(Mario *jm);
 
 /*----- Function: updateMario -----
 
 PURPOSE: Updates Mario's position and state based on his velocity, gravity, and collisions with girders and ladders. Should be called once per frame.
 
 INPUT: Mario *jm: Pointer to the Mario struct
-         Girder girders[]: Array of girder structs
-         int numGirders: Number of girders in the array
-         Ladder ladders[]: Array of ladder structs
-         int numLadders: Number of ladders in the array
+    Girder girders[]: Array of girder structs
+    int numGirders: Number of girders in the array
+    Ladder ladders[]: Array of ladder structs
+    int numLadders: Number of ladders in the array
 
 OUTPUT: None
 
@@ -108,11 +98,15 @@ void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], 
 PURPOSE: Resolves collision between Mario and a girder.
 
 INPUT: Mario *jm: Pointer to the Mario struct
-         Girder girders[]: Array of girder structs
-         int numGirders: Number of girders in the array
+    Girder girders[]: Array of girder structs
+    int numGirders: Number of girders in the array
 
 OUTPUT: None
 */
 void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders);
+
+void updateMCollision(Mario *mario);
+
+int checkMCollision(int jmXleft, int jmYtop, int otherXleft, int otherYtop, int otherSize);
 
 #endif

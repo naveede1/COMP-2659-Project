@@ -2,6 +2,17 @@
 #include "girder.h"
 #include "ladder.h"
 
+#define GRAVITY 1
+#define JUMP_FORCE -6
+#define MOVE_SPEED 4
+#define MAX_FALL_SPEED 10
+
+/* Hammer Animation Timers */
+#define HAMMER_DURATION 16
+#define HAMMER_FRAME_TIME 1
+#define HAMMER_TOTAL_FRAMES 2
+
+
 void applyGravity(Mario *jm)
 {
     if (jm->climbing) {
@@ -18,6 +29,7 @@ void applyGravity(Mario *jm)
 }
 
 void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], int numLadders) {
+    
     if (jm->climbing) {
         updateClimbing(jm, ladders, numLadders);
     } else {
@@ -27,7 +39,8 @@ void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], 
         jm->deltX = 0; /* horizontal speed resets each frame, input must be re-applied next frame */
         resolveGirderCollision(jm, girders, numGirders);
     }
-    /*updateHammer(jm, 0.15f);*/
+    
+    updateHammer(jm);
 }
 
 void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders) {
@@ -104,11 +117,12 @@ void updateClimbing(Mario *jm, Ladder ladders[], int numLadders) {
         jm->climbing = 0; /* no ladder found, stop climbing */
 }
 
-void updateHammer(Mario *jm, float deltaTime) {
-      if (jm->hammerActive) { /* Main Hammer timer/logic */
+void updateHammer(Mario *jm) {
     
-        jm->hammerTimer += deltaTime;
-        jm->hammerFrameTimer += deltaTime;
+    if (jm->hammerActive) { /* Main Hammer timer/logic */
+    
+        jm->hammerTimer++;
+        jm->hammerFrameTimer++;
 
         /* End hammer after duration */
         if (jm->hammerTimer >= HAMMER_DURATION) {
@@ -123,24 +137,10 @@ void updateHammer(Mario *jm, float deltaTime) {
 
         /* Advance animation frame */
         if (jm->hammerFrameTimer >= HAMMER_FRAME_TIME) {
-
             jm->hammerFrame++;
             jm->hammerFrameTimer = 0;
-
             if (jm->hammerFrame >= HAMMER_TOTAL_FRAMES)
                 jm->hammerFrame = 0;
-        
-        }
-
-        /* Activate hit frames (This is what the actual arcade does, only attacks frame 1 and 3 of animation) */
-        if (jm->hammerFrame == 1 || jm->hammerFrame == 3) { 
-
-            jm->hammerHitActive = 1;
-        
-        } else {
-
-            jm->hammerHitActive = 0;
-            
         }
 
         if (jm->hammerActive) { /* Prevents climbing */
@@ -150,7 +150,6 @@ void updateHammer(Mario *jm, float deltaTime) {
 
         }
     }
-
 }
 
 void requestClimbUp(Mario *jm) {
@@ -171,4 +170,37 @@ void requestJump(Mario *jm) {
     jm->deltY = JUMP_FORCE; /* launch upward */
     jm->onGround = 0; /* no longer grounded */
     jm->state = 3; /* state 3 = jumping */
+}
+
+void updateMCollision(Mario *mario) {
+
+    mario->leftB = mario->posX;
+    mario->rightB = mario->posX + 16;
+    mario->topB = mario->posY;
+    mario->bottomB = mario->posY + 16;
+
+}
+
+int checkMCollision(int jmXleft, int jmYtop, int otherXleft, int otherYtop, int otherSize) { /* Returns 1 if the Object Collides with Mario, 0 if not*/
+
+    /* Set Marios Collider */
+    int jmXright = jmXleft + 15;
+    int jmYbottom = jmYtop + 15;
+
+    /* Set Other Objects Collider */
+    int otherXright = otherXleft + (otherSize - 1);
+    int otherYbottom = otherYtop + (otherSize - 1);
+    
+    /* Check for possible X position collision */
+    if ((jmXleft <= otherXleft <= jmXright) || (jmXleft <= otherXright <= jmXright)) {
+
+        /* Check for possible Y position collision */
+        if ((jmYtop <= otherYtop <= jmYbottom) || (jmYtop <= otherYbottom <= jmYbottom)) {
+
+            /* If both conditions are met, there's some form of overlap -> COLLISION! */
+            return 1;
+        }
+    }
+    /* If there's no X overlap, it doesnt matter if we check the Y */
+    return 0;
 }
