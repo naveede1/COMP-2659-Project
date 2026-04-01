@@ -13,9 +13,9 @@
 #include "rBonus.c"
 #include "rLives.c"
 #include "rScore.c"
+#include "splash.c"
 
 #include "model.h"
-#include "raster.c"
 #include "clock.c"
 #include "item.c"
 #include "kong.c"
@@ -252,6 +252,24 @@ void inputHandler(Model *model, int *gameRunning) {
     }
 }
 
+int splash_screen(UINT16 *base, UINT16 *block) {
+    
+    int start_game;
+    clear_screen((UINT32 *)base);
+    render_title(base, block);
+
+    while(!has_input()) {
+        char input;
+        input = get_input();
+
+        if (input == '\r') {
+            return 1;
+        } else if (input == 'q') {
+            return 0;
+        }
+    } 
+}
+
 int main() {
 
     /* --- Allocate buffers --- */
@@ -277,6 +295,11 @@ int main() {
 
     int canSpawnBarrel = rand() % 10;
     Model *model = &testModel;
+
+    if (splash_screen((UINT16 *)front_buffer, title_block) == 0 ) {
+        printf("Exited game.\n");
+        return 0; /* Quit menu screen/game */
+    }
 
     /* --- Draw initial frame into back buffer --- */
     memset(back_buffer, 0, SCREEN_SIZE);
