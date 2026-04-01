@@ -77,23 +77,13 @@ void set_volume(int channel, int volume) {
 void enable_channels(int channel, int tone_on, int noise_on) {
     if ((0 <= channel) && (channel <= 2)) {
         UINT8 reg_7_value;
-        UINT8 tone;
-        UINT8 noise;
+        UINT8 tone = !tone_on << channel;
+        UINT8 noise = !noise_on << (channel + 3);
 
         reg_7_value = read_psg(7);
-
-        tone &= ~(1 << channel); /* Tone bit position depending on the channel */
-        noise &= ~(1 << (channel + 3)); /* Noise bit position depending on the channel */
-
-        /* Set tone bit */
-        if (tone_on == 0) {
-            reg_7_value |= (1 << channel);
-        }
-
-        /* Set tone bit */
-        if (noise_on == 0) {
-            reg_7_value |= (1 << (channel + 3));
-        }
+        reg_7_value &= ~(0x09 << channel); /* Clear bits to be set */
+        reg_7_value |= tone;
+        reg_7_value |= noise;
 
         write_psg(7, reg_7_value);  
 
