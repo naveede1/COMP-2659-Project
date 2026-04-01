@@ -35,9 +35,9 @@ typedef struct {
     Oil oil;
     Hammer hammers[2];
     Lady lady;
-    Barrel barrels[7];
+    Barrel barrels[9];
     Spirit spirit;
-    Item items[3];
+    Item item;
     Heart heart;
     Timer timer;
     Score score;

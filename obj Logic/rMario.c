@@ -59,8 +59,11 @@ void renderMLeft(Mario mario, UINT16 *base) {
     
     } else {
     
-        plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_hitBM);
-
+        if (mario.dead == 1) {
+            plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_deadBM);
+        } else {
+            plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_hitBM);
+        }
     }
 }
 
@@ -80,7 +83,9 @@ void renderMRight(Mario mario, UINT16 *base) {
         }
  
     } else if (currState == 2) {
-        if (mario.climbFrame == 0) {
+        if (mario.climbing == 0) {
+            plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_climbPullBM);
+        } else if (mario.climbFrame == 0) {
             plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_climbLeftBM);
             mario.walkFrame = 1;
         } else {
@@ -91,19 +96,22 @@ void renderMRight(Mario mario, UINT16 *base) {
     } else if (currState == 3) {
         
         plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_jumpRightBM);
-        
+    
     } else {
     
-        plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_hitBM);
-    
+        if (mario.dead == 1) {
+            plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_deadBM);
+        } else {
+            plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_hitBM);
+        }
     }
 }
 
-void updateMCollision(Mario mario) {
+void updateMCollision(Mario *mario) {
 
-    mario.leftB = mario.posX;
-    mario.rightB = mario.posX + 16;
-    mario.topB = mario.posY;
-    mario.bottomB = mario.posY + 16;
+    mario->leftB = mario->posX;
+    mario->rightB = mario->posX + 16;
+    mario->topB = mario->posY;
+    mario->bottomB = mario->posY + 16;
 
 }

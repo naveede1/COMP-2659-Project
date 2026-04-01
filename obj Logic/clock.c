@@ -2,7 +2,7 @@
 
 UINT32 getTime() {
 
-    long currTime;
+    volatile long currTime;
 
     long *timer = (long *)0x0462; /* Location of 70Hz Timer (+70/s)*/
     long old_ssp;

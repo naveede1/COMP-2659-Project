@@ -17,27 +17,44 @@
 
 #include "model.h"
 #include "clock.c"
+#include "item.c"
 #include "kong.c"
+#include "barrel.c"
+#include "input.c"
+#include "mario.c"
+#include "girder.c"
+
 
 #include <osbind.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h> /* for random */
+
+#define SCREEN_SIZE 32000
 #define FRAMERULE 12
 
 Model testModel = {
-{1, 306, 300, 0, 0, 3, 0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 306, 322, 300, 316}, /* Jumpman*/
+/* visible, posX, posY, deltX, deltY, state, direction, climbDir, climbing, collideLadder, onGround, hammerActive,
+    hammerTimer, dead, walkFrame, climbFrame, hammerFrame, hammerFrameTimer, hammerHitActive */
+{1, 210, 352, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 194, 226, 336, 368}, /* Jumpman*/
 
-{ {1, 176, 142, 0, 8, 0, 0}, /* Girder 1 */
-{1, 272, 106, 0, 3, 0, 0}, 
-{1, 304, 142, 2, 5, 0, 0}, 
-{1, 192, 202, 1, 13, 0, 0}, 
-{1, 176, 234, 2, 13, 0, 0}, 
-{1, 192, 290, 1, 13, 0, 0}, 
-{1, 176, 322, 2, 13, 0, 0}, 
-{1, 272, 368, 1, 8, 0, 0}, 
-{1, 176, 368, 0, 6, 0, 0} }, /* Girder 9*/
+/* visible, posY, posX, type, size, colLeft, colRight */
+/*To Calculate colLeft and colRight 
+ using the formula:
+ colLeft = posX - (size - 1) / 2
+ colRight = posX + (size - 1) / 2
+*/
+{ {1, 176, 142, 0, 8,  176, 303}, /* Girder 1 */
+  {1, 272, 106, 0, 3,  272, 319},
+  {1, 304, 142, 2, 5,  304, 383},
+  {1, 192, 202, 1, 13, 192, 399},
+  {1, 176, 234, 2, 13, 176, 383},
+  {1, 192, 290, 1, 13, 192, 399},
+  {1, 176, 322, 2, 13, 176, 383},
+  {1, 272, 368, 1, 8,  272, 399},
+  {1, 176, 368, 0, 6,  176, 319} }, /* Girder 9 */
 
+/* visible, posY, posX, broken, size, topSize, bottomSize, skipped, leftB, rightB, topB, bottomB, update */
 {{1, 248, 78, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1}, /* Ladder 1 */
 {1, 264, 78, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1},
 {1, 312, 112, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1}, 
@@ -54,39 +71,50 @@ Model testModel = {
 {1, 272, 336, 1, 4, 1, 1, 2, 0, 0, 0, 0, 1},
 {1, 356, 340, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1} }, /* Ladder 15 */ 
 
-/*visible, posX, posY, state, topL, bottomR, spawnX, spawnY, stateTimer, spawnBarrel, spawnFireBarrel*/
+/* visible, posX, posY, state, topL, bottomR, spawnX, spawnY, stateTimer, spawnBarrel, spawnFireBarrel*/
 {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* Kong */
 
-{1, 184, 336, 0, 0, 0, 0, 1, 0}, /* Oil */
+/* visible, posX, posY, state, requestFireBarrel */
+{1, 184, 336, 1, 0}, /* Oil */
 
-{ {1, 190, 162, 0, 0, 0}, /* Hammer 1 */
-{1, 338, 296, 0, 0, 0} }, /* Hammer 2 */
+/* visible, posX, posY, state */
+{ {1, 190, 162, 0}, /* Hammer 1 */
+{1, 338, 296, 0} }, /* Hammer 2 */
 
-{1, 256, 74, 0, 0, 0}, /* Pauline */ 
+/* visible, posX, posY, state */
+{1, 256, 74, 0}, /* Pauline */ 
 
-{ {1, 300, 314, 0, 0, 0, 0, 0, 0, 0}, /* Barrel 1 */
-{1, 316, 262, 0, 0, 1, 0, 0, 0, 0}, 
-{1, 246, 184, 0, 0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0} }, /* Barrel 7 */ 
+/* visible, posX, posY, state, broken, dropTick, timeSpawned */
+{ {0, 0, 0, 0, 0, 0}, /* Barrel 1 */
+{0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0} }, /* Barrel 9 */ 
 
-{1, 240, 352, 0, 0, 1, 0, 0, 0}, /* Spirit */
+/* visible, posX, posY, direction */
+{0, 240, 352, 1}, /* Spirit */
 
-{ {0, 0, 200, 0, 0, 0, 0, 0}, /* Item 1 */
-{0, 0, 200, 0, 0, 1, 0, 0},  
-{0, 0, 200, 0, 0, 2, 0, 0} },  /* Item 3 */
+/* visible, posX, posY, type, worth, lifetime, maxLifetime */
+{0, 358, 300, 2, 0, 0, 0}, /* Item */
 
-{0, 288, 66, 0, 0, 0}, /* Heart */
+/* visible, posX, posY, broken */
+{0, 288, 66, 0}, /* Heart */
 
-{1, 352, 78, 0, 0, 0, 0, 0}, /* Timer */
+/* visible, posX, posY, value, startValue */
+{1, 352, 78, 5000, 5000}, /* Timer */
 
-{1, 240, 11, 0, 981}, /* Score */
+/* visible, posX, posY, value, highValue */
+{1, 240, 11, 0, 70981}, /* Score */
 
+/* visible, posX, posY, count */
 {1, 186, 48, 3}, /* Lives */ 
 };
 
+int l = 0;
 
 void render(Model *model, UINT16 *base) {
 
@@ -101,9 +129,7 @@ void render(Model *model, UINT16 *base) {
     
     renderHammer(model->hammers[0], base);
     renderHammer(model->hammers[1], base);
-    renderItem(model->items[0], base);
-    renderItem(model->items[1], base);
-    renderItem(model->items[2], base);
+    renderItem(model->item, base);
 
 }
 
@@ -130,99 +156,228 @@ void renderLevel(Model *model, UINT32 *base) {
 
     renderBonus(model->timer, base);
     renderLives(model->lives, (UINT8 *)base);
-    renderScore(model->score, base);
+    renderScore(model->score, (UINT32 *)base);
 
 }
 
+int checkMCollision(int jmXleft, int jmYtop, int otherXleft, int otherYtop, int otherSize) { /* Returns 1 if the Object Collides with Mario, 0 if not*/
+
+    /* Set Marios Collider */
+    int jmXright = jmXleft + 15;
+    int jmYbottom = jmYtop + 15;
+
+    /* Set Other Objects Collider */
+    int otherXright = otherXleft + (otherSize - 1);
+    int otherYbottom = otherYtop + (otherSize - 1);
+    
+    /* Check for possible X position collision */
+    if ((jmXleft <= otherXleft <= jmXright) || (jmXleft <= otherXright <= jmXright)) {
+
+        /* Check for possible Y position collision */
+        if ((jmYtop <= otherYtop <= jmYbottom) || (jmYtop <= otherYbottom <= jmYbottom)) {
+
+            /* If both conditions are met, there's some form of overlap -> COLLISION! */
+            return 1;
+        }
+    }
+    /* If there's no X overlap, it doesnt matter if we check the Y */
+    return 0;
+}
+
+void draw (Model *model, UINT32 *buffer) {
+    
+    render(model,(UINT16 *)buffer);
+    renderLevel(model, buffer);
+    renderDK(model->kong,buffer);
+    renderBStack(model->kong,buffer);
+    renderLives(model->lives, (UINT8 *)buffer);
+    renderScore(model->score, buffer);
+
+}
+
+/* --- INPUT HANDLER --- 
+PURPOSE: To handle user input and update the model accordingly.
+
+INPUT: Model: Pointer to the game model struct, that has all game state information.
+       gameRunning: Pointer to the gameRunning variable.
+
+OUTPUT: None
+
+*/
+
+void inputHandler(Model *model, int *gameRunning) {
+    /* only reset to standing if grounded and not climbing */
+    if (model->mario.onGround && !model->mario.climbing)
+        model->mario.state = 0;
+
+    if (has_input()) {
+        
+        char input_val = get_input();
+
+        while (has_input()) input_val = get_input();
+
+        /* Handle input and update model accordingly */
+        /*If want to change the speed of mario change the value of the model->mario.posX =4  model->mario.posY = 4 */
+
+        if (input_val == 'a') {
+            /* detlX instead of posx because deltX is the velocity */
+            model->mario.deltX = -MOVE_SPEED;
+            model->mario.direction = 0;
+            model->mario.state = 1;
+            model->mario.walkFrame = 1 - model->mario.walkFrame;
+        }
+        else if (input_val == 'd') {
+            model->mario.deltX = MOVE_SPEED;
+            model->mario.direction = 1;
+            model->mario.state = 1;
+            model->mario.walkFrame = 1 - model->mario.walkFrame;
+        }
+        else if (input_val == 'w') {
+            requestClimbUp(&model->mario);
+            model->mario.state = 2;
+            model->mario.climbFrame = 1 - model->mario.climbFrame;
+        }
+        else if (input_val == 's') {
+            requestClimbDown(&model->mario);
+            model->mario.state = 2;
+            model->mario.climbFrame = 1 - model->mario.climbFrame;
+        }
+        else if (input_val == ' ') { /* Spacebar for Jumping */
+            requestJump(&model->mario);
+            model->mario.state = 3;
+        }
+        else if (input_val == 'q') {
+            *gameRunning = 0;
+        }
+    }
+}
 
 int main() {
-    
-    UINT32 *screen = Physbase();
+
+    /* --- Allocate buffers --- */
+    UINT8 *raw1 = (UINT8 *)Malloc(SCREEN_SIZE + 256);
+    UINT8 *raw2 = (UINT8 *)Malloc(SCREEN_SIZE + 256);
+
+    UINT8 *screen1 = (UINT8 *)(((long)raw1 + 255) & 0xFFFFFF00);
+    UINT8 *screen2 = (UINT8 *)(((long)raw2 + 255) & 0xFFFFFF00);
+
+    UINT8 *front_buffer = Physbase();
+    UINT8 *back_buffer  = screen1;
+
     long nowTime;
-    long startTime = getTime();
+    volatile long startTime = getTime();
     long passedTime;
 
+    /* For Demo */
+    int stepUpTick;
+    int deathTick;
+
     int gameRunning = 1;
-    
-    int lastFrameTick = -1; /*Tracks the last frame tick to prevent duplicate updates*/
-    int canSpawnBarrel = rand() % 10; /* Random number from 0 to 9 */
+    int lastFrameTick = -1;
+
+    int canSpawnBarrel = rand() % 10;
     Model *model = &testModel;
 
-    /* Draw static level once */
-    clear_screen(screen);
-    renderLevel(model, screen);
-    renderDK(model->kong, screen);
-    renderBStack(model->kong, screen); /*rendering barrel stack besides DK*/
+    /* --- Draw initial frame into back buffer --- */
+    memset(back_buffer, 0, SCREEN_SIZE);
 
-    /* Safety checks */
-    if (model->mario.posX < 0){
-        model->mario.posX = 0;
-    } else if (model->mario.posY < 0) {
-        model->mario.posY = 0;
-    } else if (model->mario.posX > 624) {
-        model->mario.posX = 624;
-    } else if (model->mario.posY > 384) {
-        model->mario.posY = 384;
+
+    render(model, (UINT16 *)back_buffer);
+    renderLevel(model, (UINT32 *)back_buffer);
+    renderBonus(model->timer, (UINT32 *)back_buffer);
+    renderLives(model->lives, (UINT8 *)back_buffer);
+    renderScore(model->score, (UINT32 *)back_buffer);
+    renderDK(model->kong, (UINT32 *)back_buffer);
+    renderBStack(model->kong, (UINT32 *)back_buffer);
+
+    Vsync();
+    Setscreen(back_buffer, back_buffer, -1);
+
+    /* swap buffers */
+    {
+        UINT8 *temp = front_buffer;
+        front_buffer = back_buffer;
+        back_buffer = temp;
     }
-
 
     while (gameRunning) {
 
         nowTime = getTime();
         passedTime = nowTime - startTime;
-        
-        if (passedTime % FRAMERULE == 0 && passedTime != lastFrameTick) { 
-            lastFrameTick = passedTime; /* Because we want to update the game state only once per frame */
-            if (passedTime > 5000) /*Change 500 to 5000 to see all of the states*/
-            {
-                printf("GAME OVER\n");
+
+        if (passedTime % 2000 == 0) {
+
+            model->timer.value -= 200;
+            clear_region((UINT32 *)back_buffer, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
+            renderBonus(model->timer, (UINT32 *)back_buffer);
+
+            if (model->timer.value == 4000) {
+
+                gameRunning = 0;
+                model->mario.state = 4;
+            }
+        }
+
+        /* --- FRAME CONTROL --- */
+        if (passedTime % FRAMERULE == 0 && passedTime != lastFrameTick) {
+
+            lastFrameTick = passedTime;
+
+            
+            /* --- CLEAR ENTIRE BACK BUFFER --- */
+            memset(back_buffer, 0, SCREEN_SIZE);
+
+            /* ----- IMPORTANT: Put Input Code into the Asynch.c Event File ----- */
+
+            inputHandler(model, &gameRunning);
+          
+            /* ----- IMPORTANT: Put the Update Code into the Synch.c Event File ----- */
+                    
+
+            /* --- GAME LOGIC --- */
+            if (passedTime > 40000) {
                 gameRunning = 0;
             }
-            else
-            {
-                /* --- GAME LOGIC --- */
-                clear_region(screen, 110, 198, 32, 64); /* For DK (specific values as dk does not move rdk has this pos) */
-                /* Roll 0-9. Kong only throws a barrel when roll is 0 (1 in 10 chance).
-                 * kongAction guarantees a throw after 1  miss. */
-                updateKong(&model->kong, canSpawnBarrel);
-                /*Rendering Dk*/
-                renderDK(model->kong, screen);
 
-                clear_region(screen, model->mario.posY, model->mario.posX, 16, 16);
+            /* --- UPDATE DK --- */
+            updateKong(&model->kong, canSpawnBarrel);
 
-                if (passedTime < 150)
-                {
-                    model->mario.state = 1;
-                    model->mario.direction = 1;
 
-                    /* Animation Handling */
-                    if (model->mario.walkFrame == 0){
-                        model->mario.walkFrame = 1;
-                    } else {
-                        model->mario.walkFrame = 0;
-                    }
+            /* --- UPDATE MARIO --- */
+            updateMario(&model->mario, model->girders, 9, model->ladders, 15);
+            updateMCollision(&model->mario);
+            /* pointer as it needs to write changes back to the actual Mario struct in the model */
 
-                    model->mario.posX += 1;
+            
+            /* --- UPDATE BARRELS --- */
+            if (model->kong.spawnBarrel == 1) {
+                model->kong.spawnBarrel = 0;
+                model->barrels[l].visible = 1;
+                model->barrels[l].posY = 126; 
+                model->barrels[l].posX = 254;
+                model->barrels[l].timeSpawned = nowTime;
+                l++;
+                if (l > 8) {
+                    l = 0; /* Reset the Barrel Counter*/
                 }
-                else
-                {
-                    model->mario.state = 2;
+            }
 
-                    /* Animation Handling */
-                    if (model->mario.climbFrame == 0){
-                        model->mario.climbFrame = 1;
-                    } else {
-                        model->mario.climbFrame = 0;
-                    }
+            updateBarrels(model->barrels, nowTime);                      
+
+            /* ----- IMPORTANT: Put Conditional Events (if this then that) into Cond.c Event File ----- */
 
 
-                    model->mario.posY -= 1;
-                }
-
-                updateMCollision(model->mario);
-
-                /* Draw sprite */
-                renderMario(model->mario, (UINT16 *)screen);
+            /* --- RENDER EVERYTHING (FULL REDRAW) --- */
+            draw(model, (UINT32 *)back_buffer);
+            
+            /* --- SWAP BUFFERS --- */
+            Vsync();
+            Setscreen(back_buffer, back_buffer, -1);
+            
+            {               
+                UINT8 *temp = front_buffer;
+                front_buffer = back_buffer;
+                back_buffer = temp;
             }
         }
     }
