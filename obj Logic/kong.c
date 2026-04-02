@@ -10,11 +10,11 @@
 
 /*Duration of each state in 70Hz clock ticks.
    These are set low for faster testing - increase for final game */
-#define IDLE_TICKS 18
-#define GRAB_TICKS 18
-#define HOLD_TICKS 18
-#define THROW_TICKS 18
-#define MOCK_TICKS 18
+#define IDLE_TICKS 9
+#define GRAB_TICKS 5
+#define HOLD_TICKS 4
+#define THROW_TICKS 10
+#define MOCK_TICKS 12
 
 /* barrel spawn signals */
 #define NO_BARREL 0
@@ -41,6 +41,7 @@ void updateKong(Kong *kong, int canSpawnBarrel)
     case KONG_HOLD:
         if (kong->stateTimer >= HOLD_TICKS)
         {
+            kong->spawnBarrel = NORMAL_BARREL; /* DK Throws the Barrel as he swaps animation */
             kong->state = KONG_THROW;
             kong->stateTimer = 0;
         }
@@ -109,7 +110,6 @@ static void kongSpawner(Kong *kong)
 
 static void finishThrow(Kong *kong)
 {
-    kong->spawnBarrel = NORMAL_BARREL;
     kong->state = KONG_IDLE;
     kong->stateTimer = 0;
 }
