@@ -23,7 +23,6 @@
 #include "input.c"
 #include "music.c"
 #include "psg.c"
-#include "mario.c"
 #include "girder.c"
 #include "mario.c"
 
