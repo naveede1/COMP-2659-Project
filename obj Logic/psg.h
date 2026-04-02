@@ -4,10 +4,7 @@
 #include <osbind.h>
 #include <stdio.h>
 
-/* This will be removed later, plan on making a types file */
-typedef unsigned char UINT8;
-typedef unsigned short UINT16;
-typedef unsigned long UINT32;
+#include "types.h"
 
 /*----- Function: write_psg -----
 
