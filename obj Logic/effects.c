@@ -10,7 +10,7 @@ static void wait(unsigned int cycles) {
 }
 
 void play_jump_effect() {
-    set_tone(2, 450);
+    set_tone(2, 250);
     set_envelope(9, 8000);
     set_volume(2, 16);
     enable_channels(2, 1, 0);
@@ -28,7 +28,7 @@ int main() {
 
 	old_ssp = Super(0);
 
-    play_jump_effect();
+    play_hammer_effect();
 
     while (!Cconis())
         ;   
