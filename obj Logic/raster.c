@@ -536,6 +536,8 @@ void plot_string(UINT8 *base, INT16 row, INT16 col, char *str) {
 }
 
 UINT16 *get_video_base() {
+
+	long old_ssp = Super(0);
     
     UINT8 *video_hi_byte;
     UINT8 *video_mi_byte;
@@ -549,10 +551,14 @@ UINT16 *get_video_base() {
     hi_byte_value = (UINT32)*video_hi_byte << 16;
     mi_byte_value = (UINT32)*video_mi_byte << 8;
 
+	Super(old_ssp);
+
     return (UINT16 *)(hi_byte_value | mi_byte_value);
 }
 
 void set_video_base(UINT16 *address) {
+
+	long old_ssp = Super(0);
 
     UINT8 *video_hi_byte;
     UINT8 *video_mi_byte;
@@ -572,24 +578,6 @@ void set_video_base(UINT16 *address) {
     *video_hi_byte = (UINT8)hi_byte_value;
     *video_mi_byte = (UINT8)mi_byte_value;
 
-}
+	Super(old_ssp);
 
-
-int main() {
-
-	long old_ssp = Super(0);
-
-    UINT16 *base = get_video_base();
-
-    printf("Base: %d\n", base);
-
-    set_video_base(base);
-
-    base = get_video_base();
-
-    printf("Set new base: %d\n", base);
-
-    Super(old_ssp);
-
-    return 0;
 }
