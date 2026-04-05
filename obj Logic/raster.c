@@ -536,8 +536,6 @@ void plot_string(UINT8 *base, INT16 row, INT16 col, char *str) {
 }
 
 UINT16 *get_video_base() {
-
-	long old_ssp = Super(0);
     
     UINT8 *video_hi_byte;
     UINT8 *video_mi_byte;
@@ -548,24 +546,50 @@ UINT16 *get_video_base() {
     video_hi_byte = VIDEO_HI_BYTE_ADDRESS;
     video_mi_byte = VIDEO_MI_BYTE_ADDRESS;
 
-    printf("video_hi_byte dereferenced is: %d\n", *video_hi_byte);
-    printf("video_mi_byte dereferenced is: %d\n", *video_mi_byte);
-
     hi_byte_value = (UINT32)*video_hi_byte << 16;
     mi_byte_value = (UINT32)*video_mi_byte << 8;
-
-    printf("video_hi_byte after the shift is: %d\n", hi_byte_value);
-    printf("video_mi_byte after the shift is: %d\n", mi_byte_value);
-
-    printf("Before return\n");
-
-    Super(old_ssp);
 
     return (UINT16 *)(hi_byte_value | mi_byte_value);
 }
 
+void set_video_base(UINT16 *address) {
+
+    UINT8 *video_hi_byte;
+    UINT8 *video_mi_byte;
+
+    UINT32 hi_byte_value;
+    UINT32 mi_byte_value;
+
+    video_hi_byte = VIDEO_HI_BYTE_ADDRESS;
+    video_mi_byte = VIDEO_MI_BYTE_ADDRESS;
+
+    hi_byte_value = (UINT32)address & 0xFF0000;
+    hi_byte_value = hi_byte_value >> 16;
+
+    mi_byte_value = (UINT32)address & 0x00FF00;
+    mi_byte_value = mi_byte_value >> 8;
+
+    *video_hi_byte = (UINT8)hi_byte_value;
+    *video_mi_byte = (UINT8)mi_byte_value;
+
+}
+
+
 int main() {
+
+	long old_ssp = Super(0);
+
     UINT16 *base = get_video_base();
-    plot_rectangle((UINT32 *)base, 100, 150, 50, 60);
+
+    printf("Base: %d\n", base);
+
+    set_video_base(base);
+
+    base = get_video_base();
+
+    printf("Set new base: %d\n", base);
+
+    Super(old_ssp);
+
     return 0;
 }

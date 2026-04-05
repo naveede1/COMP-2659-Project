@@ -237,6 +237,17 @@ void plot_string(UINT8 *base, INT16 row, INT16 col, char *ch);
 */
 UINT16 *get_video_base();
 
+/*----- Function: set_video_base -----
+
+ PURPOSE: Change the frame buffer starting address
+
+ INPUT: (UINT16 *) Address
+
+ OUTPUT: None
+
+*/
+void set_video_base(UINT16 *address);
+
 static const UINT32 testBM[32] = {
     0xFFFFFFFF,
     0xFFFFFFFF,
