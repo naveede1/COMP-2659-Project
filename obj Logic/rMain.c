@@ -205,10 +205,6 @@ void draw (Model *model, UINT32 *buffer) {
         while (has_input()) {
             input_val = get_input(); /* Keep latest input only */
         }
-
-        if (input_val == 'q') {
-            *gameRunning = 0; /* Quit game */
-        }
     }
 
     model->mario.deltX = jumpVelX; /* Keep horizontal jump velocity */
@@ -265,9 +261,8 @@ void draw (Model *model, UINT32 *buffer) {
     if (*moveBufferFrames > 0) {
         *jumpVelX = *lastGroundDeltX; /* Use recent ground movement for projectile jump */
     }
-    else {
+    else 
         *jumpVelX = 0; /* Jump straight up */
-    }
 
     requestJump(&model->mario); 
     model->mario.state = 3; 
@@ -281,13 +276,11 @@ void draw (Model *model, UINT32 *buffer) {
  void handleNoGroundInput(Model *model, int *lastGroundDeltX, int *moveBufferFrames) {
     model->mario.deltX = 0; /* Stop horizontal movement on ground */
 
-    if (*moveBufferFrames > 0) {
+    if (*moveBufferFrames > 0) 
         (*moveBufferFrames)--; /* Count down movement buffer */
-    }
 
-    if (*moveBufferFrames == 0) {
+    if (*moveBufferFrames == 0) 
         *lastGroundDeltX = 0; /* Forget old left/right movement */
-    }
 }
 
 /* Main input handler */
