@@ -13,17 +13,18 @@
 #include "rBonus.c"
 #include "rLives.c"
 #include "rScore.c"
+#include "splash.c"
 
 #include "model.h"
-#include "raster.c"
 #include "clock.c"
 #include "item.c"
 #include "kong.c"
 #include "barrel.c"
 #include "input.c"
-#include "mario.c"
+#include "music.c"
+#include "psg.c"
 #include "girder.c"
-
+#include "mario.c"
 
 #include <osbind.h>
 #include <stdio.h>
@@ -252,6 +253,24 @@ void inputHandler(Model *model, int *gameRunning) {
     }
 }
 
+int splash_screen(UINT16 *base, UINT16 *block) {
+    
+    int start_game;
+    clear_screen((UINT32 *)base);
+    render_title(base, block);
+
+    while(!has_input()) {
+        char input;
+        input = get_input();
+
+        if (input == '\r') {
+            return 1;
+        } else if (input == 'q') {
+            return 0;
+        }
+    } 
+}
+
 int main() {
 
     /* --- Allocate buffers --- */
@@ -260,6 +279,8 @@ int main() {
 
     UINT8 *screen1 = (UINT8 *)(((long)raw1 + 255) & 0xFFFFFF00);
     UINT8 *screen2 = (UINT8 *)(((long)raw2 + 255) & 0xFFFFFF00);
+
+    UINT8 *original_screen = Physbase(); /* For resetting buffer at exit */
 
     UINT8 *front_buffer = Physbase();
     UINT8 *back_buffer  = screen1;
@@ -277,6 +298,11 @@ int main() {
 
     int canSpawnBarrel = rand() % 10;
     Model *model = &testModel;
+
+    if (splash_screen((UINT16 *)front_buffer, title_block) == 0 ) {
+        printf("Exited game.\n");
+        return 0; /* Quit menu screen/game */
+    }
 
     /* --- Draw initial frame into back buffer --- */
     memset(back_buffer, 0, SCREEN_SIZE);
@@ -299,6 +325,8 @@ int main() {
         front_buffer = back_buffer;
         back_buffer = temp;
     }
+
+    start_music();
 
     while (gameRunning) {
 
@@ -332,6 +360,10 @@ int main() {
             inputHandler(model, &gameRunning);
           
             /* ----- IMPORTANT: Put the Update Code into the Synch.c Event File ----- */
+
+            /* ----- UPDATE MUSIC ----- */
+
+            update_music(passedTime);
                     
 
             /* --- GAME LOGIC --- */
@@ -381,6 +413,12 @@ int main() {
             }
         }
     }
+
+    Vsync();
+    Setscreen(original_screen, original_screen, -1);
+
+    Mfree(raw1);
+    Mfree(raw2);
 
     return 0;
 }
