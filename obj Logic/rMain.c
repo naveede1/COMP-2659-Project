@@ -15,7 +15,7 @@
 #include "rScore.c"
 #include "splash.c"
 
-#include "model.h"
+ 
 #include "clock.c"
 #include "item.c"
 #include "kong.c"
@@ -25,6 +25,7 @@
 #include "psg.c"
 #include "girder.c"
 #include "mario.c"
+#include "ihand.c"
 
 #include <osbind.h>
 #include <stdio.h>
@@ -195,147 +196,6 @@ void draw (Model *model, UINT32 *buffer) {
     renderLives(model->lives, (UINT8 *)buffer);
     renderScore(model->score, buffer);
 
-}
-
-/* Handles input while Mario is in the air */
-void handleAirborneInput(Model *model, int *gameRunning, int jumpVelX) {
-    if (has_input()) {
-        char input_val = get_input(); /* Read first input */
-
-        while (has_input()) {
-            input_val = get_input(); /* Keep latest input only */
-        }
-    }
-
-    model->mario.deltX = jumpVelX; /* Keep horizontal jump velocity */
-}
-
-/* Handles moving Mario left on the ground */
-void handleMoveLeft(Model *model, int *lastGroundDeltX, int *moveBufferFrames) {
-    model->mario.deltX = -MOVE_SPEED; /* Move left */
-    model->mario.direction = 0; 
-    model->mario.state = 1; 
-    model->mario.walkFrame = 1 - model->mario.walkFrame; 
-    *lastGroundDeltX = -MOVE_SPEED; /* Save last ground movement */
-    *moveBufferFrames = 1; /* Keep movement for a short time */
-}
-
-/* Handles moving Mario right on the ground */
-void handleMoveRight(Model *model, int *lastGroundDeltX, int *moveBufferFrames) {
-    model->mario.deltX = MOVE_SPEED; /* Move right */
-    model->mario.direction = 1; 
-    model->mario.state = 1; 
-    model->mario.walkFrame = 1 - model->mario.walkFrame; 
-    *lastGroundDeltX = MOVE_SPEED; /* Save last ground movement */
-    *moveBufferFrames = 1; /* Keep movement for a short time */
-}
-
-/* Handles climbing up a ladder */
-void handleClimbUp(Model *model, int *lastGroundDeltX, int *moveBufferFrames) {
-    *lastGroundDeltX = 0; /* Clear stored horizontal motion */
-    *moveBufferFrames = 0; /* Clear movement buffer */
-
-    if (model->mario.collideLadder == 1) {
-        requestClimbUp(&model->mario); /* Ask Mario to climb up */
-        model->mario.state = 2;
-        model->mario.climbFrame = 1 - model->mario.climbFrame; 
-        model->mario.onGround = 0; /* Mario is no longer grounded */
-    }
-}
-
-/* Handles climbing down a ladder */
-void handleClimbDown(Model *model, int *lastGroundDeltX, int *moveBufferFrames) {
-    *lastGroundDeltX = 0; /* Clear stored horizontal motion */
-    *moveBufferFrames = 0; /* Clear movement buffer */
-
-    if (model->mario.collideLadder == 1) {
-        requestClimbDown(&model->mario); /* Ask Mario to climb down */
-        model->mario.state = 2; 
-        model->mario.climbFrame = 1 - model->mario.climbFrame; /* Toggle climbing frame */
-        model->mario.onGround = 0; /* Mario is no longer grounded */
-    }
-}
-
-/* Handles jumping */
-void handleJump(Model *model, int *jumpVelX, int *lastGroundDeltX, int *moveBufferFrames) {
-    if (*moveBufferFrames > 0) {
-        *jumpVelX = *lastGroundDeltX; /* Use recent ground movement for projectile jump */
-    }
-    else 
-        *jumpVelX = 0; /* Jump straight up */
-
-    requestJump(&model->mario); 
-    model->mario.state = 3; 
-    model->mario.deltX = *jumpVelX; /* Apply horizontal jump velocity */
-
-    *lastGroundDeltX = 0; /* Clear stored movement after jump */
-    *moveBufferFrames = 0; /* Clear movement buffer after jump */
-}
-
-/* Handles no useful ground input */
-void handleNoGroundInput(Model *model, int *lastGroundDeltX, int *moveBufferFrames) {
-    model->mario.deltX = 0; /* Stop horizontal movement on ground */
-
-    if (*moveBufferFrames > 0) 
-        (*moveBufferFrames)--; /* Count down movement buffer */
-
-    if (*moveBufferFrames == 0) 
-        *lastGroundDeltX = 0; /* Forget old left/right movement */
-}
-
-/* --- INPUT HANDLER --- 
-PURPOSE: To handle user input and update the model accordingly.
-
-INPUT: Model: Pointer to the game model struct, that has all game state information.
-       gameRunning: Pointer to the gameRunning variable.
-
-OUTPUT: None
-
-*/
-void inputHandler(Model *model, int *gameRunning) {
-
-    char input_val; /* Stores latest keyboard input */
-    static int jumpVelX = 0; /* Horizontal velocity used during jump */
-    static int lastGroundDeltX = 0; /* Last left/right ground movement */
-    static int moveBufferFrames = 0; /* Short buffer for jump momentum */
-
-    if (model->mario.onGround && !model->mario.climbing) {
-        model->mario.state = 0; 
-        model->mario.deltX = 0; /* Stop horizontal motion on landing */
-        jumpVelX = 0; /* Reset jump velocity */
-    }
-
-
-    if (!model->mario.onGround && !model->mario.climbing) {
-        handleAirborneInput(model, gameRunning, jumpVelX); /* Handle air movement/input */
-        return; 
-    }
-
-    if (!has_input()) {
-        handleNoGroundInput(model, &lastGroundDeltX, &moveBufferFrames); /* No key pressed */
-        return; 
-    }
-
-    input_val = get_input(); /* Read first input */
-
-    while (has_input()) {
-        input_val = get_input(); /* Keep latest input only */
-    }
-
-    if (input_val == 'a') 
-        handleMoveLeft(model, &lastGroundDeltX, &moveBufferFrames); 
-    else if (input_val == 'd') 
-        handleMoveRight(model, &lastGroundDeltX, &moveBufferFrames); 
-    else if (input_val == 'w') 
-        handleClimbUp(model, &lastGroundDeltX, &moveBufferFrames); 
-    else if (input_val == 's') 
-        handleClimbDown(model, &lastGroundDeltX, &moveBufferFrames); 
-    else if (input_val == ' ') 
-        handleJump(model, &jumpVelX, &lastGroundDeltX, &moveBufferFrames); 
-    else if (input_val == 'q')
-        *gameRunning = 0; 
-    else 
-        handleNoGroundInput(model, &lastGroundDeltX, &moveBufferFrames); /* Ignore other keys */
 }
 
 int splash_screen(UINT16 *base, UINT16 *block) {
