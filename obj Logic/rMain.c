@@ -24,6 +24,7 @@
 #include "mario.c"
 #include "girder.c"
 #include "hammer.c"
+#include "ladder.c"
 
 
 #include <osbind.h>
@@ -56,21 +57,21 @@ Model testModel = {
   {1, 176, 368, 0, 6,  176, 319} }, /* Girder 9 */
 
 /* visible, posY, posX, broken, size, topSize, bottomSize, skipped, leftB, rightB, topB, bottomB, update */
-{{1, 248, 78, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1}, /* Ladder 1 */
-{1, 264, 78, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 312, 112, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1}, 
-{1, 272, 150, 1, 6, 1, 3, 2, 0, 0, 0, 0, 1}, 
-{1, 360, 153, 0, 5, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 208, 207, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 248, 206, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 344, 199, 1, 6, 1, 2, 3, 0, 0, 0, 0, 1},
-{1, 256, 247, 1, 5, 1, 2, 2, 0, 0, 0, 0, 1},
-{1, 320, 251, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 360, 252, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 208, 295, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 288, 291, 0, 5, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 272, 336, 1, 4, 1, 1, 2, 0, 0, 0, 0, 1},
-{1, 356, 340, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1} }, /* Ladder 15 */ 
+{{1, 248, 78, 0, 8, 0, 0, 0, 0, 0}, /* Ladder 1 */
+{1, 264, 78, 0, 8, 0, 0, 0, 0, 0},
+{1, 312, 112, 0, 4, 0, 0, 0, 0, 0}, 
+{1, 272, 150, 1, 6, 1, 3, 2, 0, 0}, 
+{1, 360, 153, 0, 5, 0, 0, 0, 0, 0},
+{1, 208, 207, 0, 4, 0, 0, 0, 0, 0},
+{1, 248, 206, 0, 4, 0, 0, 0, 0, 0},
+{1, 344, 199, 1, 6, 1, 2, 3, 0, 0},
+{1, 256, 247, 1, 5, 1, 2, 2, 0, 0},
+{1, 320, 251, 0, 4, 0, 0, 0, 0, 0},
+{1, 360, 252, 0, 4, 0, 0, 0, 0, 0},
+{1, 208, 295, 0, 4, 0, 0, 0, 0, 0},
+{1, 288, 291, 0, 5, 0, 0, 0, 0, 0},
+{1, 272, 336, 1, 4, 1, 1, 2, 0, 0},
+{1, 356, 340, 0, 3, 0, 0, 0, 0, 0} }, /* Ladder 15 */ 
 
 /* visible, posX, posY, state, topL, bottomR, spawnX, spawnY, stateTimer, spawnBarrel, spawnFireBarrel*/
 {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* Kong */
@@ -80,7 +81,7 @@ Model testModel = {
 
 /* visible, posX, posY, state */
 { {1, 190, 162, 0}, /* Hammer 1 */
-{1, 328, 346, 0} }, /* Hammer 2 */
+{1, 328, 300, 0} }, /* Hammer 2 */
 
 /* visible, posX, posY, state */
 {1, 256, 74, 0}, /* Pauline */ 
@@ -100,7 +101,7 @@ Model testModel = {
 {0, 240, 352, 1}, /* Spirit */
 
 /* visible, posX, posY, type, worth, lifetime, maxLifetime */
-{0, 358, 300, 2, 0, 0, 0}, /* Item */
+{1, 258, 250, 2, 0, 0, 0}, /* Item */
 
 /* visible, posX, posY, broken */
 {0, 288, 66, 0}, /* Heart */
@@ -172,15 +173,46 @@ void handle_async_events(Model *model, int *gameRunning) {
 
 /* ----- Synch Events ----- */
 
+void handle_synch_events(Model *model, long nowTime, int canSpawnBarrel) {
 
+    int l = 0; /* counter */
+   
+    /* --- UPDATE DK --- */
+    updateKong(&model->kong, canSpawnBarrel);
+
+
+    /* --- UPDATE MARIO --- */
+    updateMario(&model->mario, model->girders, 9, model->ladders, 15);
+    updateMCollision(&model->mario);
+    /* pointer as it needs to write changes back to the actual Mario struct in the model */
+            
+    /* --- UPDATE BARRELS --- */
+    if (model->kong.spawnBarrel == 1) {
+        model->kong.spawnBarrel = 0;
+        model->barrels[l].visible = 1;
+        model->barrels[l].posY = 126; 
+        model->barrels[l].posX = 254;
+        model->barrels[l].timeSpawned = nowTime;
+        l++;
+        if (l > 8) {
+            l = 0; /* Reset the Barrel Counter*/
+        }
+    }
+
+    updateBarrels(model->barrels, nowTime);  
+           
+    updateItem(&model->item);
+
+}
 
 /* ----- Cond Events ----- */
 void handle_cond_events(Model *model, int *gameRunning) {
     int barCheck;
-    int jumpPt;
 
-    if (model->mario.onGround) {
-        jumpPt = 1;
+    if (model->mario.onGround == 0) {
+        if(checkBarrelJumped(model->mario, model->barrels)) {
+                model->score.value+=200;
+        }
     }
 
     checkHammer(&model->mario, model->hammers);
@@ -189,11 +221,17 @@ void handle_cond_events(Model *model, int *gameRunning) {
         barCheck = checkBarrels(model->mario, model->barrels);
         if(barCheck != -1){
             model->barrels[barCheck].visible = 0;
-            model->score.value += 100;
+            model->score.value += 300;
         }
     }
 
-
+    if(model->item.visible == 1) {
+        if(checkItem(model->mario, model->item)) {
+            model->score.value+=model->item.worth;
+            model->item.posX == 0; /* Move it OOB so it can't be interacted with for double points */
+            model->item.visible == 0;
+        }
+    }
 }
 /* ------------------------ */
 
@@ -323,11 +361,6 @@ int runGame(Model *model) {
             clear_region((UINT32 *)back_buffer, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
             renderBonus(model->timer, (UINT32 *)back_buffer);
 
-            if (model->timer.value == 4000) {
-
-                gameRunning = 0;
-                model->mario.state = 4;
-            }
         }
 
         /* --- FRAME CONTROL --- */
@@ -345,31 +378,8 @@ int runGame(Model *model) {
           
             /* ----- IMPORTANT: Put the Update Code into the Synch.c Event File ----- */
 
-            /* --- UPDATE DK --- */
-            updateKong(&model->kong, canSpawnBarrel);
-
-
-            /* --- UPDATE MARIO --- */
-            updateMario(&model->mario, model->girders, 9, model->ladders, 15);
-            updateMCollision(&model->mario);
-            /* pointer as it needs to write changes back to the actual Mario struct in the model */
-
+            handle_synch_events(model, nowTime, canSpawnBarrel);
             
-            /* --- UPDATE BARRELS --- */
-            if (model->kong.spawnBarrel == 1) {
-                model->kong.spawnBarrel = 0;
-                model->barrels[l].visible = 1;
-                model->barrels[l].posY = 126; 
-                model->barrels[l].posX = 254;
-                model->barrels[l].timeSpawned = nowTime;
-                l++;
-                if (l > 8) {
-                    l = 0; /* Reset the Barrel Counter*/
-                }
-            }
-
-            updateBarrels(model->barrels, nowTime);                      
-
             /* ----- IMPORTANT: Put Conditional Events (if this then that) into Cond.c Event File ----- */
 
             handle_cond_events(model, &gameRunning);

@@ -115,28 +115,29 @@ void updateBarrels(Barrel barrel[], long nowTime) {
 int checkBarrels(Mario mario, Barrel barrel[]) { /* Returns the index of a barrel if it was destroyed, -1 otherwise */
 
     int barNum;
-
-    for (barNum = 0; barNum < 9; barNum++) {
-        if(barrel[barNum].visible == 1) {
-            if(mario.hammerFrame == 0) { /* Hammer Down */
-                if(mario.direction == 0) { /* Mario Left */
-                    if(checkHCollision(mario.posX-15, mario.posY+2, barrel[barNum].posX, barrel[barNum].posY))
-                        return barNum;
-                } else { /* Mario Right */
-                    if(checkHCollision(mario.posX+15, mario.posY+2, barrel[barNum].posX, barrel[barNum].posY))
-                        return barNum;
-                }
-            } else { /* Hammer Up */
-                if(mario.direction == 0) { /* Mario Left*/
-                    if(checkHCollision(mario.posX+2, mario.posY-15, barrel[barNum].posX, barrel[barNum].posY))
-                        return barNum;
-                } else { /* Mario Right */
-                    if(checkHCollision(mario.posX-2, mario.posY-15, barrel[barNum].posX, barrel[barNum].posY))
-                        return barNum;
+    if (mario.hammerActive == 1) {
+        for (barNum = 0; barNum < 9; barNum++) {
+            if(barrel[barNum].visible == 1) {
+                if(mario.hammerFrame == 0) { /* Hammer Down */
+                    if(mario.direction == 0) { /* Mario Left */
+                        if(checkHCollision(mario.posX-15, mario.posY+2, barrel[barNum].posX, barrel[barNum].posY))
+                            return barNum;
+                    } else { /* Mario Right */
+                        if(checkHCollision(mario.posX+15, mario.posY+2, barrel[barNum].posX, barrel[barNum].posY))
+                            return barNum;
+                    }
+                } else { /* Hammer Up */
+                    if(mario.direction == 0) { /* Mario Left*/
+                        if(checkHCollision(mario.posX+2, mario.posY-15, barrel[barNum].posX, barrel[barNum].posY))
+                            return barNum;
+                    } else { /* Mario Right */
+                        if(checkHCollision(mario.posX-2, mario.posY-15, barrel[barNum].posX, barrel[barNum].posY))
+                            return barNum;
+                    }
                 }
             }
         }
-    } 
+    }
 
     return -1;
 }
@@ -154,6 +155,41 @@ int checkHCollision(int hamXleft, int hamYtop, int barXleft, int barYtop) { /* R
     
     if (hamXleft > barXleft && hamXleft < barXright || hamXright > barXleft && hamXright < barXright) {
         if (hamYtop < barYbottom && hamYtop > barYtop || hamYbottom < barYbottom && hamYbottom > barYtop) {
+            return 1;
+        }
+    }
+    else {
+        return 0;   
+    }
+}
+
+int checkBarrelJumped(Mario mario, Barrel barrel[]) {
+
+    int barNum;
+
+    for (barNum = 0; barNum < 9; barNum++) {
+        if (checkJZCollision(mario.posX, mario.posY, barrel[barNum].posX, barrel[barNum].posY)) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+int checkJZCollision(int jmXleft, int jmYtop, int barXleft, int barYtopOld) { /* Returns 1 if Mario jumped over a Barrel, 0 otherwise */
+
+    /* Set Marios Collider */
+    int jmXright = jmXleft + 15;
+    int jmYbottom = jmYtop + 15;
+
+    /* Set Barrel "Jump Zone" */
+    int barYtop = barYtopOld - 16;
+    int barXright = barXleft + 15;
+    int barYbottom = barYtop + 15;
+    
+    
+    if (jmXleft > barXleft && jmXleft < barXright || jmXright > barXleft && jmXright < barXright) {
+        if (jmYtop < barYbottom && jmYtop > barYtop || jmYbottom < barYbottom && jmYbottom > barYtop) {
             return 1;
         }
     }
