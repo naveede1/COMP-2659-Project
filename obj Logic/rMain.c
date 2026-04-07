@@ -22,7 +22,9 @@
 #include "barrel.c"
 #include "input.c"
 #include "music.c"
+
 #include "psg.c"
+
 #include "girder.c"
 #include "mario.c"
 
@@ -378,6 +380,8 @@ int main() {
     int stepUpTick;
     int deathTick;
 
+    long old_ssp;
+
     int gameRunning = 1;
     int lastFrameTick = -1;
 
@@ -410,8 +414,11 @@ int main() {
         front_buffer = back_buffer;
         back_buffer = temp;
     }
+    
 
+    toggle_keyboard_sound();
     start_music();
+    
 
     while (gameRunning) {
 
@@ -447,9 +454,9 @@ int main() {
             /* ----- IMPORTANT: Put the Update Code into the Synch.c Event File ----- */
 
             /* ----- UPDATE MUSIC ----- */
-
+            
             update_music(passedTime);
-                    
+            
 
             /* --- GAME LOGIC --- */
             if (passedTime > 40000) {
@@ -499,6 +506,10 @@ int main() {
         }
     }
 
+    toggle_keyboard_sound();
+    old_ssp = Super(0);
+    stop_sound();
+    Super(old_ssp);
     Vsync();
     Setscreen(original_screen, original_screen, -1);
 

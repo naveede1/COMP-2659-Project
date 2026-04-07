@@ -50,4 +50,6 @@ Silences all PSG sound production
 */
 void stop_sound();
 
+
+void toggle_keyboard_sound();
 #endif
