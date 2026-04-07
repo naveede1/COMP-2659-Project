@@ -80,7 +80,7 @@ Model testModel = {
 
 /* visible, posX, posY, state */
 { {1, 190, 162, 0}, /* Hammer 1 */
-{1, 328, 326, 0} }, /* Hammer 2 */
+{1, 328, 346, 0} }, /* Hammer 2 */
 
 /* visible, posX, posY, state */
 {1, 256, 74, 0}, /* Pauline */ 
@@ -176,7 +176,23 @@ void handle_async_events(Model *model, int *gameRunning) {
 
 /* ----- Cond Events ----- */
 void handle_cond_events(Model *model, int *gameRunning) {
+    int barCheck;
+    int jumpPt;
+
+    if (model->mario.onGround) {
+        jumpPt = 1;
+    }
+
     checkHammer(&model->mario, model->hammers);
+    
+    if(model->mario.hammerActive == 1) {
+        barCheck = checkBarrels(model->mario, model->barrels);
+        if(barCheck != -1){
+            model->barrels[barCheck].visible = 0;
+            model->score.value += 100;
+        }
+    }
+
 
 }
 /* ------------------------ */
@@ -249,7 +265,7 @@ OUTPUT: None
 */
 
 
-int runGame() {
+int runGame(Model *model) {
 
     /* --- Allocate buffers --- */
     UINT8 *raw1 = (UINT8 *)Malloc(SCREEN_SIZE + 256);
@@ -273,7 +289,6 @@ int runGame() {
     int lastFrameTick = -1;
 
     int canSpawnBarrel = rand() % 10;
-    Model *model = &testModel;
 
     /* --- Draw initial frame into back buffer --- */
     memset(back_buffer, 0, SCREEN_SIZE);
@@ -381,7 +396,9 @@ int runGame() {
 
 int main() {
 
-    runGame();
+    Model *model = &testModel;
+
+    runGame(model);
 
     return 0;
 

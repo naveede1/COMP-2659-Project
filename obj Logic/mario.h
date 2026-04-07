@@ -107,6 +107,6 @@ void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders);
 
 void updateMCollision(Mario *mario);
 
-int checkMCollision(int jmXleft, int jmYtop, int otherXleft, int otherYtop, int otherSize);
+int checkMCollision(int jmXleft, int jmYtop, int otherXleft, int otherYtop, int otherXsize, int otherYsize);
 
 #endif

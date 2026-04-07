@@ -13,5 +13,6 @@ typedef struct { /* Structure for the Barrels */
 } Barrel;
 
 void updateBarrels(Barrel barrel[], long nowTime);
+int checkHCollision(int hamXleft, int hamYtop, int barXleft, int barYtop);
 
 #endif

@@ -8,7 +8,7 @@
 #define MAX_FALL_SPEED 10
 
 /* Hammer Animation Timers */
-#define HAMMER_DURATION 16
+#define HAMMER_DURATION 40
 #define HAMMER_FRAME_TIME 1
 #define HAMMER_TOTAL_FRAMES 2
 
@@ -181,26 +181,24 @@ void updateMCollision(Mario *mario) {
 
 }
 
-int checkMCollision(int jmXleft, int jmYtop, int otherXleft, int otherYtop, int otherSize) { /* Returns 1 if the Object Collides with Mario, 0 if not*/
+int checkMCollision(int jmXleftold, int jmYtop, int otherXleft, int otherYtop, int otherXsize, int otherYsize) { /* Returns 1 if the Object Collides with Mario, 0 if not*/
 
     /* Set Marios Collider */
-    int jmXright = jmXleft + 15;
+    int jmXleft = jmXleftold + 2;
+    int jmXright = jmXleft + 11;
     int jmYbottom = jmYtop + 15;
 
     /* Set Other Objects Collider */
-    int otherXright = otherXleft + (otherSize - 1);
-    int otherYbottom = otherYtop + (otherSize - 1);
+    int otherXright = otherXleft + (otherXsize - 1);
+    int otherYbottom = otherYtop + (otherYsize - 1);
     
-    /* Check for possible X position collision */
-    if ((jmXleft <= otherXleft <= jmXright) || (jmXleft <= otherXright <= jmXright)) {
-
-        /* Check for possible Y position collision */
-        if ((jmYtop <= otherYtop <= jmYbottom) || (jmYtop <= otherYbottom <= jmYbottom)) {
-
-            /* If both conditions are met, there's some form of overlap -> COLLISION! */
+    
+    if (jmXleft > otherXleft && jmXleft < otherXright || jmXright > otherXleft && jmXright < otherXright) {
+        if (jmYtop < otherYbottom && jmYtop > otherYtop || jmYbottom < otherYbottom && jmYbottom > otherYtop) {
             return 1;
         }
     }
-    /* If there's no X overlap, it doesnt matter if we check the Y */
-    return 0;
+    else {
+        return 0;   
+    }
 }
