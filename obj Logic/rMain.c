@@ -13,24 +13,28 @@
 #include "rBonus.c"
 #include "rLives.c"
 #include "rScore.c"
+#include "splash.c"
 
-#include "model.h"
-#include "raster.c"
+ 
 #include "clock.c"
 #include "item.c"
 #include "kong.c"
 #include "barrel.c"
 #include "input.c"
-#include "mario.c"
+#include "music.c"
+#include "psg.c"
 #include "girder.c"
 #include "hammer.c"
 #include "ladder.c"
 
+#include "mario.c"
+#include "ihand.c"
 
 #include <osbind.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h> /* for random */
+
 
 #define SCREEN_SIZE 32000
 #define FRAMERULE 12
@@ -302,6 +306,23 @@ OUTPUT: None
 
 */
 
+int splash_screen(UINT16 *base, UINT16 *block) {
+    
+    int start_game;
+    clear_screen((UINT32 *)base);
+    render_title(base, block);
+
+    while(!has_input()) {
+        char input;
+        input = get_input();
+
+        if (input == '\r') {
+            return 1;
+        } else if (input == 'q') {
+            return 0;
+        }
+    } 
+}
 
 int runGame(Model *model) {
 
@@ -311,6 +332,8 @@ int runGame(Model *model) {
 
     UINT8 *screen1 = (UINT8 *)(((long)raw1 + 255) & 0xFFFFFF00);
     UINT8 *screen2 = (UINT8 *)(((long)raw2 + 255) & 0xFFFFFF00);
+
+    UINT8 *original_screen = Physbase(); /* For resetting buffer at exit */
 
     UINT8 *front_buffer = Physbase();
     UINT8 *back_buffer  = screen1;
@@ -327,6 +350,11 @@ int runGame(Model *model) {
     int lastFrameTick = -1;
 
     int canSpawnBarrel = rand() % 10;
+
+    if (splash_screen((UINT16 *)front_buffer, title_block) == 0 ) {
+        printf("Exited game.\n");
+        return 0; /* Quit menu screen/game */
+    }
 
     /* --- Draw initial frame into back buffer --- */
     memset(back_buffer, 0, SCREEN_SIZE);
@@ -349,6 +377,8 @@ int runGame(Model *model) {
         front_buffer = back_buffer;
         back_buffer = temp;
     }
+
+    start_music();
 
     while (gameRunning) {
 
@@ -378,6 +408,10 @@ int runGame(Model *model) {
           
             /* ----- IMPORTANT: Put the Update Code into the Synch.c Event File ----- */
 
+            /* ----- UPDATE MUSIC ----- */
+
+            update_music(passedTime);
+ 
             handle_synch_events(model, nowTime, canSpawnBarrel);
             
             /* ----- IMPORTANT: Put Conditional Events (if this then that) into Cond.c Event File ----- */
@@ -400,6 +434,12 @@ int runGame(Model *model) {
             Mfree(raw2);
         }
     }
+
+    Vsync();
+    Setscreen(original_screen, original_screen, -1);
+
+    Mfree(raw1);
+    Mfree(raw2);
 
     return 0;
 }

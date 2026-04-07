@@ -41,6 +41,7 @@ void updateKong(Kong *kong, int canSpawnBarrel)
     case KONG_HOLD:
         if (kong->stateTimer >= HOLD_TICKS)
         {
+            kong->spawnBarrel = NORMAL_BARREL; /* DK Throws the Barrel as he swaps animation */
             kong->state = KONG_THROW;
             kong->stateTimer = 0;
         }
@@ -109,7 +110,6 @@ static void kongSpawner(Kong *kong)
 
 static void finishThrow(Kong *kong)
 {
-    kong->spawnBarrel = NORMAL_BARREL;
     kong->state = KONG_IDLE;
     kong->stateTimer = 0;
 }
