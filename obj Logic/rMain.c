@@ -15,7 +15,7 @@
 #include "rScore.c"
 #include "splash.c"
 
-#include "model.h"
+ 
 #include "clock.c"
 #include "item.c"
 #include "kong.c"
@@ -25,11 +25,13 @@
 #include "psg.c"
 #include "girder.c"
 #include "mario.c"
+#include "ihand.c"
 
 #include <osbind.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h> /* for random */
+
 
 #define SCREEN_SIZE 32000
 #define FRAMERULE 12
@@ -194,63 +196,6 @@ void draw (Model *model, UINT32 *buffer) {
     renderLives(model->lives, (UINT8 *)buffer);
     renderScore(model->score, buffer);
 
-}
-
-/* --- INPUT HANDLER --- 
-PURPOSE: To handle user input and update the model accordingly.
-
-INPUT: Model: Pointer to the game model struct, that has all game state information.
-       gameRunning: Pointer to the gameRunning variable.
-
-OUTPUT: None
-
-*/
-
-void inputHandler(Model *model, int *gameRunning) {
-    /* only reset to standing if grounded and not climbing */
-    if (model->mario.onGround && !model->mario.climbing)
-        model->mario.state = 0;
-
-    if (has_input()) {
-        
-        char input_val = get_input();
-
-        while (has_input()) input_val = get_input();
-
-        /* Handle input and update model accordingly */
-        /*If want to change the speed of mario change the value of the model->mario.posX =4  model->mario.posY = 4 */
-
-        if (input_val == 'a') {
-            /* detlX instead of posx because deltX is the velocity */
-            model->mario.deltX = -MOVE_SPEED;
-            model->mario.direction = 0;
-            model->mario.state = 1;
-            model->mario.walkFrame = 1 - model->mario.walkFrame;
-        }
-        else if (input_val == 'd') {
-            model->mario.deltX = MOVE_SPEED;
-            model->mario.direction = 1;
-            model->mario.state = 1;
-            model->mario.walkFrame = 1 - model->mario.walkFrame;
-        }
-        else if (input_val == 'w') {
-            requestClimbUp(&model->mario);
-            model->mario.state = 2;
-            model->mario.climbFrame = 1 - model->mario.climbFrame;
-        }
-        else if (input_val == 's') {
-            requestClimbDown(&model->mario);
-            model->mario.state = 2;
-            model->mario.climbFrame = 1 - model->mario.climbFrame;
-        }
-        else if (input_val == ' ') { /* Spacebar for Jumping */
-            requestJump(&model->mario);
-            model->mario.state = 3;
-        }
-        else if (input_val == 'q') {
-            *gameRunning = 0;
-        }
-    }
 }
 
 int splash_screen(UINT16 *base, UINT16 *block) {
