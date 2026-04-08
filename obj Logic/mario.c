@@ -23,7 +23,14 @@ void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], 
     } else {
         applyGravity(jm);
         jm->posX += jm->deltX; /* apply horizontal movement */
+        if (jm->posX > 384) /* Right Bound*/
+            jm->posX = 384;
+        if (jm->posX < 176) /* Left Bound */
+            jm->posX = 176;
         jm->posY += jm->deltY; /* apply vertical movement */
+        if (jm->posY > 380) /* Failsafe if Mario somehows falls OOB */
+            jm->posX = 210;
+            jm->posY = 352;
         jm->deltX = 0; /* horizontal speed resets each frame, input must be re-applied next frame */
         resolveGirderCollision(jm, girders, numGirders);
     }
