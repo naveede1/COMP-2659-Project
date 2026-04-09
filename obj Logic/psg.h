@@ -50,6 +50,13 @@ Silences all PSG sound production
 */
 void stop_sound();
 
+/*----- Function: toggle_keyboard_sound -----
+        
+Toggles on/off sound of keyboard input. 
 
+This function is written by Parker Hutcherson.
+
+*/
 void toggle_keyboard_sound();
+
 #endif

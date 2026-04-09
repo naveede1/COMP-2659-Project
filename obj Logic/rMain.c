@@ -415,10 +415,10 @@ int main() {
         back_buffer = temp;
     }
     
-
+    old_ssp = Super(0);
     toggle_keyboard_sound();
     start_music();
-    
+    Super(old_ssp);
 
     while (gameRunning) {
 
@@ -454,9 +454,9 @@ int main() {
             /* ----- IMPORTANT: Put the Update Code into the Synch.c Event File ----- */
 
             /* ----- UPDATE MUSIC ----- */
-            
+            old_ssp = Super(0);
             update_music(passedTime);
-            
+            Super(old_ssp);
 
             /* --- GAME LOGIC --- */
             if (passedTime > 40000) {
@@ -505,11 +505,11 @@ int main() {
             }
         }
     }
-
-    toggle_keyboard_sound();
     old_ssp = Super(0);
+    toggle_keyboard_sound();
     stop_sound();
     Super(old_ssp);
+
     Vsync();
     Setscreen(original_screen, original_screen, -1);
 
