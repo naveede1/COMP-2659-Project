@@ -13,6 +13,7 @@
 #include "rBonus.c"
 #include "rLives.c"
 #include "rScore.c"
+#include "rBound.c"
 #include "splash.c"
 
  
@@ -121,6 +122,7 @@ int l = 0;
 
 void render(Model *model, UINT16 *base) {
 
+    renderBounds((UINT8 *)base);
     renderDK(model->kong,(UINT32 *)base);
     renderMario(model->mario, base);
     renderHeart(model->heart, base);
