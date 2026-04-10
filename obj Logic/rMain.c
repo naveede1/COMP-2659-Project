@@ -227,9 +227,9 @@ int main() {
     UINT8 *screen1 = (UINT8 *)(((long)raw1 + 255) & 0xFFFFFF00);
     UINT8 *screen2 = (UINT8 *)(((long)raw2 + 255) & 0xFFFFFF00);
 
-    UINT8 *original_screen = Physbase(); /* For resetting buffer at exit */
+    UINT8 *original_screen = (UINT8 *)get_video_base(); /* For resetting buffer at exit */
 
-    UINT8 *front_buffer = Physbase();
+    UINT8 *front_buffer = (UINT8 *)get_video_base();
     UINT8 *back_buffer  = screen1;
 
     long nowTime;
@@ -264,7 +264,9 @@ int main() {
     renderBStack(model->kong, (UINT32 *)back_buffer);
 
     Vsync();
-    Setscreen(back_buffer, back_buffer, -1);
+    /* Setscreen(back_buffer, back_buffer, -1); */
+
+    set_video_base((UINT16 *)screen1);
 
     /* swap buffers */
     {
@@ -351,7 +353,8 @@ int main() {
             
             /* --- SWAP BUFFERS --- */
             Vsync();
-            Setscreen(back_buffer, back_buffer, -1);
+            /* Setscreen(back_buffer, back_buffer, -1); */
+            set_video_base((UINT16 *)back_buffer);
             
             {               
                 UINT8 *temp = front_buffer;
@@ -362,7 +365,8 @@ int main() {
     }
 
     Vsync();
-    Setscreen(original_screen, original_screen, -1);
+    /* Setscreen(original_screen, original_screen, -1); */
+    set_video_base((UINT16 *)original_screen);
 
     Mfree(raw1);
     Mfree(raw2);

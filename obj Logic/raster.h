@@ -3,6 +3,9 @@
 
 #include "types.h"
 
+#define VIDEO_HI_BYTE_ADDRESS 0xFFFF8201
+#define VIDEO_MI_BYTE_ADDRESS 0xFFFF8203
+
 #define SPRITE_HEIGHT 32
 
 /*----- Function: clear_screen -----
@@ -222,6 +225,28 @@ void plot_character(UINT8 *base, INT16 row, INT16 col, char ch);
 */
 
 void plot_string(UINT8 *base, INT16 row, INT16 col, char *ch);
+
+/*----- Function: get_video_base -----
+
+ PURPOSE: Retrieve the current frame buffer start address (Physbase())
+
+ INPUT: None
+
+ OUTPUT: Address(UINT12*): Frame buffer start address of the screen
+
+*/
+UINT16 *get_video_base();
+
+/*----- Function: set_video_base -----
+
+ PURPOSE: Change the frame buffer starting address
+
+ INPUT: (UINT16 *) Address
+
+ OUTPUT: None
+
+*/
+void set_video_base(UINT16 *address);
 
 static const UINT32 testBM[32] = {
     0xFFFFFFFF,
