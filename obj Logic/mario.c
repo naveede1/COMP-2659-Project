@@ -83,7 +83,6 @@ void updateClimbing(Mario *jm, Ladder ladders[], int numLadders) {
         jm->climbFrame = 1 - jm->climbFrame;
     
     }
-
 }
 
 void updateHammer(Mario *jm, float deltaTime) {

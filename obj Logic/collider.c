@@ -77,26 +77,28 @@ void printLadderColliderInfo(Ladder ladder, UINT32 *base) {
 
 }
 
-void ladderCollision (Mario *mario, Ladder ladder, int index, UINT32 *base) {
+int ladderCollision (Mario *mario, Ladder ladder, int index) {
+
+    char ladInd[4];
 
     if (mario->centerX >= ladder.leftB && mario->centerX <= ladder.rightB) {
         if (mario->centerY >= ladder.topB && mario->centerY <= ladder.bottomB) {
-            
-            plot_string((UINT8 *)base, 220, 14, "ML Collision");
-            mario->collideLadder = 1;
-            mario->ladderIndex = index;
+        
+            return 1;
+
         } else {
-            mario->collideLadder = 0;
+            return 0;
             
+            /*
             if(mario->climbing == 1) {
                 mario->climbing = 0;
                 mario->posY  -= 6;
-                mario->state = 2; /* Pull up animation */
+                mario->state = 2; / Pull up animation /
                 mario->onGround = 1;
-            }
+            } */
         }
     } else {
-        mario->collideLadder = 0;
+        return 0;
     }
 }
 

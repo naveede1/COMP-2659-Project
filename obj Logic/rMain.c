@@ -120,6 +120,7 @@ Model testModel = {
 };
 
 int l = 0;
+int m = 0;
 
 void render(Model *model, UINT16 *base) {
 
@@ -323,8 +324,16 @@ int main() {
             updateBarrels(model->barrels, nowTime);                      
 
             /* ----- IMPORTANT: Put Conditional Events (if this then that) into Cond.c Event File ----- */
-            
-            ladderCollision(&model->mario, model->ladders[14], 14, (UINT32 *)back_buffer);
+            for (m = 0; m < 15; m++) {
+                if (ladderCollision(&model->mario, model->ladders[m], m)) {
+                    plot_string(back_buffer, 220, 14, "ML Collision");
+                    model->mario.collideLadder = 1;
+                    model->mario.ladderIndex = m;
+                    m = 15;
+                }
+            }
+                
+        
 
             /* --- RENDER EVERYTHING (FULL REDRAW) --- */
             draw(model, (UINT32 *)back_buffer);

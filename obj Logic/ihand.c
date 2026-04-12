@@ -42,7 +42,8 @@ void handleClimbUp(Model *model, int *lastGroundDeltX, int *moveBufferFrames) {
     *moveBufferFrames = 0;
 
     if (model->mario.collideLadder == 1) {
-        model->mario.posX = model->ladders[model->mario.ladderIndex].posX + 12;
+
+        model->mario.posX = model->ladders[model->mario.ladderIndex].leftB;
         model->mario.climbing = 1;
         model->mario.climbDir = -1;
         model->mario.posY -= 3;
