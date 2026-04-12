@@ -40,8 +40,8 @@
 Model testModel = {
 /* visible, posX, posY, deltX, deltY, state, direction, climbing, climbDir, collideLadder, onGround, hammerActive,
     hammerTimer, dead, walkFrame, climbFrame, hammerFrame, hammerFrameTimer, hammerHitActive, leftB, rightB, topB, 
-    bottomB, centerX, ladderIndex*/
-{1, 210, 352, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1}, /* Jumpman*/
+    bottomB, centerX, center Y, ladderIndex*/
+{1, 210, 352, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1}, /* Jumpman*/
 
 /* visible, posY, posX, type, size, colLeft, colRight */
 /*To Calculate colLeft and colRight 
@@ -59,22 +59,22 @@ Model testModel = {
   {1, 272, 368, 1, 8,  272, 399},
   {1, 176, 368, 0, 6,  176, 319} }, /* Girder 9 */
 
-/* visible, posY, posX, broken, size, topSize, bottomSize, skipped, leftB, rightB, topB, bottomB, update */
-{{1, 248, 78, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1}, /* Ladder 1 */
-{1, 264, 78, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 312, 112, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1}, 
-{1, 272, 150, 1, 6, 1, 3, 2, 0, 0, 0, 0, 1}, 
-{1, 360, 153, 0, 5, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 208, 207, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 248, 206, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 344, 199, 1, 6, 1, 2, 3, 0, 0, 0, 0, 1},
-{1, 256, 247, 1, 5, 1, 2, 2, 0, 0, 0, 0, 1},
-{1, 320, 251, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 360, 252, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 208, 295, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 288, 291, 0, 5, 0, 0, 0, 284, 299, 291, 330, 1},
-{1, 272, 336, 1, 4, 1, 1, 2, 0, 0, 0, 0, 1},
-{1, 356, 340, 0, 3, 0, 0, 0, 352, 367, 340, 363, 1} }, /* Ladder 15 */ 
+/* visible, posY, posX, broken, size, topSize, bottomSize, skipped, leftB, rightB, topB, bottomB */
+{{1, 248, 78, 0, 8, 0, 0, 0, 244, 259, 78, 141}, /* Ladder 1 */
+{1, 264, 78, 0, 8, 0, 0, 0, 260, 275, 78, 141},
+{1, 312, 112, 0, 4, 0, 0, 0, 308, 323, 112, 143}, 
+{1, 272, 150, 1, 6, 1, 3, 2, 268, 283, 150, 197}, 
+{1, 360, 153, 0, 5, 0, 0, 0, 356, 371, 153, 192},
+{1, 208, 207, 0, 4, 0, 0, 0, 204, 219, 207, 238},
+{1, 248, 206, 0, 4, 0, 0, 0, 244, 259, 206, 237},
+{1, 344, 199, 1, 6, 1, 2, 3, 340, 355, 199, 246},
+{1, 256, 247, 1, 5, 1, 2, 2, 252, 267, 247, 286},
+{1, 320, 251, 0, 4, 0, 0, 0, 316, 331, 251, 282},
+{1, 360, 252, 0, 4, 0, 0, 0, 356, 371, 252, 283},
+{1, 208, 295, 0, 4, 0, 0, 0, 204, 219, 295, 326},
+{1, 288, 291, 0, 5, 0, 0, 0, 284, 299, 291, 330},
+{1, 272, 336, 1, 4, 1, 1, 2, 268, 283, 336, 367},
+{1, 356, 340, 0, 3, 0, 0, 0, 352, 367, 340, 363} }, /* Ladder 15 */ 
 
 /* visible, posX, posY, state, topL, bottomR, spawnX, spawnY, stateTimer, spawnBarrel, spawnFireBarrel*/
 {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* Kong */
@@ -176,7 +176,7 @@ void draw (Model *model, UINT32 *buffer) {
     renderScore(model->score, buffer);
 
     printMColliderInfo(model->mario, buffer);
-    printLadderColliderInfo(model->ladders[14], buffer);
+    printLadderColliderInfo(model->ladders[11], buffer);
 
 }
 
@@ -323,7 +323,7 @@ int main() {
             updateBarrels(model->barrels, nowTime);                      
 
             /* ----- IMPORTANT: Put Conditional Events (if this then that) into Cond.c Event File ----- */
-
+            
             ladderCollision(&model->mario, model->ladders[14], 14, (UINT32 *)back_buffer);
 
             /* --- RENDER EVERYTHING (FULL REDRAW) --- */

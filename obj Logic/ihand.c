@@ -42,9 +42,11 @@ void handleClimbUp(Model *model, int *lastGroundDeltX, int *moveBufferFrames) {
     *moveBufferFrames = 0;
 
     if (model->mario.collideLadder == 1) {
-        requestClimbUp(&model->mario);    
+        model->mario.posX = model->ladders[model->mario.ladderIndex].posX + 12;
+        model->mario.climbing = 1;
+        model->mario.climbDir = -1;
+        model->mario.posY -= 3;
         model->mario.state = 2;        
-        model->mario.climbFrame = 1 - model->mario.climbFrame;
         model->mario.onGround = 0;
     }
 }
@@ -56,9 +58,7 @@ void handleClimbDown(Model *model, int *lastGroundDeltX, int *moveBufferFrames) 
     *moveBufferFrames = 0;
 
     if (model->mario.collideLadder == 1) {
-        requestClimbDown(&model->mario);
         model->mario.state = 2;       
-        model->mario.climbFrame = 1 - model->mario.climbFrame;
         model->mario.onGround = 0; 
     }
 }
