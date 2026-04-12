@@ -38,6 +38,8 @@ typedef struct { /* Structure for Jumpman */
     int hammerHitActive;    /* 1 when swing can destroy barrels */
 
     int leftB, rightB, topB, bottomB; /* Collider Bounds */
+    int centerX;
+    int ladderIndex; /* Stores the index of the ladder currently being climbed */
 
 } Mario;
 

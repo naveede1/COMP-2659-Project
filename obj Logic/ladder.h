@@ -17,8 +17,4 @@ typedef struct { /* Structure for Ladders */
 
 } Ladder;
 
-int isOnLadder(Ladder *ladder, int x, int y);
-int canClimb(Ladder *ladder);
-int barrelCanDescend(Ladder *ladder);
-
 #endif

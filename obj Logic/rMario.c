@@ -47,10 +47,10 @@ void renderMLeft(Mario mario, UINT16 *base) {
     } else if (currState == 2) {
         if (mario.climbFrame == 0) {
             plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_climbLeftBM);
-            mario.walkFrame = 1;
+            mario.climbFrame = 1;
         } else {
             plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_climbRightBM);
-            mario.walkFrame = 0;
+            mario.climbFrame = 0;
         }
 
     } else if (currState == 3) {
@@ -87,10 +87,10 @@ void renderMRight(Mario mario, UINT16 *base) {
             plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_climbPullBM);
         } else if (mario.climbFrame == 0) {
             plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_climbLeftBM);
-            mario.walkFrame = 1;
+            mario.climbFrame = 1;
         } else {
             plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_climbRightBM);
-            mario.walkFrame = 0;
+            mario.climbFrame = 0;
         }
         
     } else if (currState == 3) {
@@ -105,13 +105,4 @@ void renderMRight(Mario mario, UINT16 *base) {
             plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_hitBM);
         }
     }
-}
-
-void updateMCollision(Mario *mario) {
-
-    mario->leftB = mario->posX;
-    mario->rightB = mario->posX + 16;
-    mario->topB = mario->posY;
-    mario->bottomB = mario->posY + 16;
-
 }
