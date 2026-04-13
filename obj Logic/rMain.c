@@ -51,21 +51,21 @@ Model testModel = {
   {1, 176, 368, 0, 6,  176, 319} },
 
 /* visible, posY, posX, broken, size, topSize, bottomSize, skipped, leftB, rightB, topB, bottomB, update */
-{{1, 248, 78, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1},
+{{1, 248, 78, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1}, /* Ladder 1 */
 {1, 264, 78, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 312, 112, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 272, 150, 1, 6, 1, 3, 2, 0, 0, 0, 0, 1},
-{1, 360, 152, 0, 5, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 208, 208, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
+{1, 312, 112, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1}, 
+{1, 272, 150, 1, 6, 1, 3, 2, 0, 0, 0, 0, 1}, 
+{1, 360, 153, 0, 5, 0, 0, 0, 0, 0, 0, 0, 1},
+{1, 208, 207, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
 {1, 248, 206, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 344, 200, 1, 6, 1, 2, 3, 0, 0, 0, 0, 1},
-{1, 256, 246, 1, 5, 1, 2, 2, 0, 0, 0, 0, 1},
-{1, 320, 250, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
+{1, 344, 199, 1, 6, 1, 2, 3, 0, 0, 0, 0, 1},
+{1, 256, 247, 1, 5, 1, 2, 2, 0, 0, 0, 0, 1},
+{1, 320, 251, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
 {1, 360, 252, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
 {1, 208, 295, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 288, 292, 0, 5, 0, 0, 0, 0, 0, 0, 0, 1},
+{1, 288, 291, 0, 5, 0, 0, 0, 0, 0, 0, 0, 1},
 {1, 272, 336, 1, 4, 1, 1, 2, 0, 0, 0, 0, 1},
-{1, 356, 340, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1} },
+{1, 356, 340, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1} }, /* Ladder 15 */ 
 
 /* Kong */
 {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -238,12 +238,11 @@ void update_game(Model *model, int *gameRunning)
 
     inputHandler(model, gameRunning);
 
-    if (vbl_ticks % 140 == 0 && model->timer.value > 0)
+    if (vbl_ticks % 70 == 0 && model->timer.value > 0)
     {
         model->timer.value -= 200;
 
-        if (model->timer.value <= 4000)
-        {
+        if (model->timer.value <= 4000) {
             *gameRunning = 0;
             model->mario.state = 4;
         }
@@ -300,7 +299,6 @@ int main(void)
 
     draw(model, (UINT32 *)back_buffer);
 
-    Vsync();
     Setscreen(back_buffer, back_buffer, -1);
     {
         UINT8 *temp = front_buffer;
@@ -310,7 +308,7 @@ int main(void)
     old_ssp = Super(0);
     start_music();
     Super(old_ssp);
-    
+
     init_vbl();
     while (gameRunning)
     {
@@ -333,8 +331,9 @@ int main(void)
     }
 
     shutdown_vbl();
-
-    Vsync();
+    old_ssp = Super(0); 
+    stop_sound();
+    Super(old_ssp);
     Setscreen(original_screen, original_screen, -1);
 
     Mfree(raw1);

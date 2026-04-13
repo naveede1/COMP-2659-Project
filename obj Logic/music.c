@@ -39,15 +39,15 @@ void start_music(void)
     Notes:
     - Call this from do_vbl_isr().
 */
-void update_music(UINT32 time_elapsed) {
-    if ((time_elapsed - time_note_started) >= current_note->duration) {
-        if (i < INTRO_MELODY_LENGTH - 1) {
-            i++;
-            current_note = &intro_melody[i];
-            time_note_started = time_elapsed;
+void update_music(UINT32 time_elapsed)
+{
+    if ((time_elapsed - time_note_started) >= current_note->duration)
+    {
+        i = (i + 1) % INTRO_MELODY_LENGTH;
+        current_note = &intro_melody[i];
+        time_note_started = time_elapsed;
 
-            set_tone(0, current_note->tuning);
-            set_volume(0, 8);
-        }
+        set_tone(0, current_note->tuning);
+        set_volume(0, 8);
     }
 }

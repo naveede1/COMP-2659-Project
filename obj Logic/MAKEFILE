@@ -1,8 +1,22 @@
-tst_rast: tst_rast.o raster.o
-	cc68x -g tst_rast.o raster.o -o tst_rast
+PROGRAM = game.prg
 
-tst_rast.o: tst_rast.c raster.h
-	cc68x -g -c tst_rast.c
+CC = cc68x
+AS = gen
 
-raster.o: raster.c raster.h
-	cc68x -g -c raster.c
+CFLAGS = -c -g
+LDFLAGS = -g
+ASFLAGS = -L2 -D
+
+OBJS = rMain.o vbl.o
+
+$(PROGRAM): $(OBJS)
+	$(CC) $(LDFLAGS) $(OBJS) -o $(PROGRAM)
+
+rMain.o: rMain.c vbl.h
+	$(CC) $(CFLAGS) rMain.c
+
+vbl.o: vbl.s
+	$(AS) $(ASFLAGS) vbl.s
+
+clean:
+	rm -f *.o $(PROGRAM)
