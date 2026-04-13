@@ -6,10 +6,10 @@ void renderMario(Mario mario, UINT16 *base) {
 
         if (mario.hammerActive == 1) {
             if(mario.direction == 0) {
-                plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_hammerDownLeftBM);
+                renderMHammerLeft(mario, base);
             }
             else {
-                plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_hammerUpRightBM);
+                renderMHammerRight(mario, base);
             }
         }
         else { 
@@ -104,5 +104,28 @@ void renderMRight(Mario mario, UINT16 *base) {
         } else {
             plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_hitBM);
         }
+    }
+}
+
+void renderMHammerLeft(Mario mario, UINT16 *base) {
+
+    if (mario.hammerFrame == 0) {
+        plot_bitmap_16(base, mario.posY+2, mario.posX-15, 16, hammer_downLeftBM);
+        plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_hammerDownLeftBM);
+
+    } else if (mario.hammerFrame == 1) {
+        plot_bitmap_16(base, mario.posY-15, mario.posX+2, 16, hammer_upBM);
+        plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_hammerUpLeftBM);
+    }
+}
+
+void renderMHammerRight(Mario mario, UINT16 *base) {
+                
+    if (mario.hammerFrame == 0) {
+        plot_bitmap_16(base, mario.posY+2, mario.posX+15, 16, hammer_downRightBM);
+        plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_hammerDownRightBM);
+    } else if (mario.hammerFrame == 1) {
+        plot_bitmap_16(base, mario.posY-15, mario.posX-2, 16, hammer_upBM);
+        plot_bitmap_16(base, mario.posY, mario.posX, 16, mario_hammerUpRightBM);
     }
 }

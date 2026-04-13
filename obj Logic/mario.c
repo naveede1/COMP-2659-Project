@@ -2,6 +2,16 @@
 #include "girder.h"
 #include "ladder.h"
 
+#define GRAVITY 1
+#define JUMP_FORCE -6
+#define MOVE_SPEED 4
+#define MAX_FALL_SPEED 10
+
+/* Hammer Animation Timers */
+#define HAMMER_DURATION 40
+#define HAMMER_FRAME_TIME 1
+#define HAMMER_TOTAL_FRAMES 2
+
 void applyGravity(Mario *jm)
 {
     if (jm->climbing) {
@@ -27,7 +37,8 @@ void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], 
         jm->deltX = 0; /* horizontal speed resets each frame, input must be re-applied next frame */
         resolveGirderCollision(jm, girders, numGirders);
     }
-    /*updateHammer(jm, 0.15f);*/
+    
+    updateHammer(jm);
 }
 
 void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders) {
@@ -85,11 +96,11 @@ void updateClimbing(Mario *jm, Ladder ladders[], int numLadders) {
     }
 }
 
-void updateHammer(Mario *jm, float deltaTime) {
+void updateHammer(Mario *jm) {
       if (jm->hammerActive) { /* Main Hammer timer/logic */
     
-        jm->hammerTimer += deltaTime;
-        jm->hammerFrameTimer += deltaTime;
+        jm->hammerTimer++;
+        jm->hammerFrameTimer++;
 
         /* End hammer after duration */
         if (jm->hammerTimer >= HAMMER_DURATION) {
@@ -111,17 +122,6 @@ void updateHammer(Mario *jm, float deltaTime) {
             if (jm->hammerFrame >= HAMMER_TOTAL_FRAMES)
                 jm->hammerFrame = 0;
         
-        }
-
-        /* Activate hit frames (This is what the actual arcade does, only attacks frame 1 and 3 of animation) */
-        if (jm->hammerFrame == 1 || jm->hammerFrame == 3) { 
-
-            jm->hammerHitActive = 1;
-        
-        } else {
-
-            jm->hammerHitActive = 0;
-            
         }
 
         if (jm->hammerActive) { /* Prevents climbing */

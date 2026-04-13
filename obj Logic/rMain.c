@@ -124,6 +124,8 @@ int m = 0; /* Ladder Collider Counter */
 int n = 0; /* Hammer Collider Counter */
 int o = 0; /* Barrel Collider Counter */
 
+int barCheck = -1;
+
 void render(Model *model, UINT16 *base) {
 
     renderDK(model->kong,(UINT32 *)base);
@@ -346,9 +348,23 @@ int main() {
             for (n = 0; n < 2; n++) {
                 if (hammerCollision(&model->mario, model->hammers[n], n)) {
                     plot_string(back_buffer, 220, 14, "MH Collision");
+                    model->hammers[n].visible = 0;
+                    model->mario.hammerActive = 1;
+                    model->mario.hammerTimer = 0;
+                    model->mario.hammerFrameTimer = 0;
                     n = 2;
                 }
             }
+
+            if(model->mario.hammerActive == 1) {
+                barCheck = checkBarrels(model->mario, model->barrels);
+                if(barCheck != -1){
+                    model->barrels[barCheck].visible = 0;
+                    model->score.value += 300;
+                }
+            }
+        
+    
                 
         
 
@@ -365,13 +381,14 @@ int main() {
                 back_buffer = temp;
             }
         }
+    
     }
-
+        
     Vsync();
     Setscreen(original_screen, original_screen, -1);
-
     Mfree(raw1);
     Mfree(raw2);
 
     return 0;
+    
 }
