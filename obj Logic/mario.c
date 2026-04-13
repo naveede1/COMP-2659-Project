@@ -27,7 +27,15 @@ void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], 
         jm->deltX = 0; /* horizontal speed resets each frame, input must be re-applied next frame */
         resolveGirderCollision(jm, girders, numGirders);
     }
+
     /*updateHammer(jm, 0.15f);*/
+    
+    /* Boundary Checking */
+    if (jm->posX > 384) /* Right Bound*/
+        jm->posX = 384;
+    if (jm->posX < 176) /* Left Bound */
+        jm->posX = 176;
+
 }
 
 void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders) {
