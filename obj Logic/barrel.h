@@ -11,10 +11,11 @@ typedef struct { /* Structure for the Barrels */
     long timeSpawned; /* The time when the barrel was first spawned */
 
     int leftB, rightB, topB, bottomB; /* Bounds */
+    int leftPt, rightPt, topPt, bottomPt; /* Bounds */
 
 } Barrel;
 
 void updateBarrels(Barrel barrel[], long nowTime);
-int checkHCollision(int hamXleft, int hamYtop, int barXleft, int barYtop);
+int checkHCollision(int hamXleft, int hamYtop, Barrel barrel);
 
 #endif
