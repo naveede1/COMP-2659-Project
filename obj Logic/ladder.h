@@ -13,7 +13,6 @@ typedef struct { /* Structure for Ladders */
     int skipped; /* How many rungs are missing on the Broken Ladder */
 
     int leftB, rightB, topB, bottomB; /* Bounds */
-    int update;
 
 } Ladder;
 

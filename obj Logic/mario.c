@@ -83,33 +83,14 @@ void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders) {
 }
 
 void updateClimbing(Mario *jm, Ladder ladders[], int numLadders) {
-    int index;
-    int onLadder = 0;
-    int marioCenterX = jm->posX + 8;
 
-    for (index = 0; index < numLadders; index++) {
-        Ladder *ladder = &ladders[index];
+    if (jm->collideLadder && jm->climbing) { /* If Mario is still climbing */
 
-        if (!ladder->visible || ladder->broken)
-            continue;
-
-        /* check Mario is horizontally aligned with this ladder */
-        if (marioCenterX >= ladder->posX - 5 &&
-            marioCenterX <= ladder->posX + 5 &&
-            jm->posY >= ladder->topB &&
-            jm->posY <= ladder->bottomB) {
-
-            jm->posX = ladder->posX - 8; /* centre Mario on ladder  */
-            jm->posY += jm->climbDir * 2; /* move up or down 2px */
-            jm->deltY = 0; /* cancel gravity */
-            jm->onGround = 0; /* not on ground */
-            onLadder = 1;
-            break;
-        }
+        jm->deltY = 0; /* No Gravity */
+        jm->onGround = 0;
+        jm->climbFrame = 1 - jm->climbFrame;
+    
     }
-
-    if (!onLadder)
-        jm->climbing = 0; /* no ladder found, stop climbing */
 }
 
 void updateHammer(Mario *jm, float deltaTime) {
@@ -159,17 +140,6 @@ void updateHammer(Mario *jm, float deltaTime) {
         }
     }
 
-}
-
-void requestClimbUp(Mario *jm) {
-    jm->climbing = 1;
-    jm->climbDir = -1; /* negative Y = upward on screen */
-}
-
-
-void requestClimbDown(Mario *jm) {
-    jm->climbing = 1;
-    jm->climbDir = 1; /* positive Y = downward on screen */
 }
 
 void requestJump(Mario *jm) {
