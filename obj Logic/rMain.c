@@ -43,8 +43,8 @@
 Model testModel = {
 /* visible, posX, posY, deltX, deltY, state, direction, climbing, climbDir, collideLadder, onGround, hammerActive,
     hammerTimer, dead, walkFrame, climbFrame, hammerFrame, hammerFrameTimer, hammerHitActive, leftB, rightB, topB, 
-    bottomB, centerX, center Y, ladderIndex*/
-{1, 210, 352, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1}, /* Jumpman*/
+    bottomB, centerX, center Y, ladderIndex, hammerIndex*/
+{1, 210, 352, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1}, /* Jumpman*/
 
 /* visible, posY, posX, type, size, colLeft, colRight */
 /*To Calculate colLeft and colRight 
@@ -85,23 +85,23 @@ Model testModel = {
 /* visible, posX, posY, state, requestFireBarrel */
 {1, 184, 336, 1, 0}, /* Oil */
 
-/* visible, posX, posY, state */
-{ {1, 190, 162, 0}, /* Hammer 1 */
-{1, 338, 296, 0} }, /* Hammer 2 */
+/* visible, posX, posY, state, leftB, rightB, topB, bottomB */
+{ {1, 190, 162, 0, 186, 207, 158, 181}, /* Hammer 1 */
+{1, 338, 296, 0, 334, 355, 296, 315} }, /* Hammer 2 */
 
 /* visible, posX, posY, state */
 {1, 256, 74, 0}, /* Pauline */ 
 
 /* visible, posX, posY, state, broken, dropTick, timeSpawned */
-{ {0, 0, 0, 0, 0, 0}, /* Barrel 1 */
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0} }, /* Barrel 9 */ 
+{ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* Barrel 1 */
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0} }, /* Barrel 9 */ 
 
 /* visible, posX, posY, direction */
 {0, 240, 352, 1}, /* Spirit */
@@ -122,8 +122,12 @@ Model testModel = {
 {1, 186, 48, 3}, /* Lives */ 
 };
 
-int l = 0;
-int m = 0;
+int l = 0; /* Kong Spawning Counter */
+int m = 0; /* Ladder Collider Counter */
+int n = 0; /* Hammer Collider Counter */
+int o = 0; /* Barrel Collider Counter */
+
+int barCheck = -1;
 
 void render(Model *model, UINT16 *base) {
 
@@ -181,7 +185,7 @@ void draw (Model *model, UINT32 *buffer) {
     renderScore(model->score, buffer);
 
     printMColliderInfo(model->mario, buffer);
-    printLadderColliderInfo(model->ladders[11], buffer);
+    printBarrelColliderInfo(model->barrels[0], buffer);
 
 }
 
@@ -330,7 +334,7 @@ int main() {
                 }
             }
 
-            updateBarrels(model->barrels, nowTime);                      
+            updateBarrels(model->barrels, nowTime);     
 
             /* ----- IMPORTANT: Put Conditional Events (if this then that) into Cond.c Event File ----- */
             for (m = 0; m < 15; m++) {
@@ -349,6 +353,39 @@ int main() {
                     model->mario.collideLadder = 0; 
                 }
             }
+
+            for (n = 0; n < 2; n++) {
+                if (hammerCollision(&model->mario, model->hammers[n], n)) {
+                    plot_string(back_buffer, 220, 14, "MH Collision");
+                    model->hammers[n].visible = 0;
+                    model->mario.hammerActive = 1;
+                    model->mario.hammerTimer = 0;
+                    model->mario.hammerFrameTimer = 0;
+                    n = 2;
+                }
+            }
+
+            if(model->mario.hammerActive == 1) {
+                barCheck = checkBarrels(model->mario, model->barrels);
+                if(barCheck != -1 && model->barrels[barCheck].visible){
+                    model->barrels[barCheck].visible = 0;
+                    model->score.value += 200;
+                    barCheck = -1;
+                }
+            }
+        
+            for (o = 0; o < 9; o++) {
+
+                model->barrels[o].leftB = model->barrels[o].posX + 1;
+                model->barrels[o].rightB = model->barrels[o].posX + 14;
+                model->barrels[o].topB = model->barrels[o].posY + 1;
+                model->barrels[o].bottomB = model->barrels[o].posY + 14;
+
+                if (barrelCollision(&model->mario, model->barrels[o])) {
+                    plot_string(back_buffer, 260, 14, "MB Collision");
+                    o = 9;
+                }
+            }
                 
         
 
@@ -365,7 +402,9 @@ int main() {
                 back_buffer = temp;
             }
         }
+    
     }
+        
     old_ssp = Super(0);
     toggle_keyboard_sound();
     stop_sound();
@@ -373,9 +412,9 @@ int main() {
 
     Vsync();
     Setscreen(original_screen, original_screen, -1);
-
     Mfree(raw1);
     Mfree(raw2);
 
     return 0;
+    
 }

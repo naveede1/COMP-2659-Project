@@ -4,15 +4,6 @@
 #include "girder.h"
 #include "ladder.h"
 
-#define GRAVITY 1
-#define JUMP_FORCE -6
-#define MOVE_SPEED 4
-#define MAX_FALL_SPEED 10
-
-#define HAMMER_DURATION 8.0f
-#define HAMMER_FRAME_TIME 1
-#define HAMMER_FRAME_TIME 0.15f
-#define HAMMER_TOTAL_FRAMES 4
 
 typedef struct { /* Structure for Jumpman */
 
@@ -40,6 +31,7 @@ typedef struct { /* Structure for Jumpman */
     int leftB, rightB, topB, bottomB; /* Collider Bounds */
     int centerX, centerY;
     int ladderIndex; /* Stores the index of the ladder currently being climbed */
+    int hammerIndex; /* Stores the index of the hammer currently being collected */
 
 } Mario;
 
@@ -88,7 +80,7 @@ OUTPUT: None
 void applyGravity(Mario *jm);
 
 
-void updateHammer(Mario *jm, float deltaTime);
+void updateHammer(Mario *jm);
 
 /*----- Function: updateMario -----
 
