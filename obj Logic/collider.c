@@ -77,6 +77,31 @@ void printLadderColliderInfo(Ladder ladder, UINT32 *base) {
 
 }
 
+void printHammerColliderInfo(Hammer hammer, UINT32 *base) {
+
+    char position[4];
+    linea0();
+
+    plot_string((UINT8 *)base, 112, 14, "HBounds (LRTB)");
+
+    posToStr(hammer.leftB, position);
+    position[3] = '\0';
+    plot_string((UINT8 *)base, 130, 14, position);
+
+    posToStr(hammer.rightB, position);
+    position[3] = '\0';
+    plot_string((UINT8 *)base, 148, 14, position);
+    
+    posToStr(hammer.topB, position);
+    position[3] = '\0';
+    plot_string((UINT8 *)base, 166, 14, position);
+
+    posToStr(hammer.bottomB, position);
+    position[3] = '\0';
+    plot_string((UINT8 *)base, 184, 14, position);
+
+}
+
 int ladderCollision (Mario *mario, Ladder ladder, int index) {
     if (ladder.broken)
         return 0;
@@ -89,6 +114,23 @@ int ladderCollision (Mario *mario, Ladder ladder, int index) {
             return 0;
 
         }
+    } else {
+        return 0;
+    }
+}
+
+int hammerCollision (Mario *mario, Hammer hammer, int index) {
+    if (!hammer.visible) /* Can't recollect a collected hammer */
+        return 0;
+    if (mario->centerX >= hammer.leftB && mario->centerX <= hammer.rightB) {
+        if (mario->centerY >= hammer.topB && mario->centerY <= hammer.bottomB) {
+            mario->hammerIndex = index;
+            return 1;
+
+        } else {
+            return 0;
+        }
+        
     } else {
         return 0;
     }

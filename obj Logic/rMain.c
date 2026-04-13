@@ -40,8 +40,8 @@
 Model testModel = {
 /* visible, posX, posY, deltX, deltY, state, direction, climbing, climbDir, collideLadder, onGround, hammerActive,
     hammerTimer, dead, walkFrame, climbFrame, hammerFrame, hammerFrameTimer, hammerHitActive, leftB, rightB, topB, 
-    bottomB, centerX, center Y, ladderIndex*/
-{1, 210, 352, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1}, /* Jumpman*/
+    bottomB, centerX, center Y, ladderIndex, hammerIndex*/
+{1, 210, 352, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1}, /* Jumpman*/
 
 /* visible, posY, posX, type, size, colLeft, colRight */
 /*To Calculate colLeft and colRight 
@@ -82,9 +82,9 @@ Model testModel = {
 /* visible, posX, posY, state, requestFireBarrel */
 {1, 184, 336, 1, 0}, /* Oil */
 
-/* visible, posX, posY, state */
-{ {1, 190, 162, 0}, /* Hammer 1 */
-{1, 338, 296, 0} }, /* Hammer 2 */
+/* visible, posX, posY, state, leftB, rightB, topB, bottomB */
+{ {1, 190, 162, 0, 186, 207, 158, 181}, /* Hammer 1 */
+{1, 338, 296, 0, 334, 355, 296, 315} }, /* Hammer 2 */
 
 /* visible, posX, posY, state */
 {1, 256, 74, 0}, /* Pauline */ 
@@ -119,8 +119,10 @@ Model testModel = {
 {1, 186, 48, 3}, /* Lives */ 
 };
 
-int l = 0;
-int m = 0;
+int l = 0; /* Kong Spawning Counter */
+int m = 0; /* Ladder Collider Counter */
+int n = 0; /* Hammer Collider Counter */
+int o = 0; /* Barrel Collider Counter */
 
 void render(Model *model, UINT16 *base) {
 
@@ -177,7 +179,7 @@ void draw (Model *model, UINT32 *buffer) {
     renderScore(model->score, buffer);
 
     printMColliderInfo(model->mario, buffer);
-    printLadderColliderInfo(model->ladders[11], buffer);
+    printHammerColliderInfo(model->hammers[1], buffer);
 
 }
 
@@ -338,6 +340,13 @@ int main() {
                     m = 15;
                 } else {
                     model->mario.collideLadder = 0; 
+                }
+            }
+
+            for (n = 0; n < 2; n++) {
+                if (hammerCollision(&model->mario, model->hammers[n], n)) {
+                    plot_string(back_buffer, 220, 14, "MH Collision");
+                    n = 2;
                 }
             }
                 

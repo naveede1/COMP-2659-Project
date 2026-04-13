@@ -7,6 +7,8 @@ typedef struct { /* Structure for the Hammers */
     int posX, posY; /* Current Position */
     int state; /* Has the Hammer been grabbed? No = 0, Yes = 1 */
 
+    int leftB, rightB, topB, bottomB; /* Bounds */
+
 } Hammer;
 
 #endif

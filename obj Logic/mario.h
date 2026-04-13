@@ -40,6 +40,7 @@ typedef struct { /* Structure for Jumpman */
     int leftB, rightB, topB, bottomB; /* Collider Bounds */
     int centerX, centerY;
     int ladderIndex; /* Stores the index of the ladder currently being climbed */
+    int hammerIndex; /* Stores the index of the hammer currently being collected */
 
 } Mario;
 
