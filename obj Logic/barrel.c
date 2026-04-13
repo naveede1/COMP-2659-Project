@@ -1,4 +1,5 @@
 #include "barrel.h"
+#include "mario.h"
 
 long spawnedTime;
 
@@ -117,4 +118,55 @@ void updateBarrels(Barrel barrel[], long nowTime) {
     }
 
     return;
+}
+
+int checkBarrels(Mario mario, Barrel barrel[]) { /* Returns the index of a barrel if it was destroyed, -1 otherwise */
+
+    int barNum;
+    if (mario.hammerActive == 1) {
+        for (barNum = 0; barNum < 9; barNum++) {
+            if(barrel[barNum].visible == 1) {
+                if(mario.hammerFrame == 0) { /* Hammer Down */
+                    if(mario.direction == 0) { /* Mario Left */
+                        if(checkHCollision(mario.posX-15, mario.posY+2, barrel[barNum].posX, barrel[barNum].posY))
+                            return barNum;
+                    } else { /* Mario Right */
+                        if(checkHCollision(mario.posX+15, mario.posY+2, barrel[barNum].posX, barrel[barNum].posY))
+                            return barNum;
+                    }
+                } else { /* Hammer Up */
+                    if(mario.direction == 0) { /* Mario Left*/
+                        if(checkHCollision(mario.posX+2, mario.posY-15, barrel[barNum].posX, barrel[barNum].posY))
+                            return barNum;
+                    } else { /* Mario Right */
+                        if(checkHCollision(mario.posX-2, mario.posY-15, barrel[barNum].posX, barrel[barNum].posY))
+                            return barNum;
+                    }
+                }
+            }
+        }
+    }
+
+    return -1;
+}
+
+int checkHCollision(int hamXleft, int hamYtop, int barXleft, int barYtop) { /* Returns 1 if the Barrel Collides with the Hammer, 0 if not*/
+
+    /* Set Marios Collider */
+    int hamXright = hamXleft + 15;
+    int hamYbottom = hamYtop + 15;
+
+    /* Set Other Objects Collider */
+    int barXright = barXleft + 15;
+    int barYbottom = barYtop + 15;
+    
+    
+    if (hamXleft > barXleft && hamXleft < barXright || hamXright > barXleft && hamXright < barXright) {
+        if (hamYtop < barYbottom && hamYtop > barYtop || hamYbottom < barYbottom && hamYbottom > barYtop) {
+            return 1;
+        }
+    }
+    else {
+        return 0;   
+    }
 }

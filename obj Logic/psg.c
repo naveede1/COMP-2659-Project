@@ -15,9 +15,11 @@ TO DO:
 	    *PSG_reg_write  = val;
 
 */
+#define CONSOLE_PTR    ((volatile char *)0x000484)
 
 volatile unsigned char *PSG_reg_select = 0xFF8800; 
 volatile unsigned char *PSG_reg_write = 0xFF8802;
+
 
 void write_psg(int reg, UINT8 val) {
     if ((0 <= reg) && (reg <= 15)) {
@@ -114,4 +116,11 @@ void stop_sound() {
     write_psg(8, 0);
     write_psg(9, 0);
     write_psg(10, 0);  
+}
+
+void toggle_keyboard_sound() {
+
+    UINT8 console_byte = *CONSOLE_PTR ^ 0x01; /* Invert bit 0 to flip keyboard sound */
+    *CONSOLE_PTR = console_byte;
+
 }

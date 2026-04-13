@@ -13,8 +13,10 @@
 #include "rBonus.c"
 #include "rLives.c"
 #include "rScore.c"
+#include "rBound.c"
 #include "splash.c"
 
+#include "collider.c"
  
 #include "clock.c"
 #include "item.c"
@@ -22,7 +24,9 @@
 #include "barrel.c"
 #include "input.c"
 #include "music.c"
+
 #include "psg.c"
+
 #include "girder.c"
 #include "mario.c"
 #include "ihand.c"
@@ -37,9 +41,10 @@
 #define FRAMERULE 12
 
 Model testModel = {
-/* visible, posX, posY, deltX, deltY, state, direction, climbDir, climbing, collideLadder, onGround, hammerActive,
-    hammerTimer, dead, walkFrame, climbFrame, hammerFrame, hammerFrameTimer, hammerHitActive */
-{1, 210, 352, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 194, 226, 336, 368}, /* Jumpman*/
+/* visible, posX, posY, deltX, deltY, state, direction, climbing, climbDir, collideLadder, onGround, hammerActive,
+    hammerTimer, dead, walkFrame, climbFrame, hammerFrame, hammerFrameTimer, hammerHitActive, leftB, rightB, topB, 
+    bottomB, centerX, center Y, ladderIndex, hammerIndex*/
+{1, 210, 352, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1}, /* Jumpman*/
 
 /* visible, posY, posX, type, size, colLeft, colRight */
 /*To Calculate colLeft and colRight 
@@ -57,22 +62,22 @@ Model testModel = {
   {1, 272, 368, 1, 8,  272, 399},
   {1, 176, 368, 0, 6,  176, 319} }, /* Girder 9 */
 
-/* visible, posY, posX, broken, size, topSize, bottomSize, skipped, leftB, rightB, topB, bottomB, update */
-{{1, 248, 78, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1}, /* Ladder 1 */
-{1, 264, 78, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 312, 112, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1}, 
-{1, 272, 150, 1, 6, 1, 3, 2, 0, 0, 0, 0, 1}, 
-{1, 360, 153, 0, 5, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 208, 207, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 248, 206, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 344, 199, 1, 6, 1, 2, 3, 0, 0, 0, 0, 1},
-{1, 256, 247, 1, 5, 1, 2, 2, 0, 0, 0, 0, 1},
-{1, 320, 251, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 360, 252, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 208, 295, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 288, 291, 0, 5, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 272, 336, 1, 4, 1, 1, 2, 0, 0, 0, 0, 1},
-{1, 356, 340, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1} }, /* Ladder 15 */ 
+/* visible, posY, posX, broken, size, topSize, bottomSize, skipped, leftB, rightB, topB, bottomB */
+{{1, 248, 78, 0, 8, 0, 0, 0, 244, 259, 78, 141}, /* Ladder 1 */
+{1, 264, 78, 0, 8, 0, 0, 0, 260, 275, 78, 141},
+{1, 312, 112, 0, 4, 0, 0, 0, 308, 323, 112, 143}, 
+{1, 272, 150, 1, 6, 1, 3, 2, 268, 283, 150, 197}, 
+{1, 360, 153, 0, 5, 0, 0, 0, 356, 371, 153, 192},
+{1, 208, 207, 0, 4, 0, 0, 0, 204, 219, 207, 238},
+{1, 248, 206, 0, 4, 0, 0, 0, 244, 259, 206, 237},
+{1, 344, 199, 1, 6, 1, 2, 3, 340, 355, 199, 246},
+{1, 256, 247, 1, 5, 1, 2, 2, 252, 267, 247, 286},
+{1, 320, 251, 0, 4, 0, 0, 0, 316, 331, 251, 282},
+{1, 360, 252, 0, 4, 0, 0, 0, 356, 371, 252, 283},
+{1, 208, 295, 0, 4, 0, 0, 0, 204, 219, 295, 326},
+{1, 288, 291, 0, 5, 0, 0, 0, 284, 299, 291, 330},
+{1, 272, 336, 1, 4, 1, 1, 2, 268, 283, 336, 367},
+{1, 356, 340, 0, 3, 0, 0, 0, 352, 367, 340, 363} }, /* Ladder 15 */ 
 
 /* visible, posX, posY, state, topL, bottomR, spawnX, spawnY, stateTimer, spawnBarrel, spawnFireBarrel*/
 {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* Kong */
@@ -80,23 +85,23 @@ Model testModel = {
 /* visible, posX, posY, state, requestFireBarrel */
 {1, 184, 336, 1, 0}, /* Oil */
 
-/* visible, posX, posY, state */
-{ {1, 190, 162, 0}, /* Hammer 1 */
-{1, 338, 296, 0} }, /* Hammer 2 */
+/* visible, posX, posY, state, leftB, rightB, topB, bottomB */
+{ {1, 190, 162, 0, 186, 207, 158, 181}, /* Hammer 1 */
+{1, 338, 296, 0, 334, 355, 296, 315} }, /* Hammer 2 */
 
 /* visible, posX, posY, state */
 {1, 256, 74, 0}, /* Pauline */ 
 
 /* visible, posX, posY, state, broken, dropTick, timeSpawned */
-{ {0, 0, 0, 0, 0, 0}, /* Barrel 1 */
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0} }, /* Barrel 9 */ 
+{ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* Barrel 1 */
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0} }, /* Barrel 9 */ 
 
 /* visible, posX, posY, direction */
 {0, 240, 352, 1}, /* Spirit */
@@ -117,10 +122,16 @@ Model testModel = {
 {1, 186, 48, 3}, /* Lives */ 
 };
 
-int l = 0;
+int l = 0; /* Kong Spawning Counter */
+int m = 0; /* Ladder Collider Counter */
+int n = 0; /* Hammer Collider Counter */
+int o = 0; /* Barrel Collider Counter */
+
+int barCheck = -1;
 
 void render(Model *model, UINT16 *base) {
 
+    renderBounds((UINT8 *)base);
     renderDK(model->kong,(UINT32 *)base);
     renderMario(model->mario, base);
     renderHeart(model->heart, base);
@@ -163,29 +174,6 @@ void renderLevel(Model *model, UINT32 *base) {
 
 }
 
-int checkMCollision(int jmXleft, int jmYtop, int otherXleft, int otherYtop, int otherSize) { /* Returns 1 if the Object Collides with Mario, 0 if not*/
-
-    /* Set Marios Collider */
-    int jmXright = jmXleft + 15;
-    int jmYbottom = jmYtop + 15;
-
-    /* Set Other Objects Collider */
-    int otherXright = otherXleft + (otherSize - 1);
-    int otherYbottom = otherYtop + (otherSize - 1);
-    
-    /* Check for possible X position collision */
-    if ((jmXleft <= otherXleft <= jmXright) || (jmXleft <= otherXright <= jmXright)) {
-
-        /* Check for possible Y position collision */
-        if ((jmYtop <= otherYtop <= jmYbottom) || (jmYtop <= otherYbottom <= jmYbottom)) {
-
-            /* If both conditions are met, there's some form of overlap -> COLLISION! */
-            return 1;
-        }
-    }
-    /* If there's no X overlap, it doesnt matter if we check the Y */
-    return 0;
-}
 
 void draw (Model *model, UINT32 *buffer) {
     
@@ -195,6 +183,9 @@ void draw (Model *model, UINT32 *buffer) {
     renderBStack(model->kong,buffer);
     renderLives(model->lives, (UINT8 *)buffer);
     renderScore(model->score, buffer);
+
+    printMColliderInfo(model->mario, buffer);
+    printBarrelColliderInfo(model->barrels[0], buffer);
 
 }
 
@@ -238,6 +229,8 @@ int main() {
     int stepUpTick;
     int deathTick;
 
+    long old_ssp;
+
     int gameRunning = 1;
     int lastFrameTick = -1;
 
@@ -270,8 +263,11 @@ int main() {
         front_buffer = back_buffer;
         back_buffer = temp;
     }
-
+    
+    old_ssp = Super(0);
+    toggle_keyboard_sound();
     start_music();
+    Super(old_ssp);
 
     while (gameRunning) {
 
@@ -307,9 +303,9 @@ int main() {
             /* ----- IMPORTANT: Put the Update Code into the Synch.c Event File ----- */
 
             /* ----- UPDATE MUSIC ----- */
-
+            old_ssp = Super(0);
             update_music(passedTime);
-                    
+            Super(old_ssp);
 
             /* --- GAME LOGIC --- */
             if (passedTime > 40000) {
@@ -322,9 +318,8 @@ int main() {
 
             /* --- UPDATE MARIO --- */
             updateMario(&model->mario, model->girders, 9, model->ladders, 15);
-            updateMCollision(&model->mario);
             /* pointer as it needs to write changes back to the actual Mario struct in the model */
-
+            updateMBounds(&model->mario);
             
             /* --- UPDATE BARRELS --- */
             if (model->kong.spawnBarrel == 1) {
@@ -339,10 +334,60 @@ int main() {
                 }
             }
 
-            updateBarrels(model->barrels, nowTime);                      
+            updateBarrels(model->barrels, nowTime);     
 
             /* ----- IMPORTANT: Put Conditional Events (if this then that) into Cond.c Event File ----- */
+            for (m = 0; m < 15; m++) {
+                if (!ladderCollision(&model->mario, model->ladders[model->mario.ladderIndex], model->mario.ladderIndex) && model->mario.climbing) {
+                    model->mario.climbing = 0;
+                    model->mario.posY  -= 6;
+                    model->mario.state = 2; /* Pull up animation */
+                    model->mario.onGround = 1;
+                } 
+                if (ladderCollision(&model->mario, model->ladders[m], m)) {
+                    plot_string(back_buffer, 220, 14, "ML Collision");
+                    model->mario.collideLadder = 1;
+                    model->mario.ladderIndex = m;
+                    m = 15;
+                } else {
+                    model->mario.collideLadder = 0; 
+                }
+            }
 
+            for (n = 0; n < 2; n++) {
+                if (hammerCollision(&model->mario, model->hammers[n], n)) {
+                    plot_string(back_buffer, 220, 14, "MH Collision");
+                    model->hammers[n].visible = 0;
+                    model->mario.hammerActive = 1;
+                    model->mario.hammerTimer = 0;
+                    model->mario.hammerFrameTimer = 0;
+                    n = 2;
+                }
+            }
+
+            if(model->mario.hammerActive == 1) {
+                barCheck = checkBarrels(model->mario, model->barrels);
+                if(barCheck != -1 && model->barrels[barCheck].visible){
+                    model->barrels[barCheck].visible = 0;
+                    model->score.value += 200;
+                    barCheck = -1;
+                }
+            }
+        
+            for (o = 0; o < 9; o++) {
+
+                model->barrels[o].leftB = model->barrels[o].posX + 1;
+                model->barrels[o].rightB = model->barrels[o].posX + 14;
+                model->barrels[o].topB = model->barrels[o].posY + 1;
+                model->barrels[o].bottomB = model->barrels[o].posY + 14;
+
+                if (barrelCollision(&model->mario, model->barrels[o])) {
+                    plot_string(back_buffer, 260, 14, "MB Collision");
+                    o = 9;
+                }
+            }
+                
+        
 
             /* --- RENDER EVERYTHING (FULL REDRAW) --- */
             draw(model, (UINT32 *)back_buffer);
@@ -357,13 +402,19 @@ int main() {
                 back_buffer = temp;
             }
         }
+    
     }
+        
+    old_ssp = Super(0);
+    toggle_keyboard_sound();
+    stop_sound();
+    Super(old_ssp);
 
     Vsync();
     Setscreen(original_screen, original_screen, -1);
-
     Mfree(raw1);
     Mfree(raw2);
 
     return 0;
+    
 }

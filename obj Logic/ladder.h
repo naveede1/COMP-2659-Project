@@ -13,12 +13,7 @@ typedef struct { /* Structure for Ladders */
     int skipped; /* How many rungs are missing on the Broken Ladder */
 
     int leftB, rightB, topB, bottomB; /* Bounds */
-    int update;
 
 } Ladder;
-
-int isOnLadder(Ladder *ladder, int x, int y);
-int canClimb(Ladder *ladder);
-int barrelCanDescend(Ladder *ladder);
 
 #endif

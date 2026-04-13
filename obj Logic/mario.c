@@ -2,6 +2,16 @@
 #include "girder.h"
 #include "ladder.h"
 
+#define GRAVITY 1
+#define JUMP_FORCE -6
+#define MOVE_SPEED 4
+#define MAX_FALL_SPEED 10
+
+/* Hammer Animation Timers */
+#define HAMMER_DURATION 40
+#define HAMMER_FRAME_TIME 1
+#define HAMMER_TOTAL_FRAMES 2
+
 void applyGravity(Mario *jm)
 {
     if (jm->climbing) {
@@ -27,7 +37,17 @@ void updateMario(Mario *jm, Girder girders[], int numGirders, Ladder ladders[], 
         jm->deltX = 0; /* horizontal speed resets each frame, input must be re-applied next frame */
         resolveGirderCollision(jm, girders, numGirders);
     }
+    
+    updateHammer(jm);
+
     /*updateHammer(jm, 0.15f);*/
+    
+    /* Boundary Checking */
+    if (jm->posX > 384) /* Right Bound*/
+        jm->posX = 384;
+    if (jm->posX < 176) /* Left Bound */
+        jm->posX = 176;
+
 }
 
 void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders) {
@@ -75,40 +95,21 @@ void resolveGirderCollision(Mario *jm, Girder girders[], int numGirders) {
 }
 
 void updateClimbing(Mario *jm, Ladder ladders[], int numLadders) {
-    int index;
-    int onLadder = 0;
-    int marioCenterX = jm->posX + 8;
 
-    for (index = 0; index < numLadders; index++) {
-        Ladder *ladder = &ladders[index];
+    if (jm->collideLadder && jm->climbing) { /* If Mario is still climbing */
 
-        if (!ladder->visible || ladder->broken)
-            continue;
-
-        /* check Mario is horizontally aligned with this ladder */
-        if (marioCenterX >= ladder->posX - 5 &&
-            marioCenterX <= ladder->posX + 5 &&
-            jm->posY >= ladder->topB &&
-            jm->posY <= ladder->bottomB) {
-
-            jm->posX = ladder->posX - 8; /* centre Mario on ladder  */
-            jm->posY += jm->climbDir * 2; /* move up or down 2px */
-            jm->deltY = 0; /* cancel gravity */
-            jm->onGround = 0; /* not on ground */
-            onLadder = 1;
-            break;
-        }
+        jm->deltY = 0; /* No Gravity */
+        jm->onGround = 0;
+        jm->climbFrame = 1 - jm->climbFrame;
+    
     }
-
-    if (!onLadder)
-        jm->climbing = 0; /* no ladder found, stop climbing */
 }
 
-void updateHammer(Mario *jm, float deltaTime) {
+void updateHammer(Mario *jm) {
       if (jm->hammerActive) { /* Main Hammer timer/logic */
     
-        jm->hammerTimer += deltaTime;
-        jm->hammerFrameTimer += deltaTime;
+        jm->hammerTimer++;
+        jm->hammerFrameTimer++;
 
         /* End hammer after duration */
         if (jm->hammerTimer >= HAMMER_DURATION) {
@@ -132,17 +133,6 @@ void updateHammer(Mario *jm, float deltaTime) {
         
         }
 
-        /* Activate hit frames (This is what the actual arcade does, only attacks frame 1 and 3 of animation) */
-        if (jm->hammerFrame == 1 || jm->hammerFrame == 3) { 
-
-            jm->hammerHitActive = 1;
-        
-        } else {
-
-            jm->hammerHitActive = 0;
-            
-        }
-
         if (jm->hammerActive) { /* Prevents climbing */
         
             if (jm->state == 2)
@@ -151,17 +141,6 @@ void updateHammer(Mario *jm, float deltaTime) {
         }
     }
 
-}
-
-void requestClimbUp(Mario *jm) {
-    jm->climbing = 1;
-    jm->climbDir = -1; /* negative Y = upward on screen */
-}
-
-
-void requestClimbDown(Mario *jm) {
-    jm->climbing = 1;
-    jm->climbDir = 1; /* positive Y = downward on screen */
 }
 
 void requestJump(Mario *jm) {
