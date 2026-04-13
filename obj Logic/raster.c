@@ -534,3 +534,50 @@ void plot_string(UINT8 *base, INT16 row, INT16 col, char *str) {
         col = (UINT16)(col + 8);
     }
 }
+
+UINT16 *get_video_base() {
+
+	long old_ssp = Super(0);
+    
+    UINT8 *video_hi_byte;
+    UINT8 *video_mi_byte;
+
+    UINT32 hi_byte_value;
+    UINT32 mi_byte_value;
+
+    video_hi_byte = VIDEO_HI_BYTE_ADDRESS;
+    video_mi_byte = VIDEO_MI_BYTE_ADDRESS;
+
+    hi_byte_value = (UINT32)*video_hi_byte << 16;
+    mi_byte_value = (UINT32)*video_mi_byte << 8;
+
+	Super(old_ssp);
+
+    return (UINT16 *)(hi_byte_value | mi_byte_value);
+}
+
+void set_video_base(UINT16 *address) {
+
+	long old_ssp = Super(0);
+
+    UINT8 *video_hi_byte;
+    UINT8 *video_mi_byte;
+
+    UINT32 hi_byte_value;
+    UINT32 mi_byte_value;
+
+    video_hi_byte = VIDEO_HI_BYTE_ADDRESS;
+    video_mi_byte = VIDEO_MI_BYTE_ADDRESS;
+
+    hi_byte_value = (UINT32)address & 0xFF0000;
+    hi_byte_value = hi_byte_value >> 16;
+
+    mi_byte_value = (UINT32)address & 0x00FF00;
+    mi_byte_value = mi_byte_value >> 8;
+
+    *video_hi_byte = (UINT8)hi_byte_value;
+    *video_mi_byte = (UINT8)mi_byte_value;
+
+	Super(old_ssp);
+
+}
