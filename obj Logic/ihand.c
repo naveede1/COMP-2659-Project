@@ -8,6 +8,9 @@ void handleAirborneInput(Model *model, int *gameRunning, int jumpVelX) {
         while (has_input()) {
             input_val = get_input();
         }
+        if (input_val == 'q') {
+            *gameRunning = 0; /* Allow quitting while airborne */
+        }
     }
     /* Preserve the horizontal velocity set at jump time — no mid-air steering */
     model->mario.deltX = jumpVelX;

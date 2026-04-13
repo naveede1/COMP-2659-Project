@@ -8,8 +8,7 @@ volatile unsigned long vbl_ticks = 0;
 
 static Vector old_vbl = 0;
 
-static Vector install_vector(int num, Vector vector)
-{
+static Vector install_vector(int num, Vector vector) { /* From lab 08*/
     Vector orig;
     Vector *vectp;
     long old_ssp;
@@ -23,22 +22,18 @@ static Vector install_vector(int num, Vector vector)
     return orig;
 }
 
-void init_vbl(void)
-{
+void init_vbl() {
     render_request = 0;
     vbl_ticks = 0;
     old_vbl = install_vector(28, vbl_isr);
 }
 
-void shutdown_vbl(void)
-{
+void shutdown_vbl() {
     if (old_vbl != 0)
-    {
         install_vector(28, old_vbl);
-    }
 }
 
-void do_vbl_isr(void) {
+void do_vbl_isr() {
     vbl_ticks++;
     update_music(vbl_ticks);
     render_request = 1;
