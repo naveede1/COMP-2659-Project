@@ -364,7 +364,7 @@ int main() {
                 barCheck = checkBarrels(model->mario, model->barrels);
                 if(barCheck != -1 && model->barrels[barCheck].visible){
                     model->barrels[barCheck].visible = 0;
-                    model->score.value += 200;
+                    model->score.value += 2000;
                     barCheck = -1;
                 }
             }

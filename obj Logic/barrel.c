@@ -128,18 +128,18 @@ int checkBarrels(Mario mario, Barrel barrel[]) { /* Returns the index of a barre
             if(barrel[barNum].visible == 1) {
                 if(mario.hammerFrame == 0) { /* Hammer Down */
                     if(mario.direction == 0) { /* Mario Left */
-                        if(checkHCollision(mario.posX-15, mario.posY+2, barrel[barNum].posX, barrel[barNum].posY))
+                        if(checkHCollision(mario.posX-15, mario.posY+2, barrel[barNum]))
                             return barNum;
                     } else { /* Mario Right */
-                        if(checkHCollision(mario.posX+15, mario.posY+2, barrel[barNum].posX, barrel[barNum].posY))
+                        if(checkHCollision(mario.posX+15, mario.posY+2, barrel[barNum]))
                             return barNum;
                     }
                 } else { /* Hammer Up */
                     if(mario.direction == 0) { /* Mario Left*/
-                        if(checkHCollision(mario.posX+2, mario.posY-15, barrel[barNum].posX, barrel[barNum].posY))
+                        if(checkHCollision(mario.posX+2, mario.posY-15, barrel[barNum]))
                             return barNum;
                     } else { /* Mario Right */
-                        if(checkHCollision(mario.posX-2, mario.posY-15, barrel[barNum].posX, barrel[barNum].posY))
+                        if(checkHCollision(mario.posX-2, mario.posY-15, barrel[barNum]))
                             return barNum;
                     }
                 }
@@ -150,23 +150,30 @@ int checkBarrels(Mario mario, Barrel barrel[]) { /* Returns the index of a barre
     return -1;
 }
 
-int checkHCollision(int hamXleft, int hamYtop, int barXleft, int barYtop) { /* Returns 1 if the Barrel Collides with the Hammer, 0 if not*/
+int checkHCollision(int hamXleft, int hamYtop, Barrel barrel) { /* Returns 1 if the Barrel Collides with the Hammer, 0 if not*/
 
     /* Set Marios Collider */
-    int hamXright = hamXleft + 15;
-    int hamYbottom = hamYtop + 15;
+    int hamXcenter = hamXleft + 7;
+    int hamYcenter = hamYtop + 7;
 
     /* Set Other Objects Collider */
+    int barXleft = barrel.posX;
     int barXright = barXleft + 15;
+    int barYtop = barrel.posY;
     int barYbottom = barYtop + 15;
     
+    if (!barrel.visible) /* Can't die to destroyed barrel */
+        return 0;
     
-    if (hamXleft > barXleft && hamXleft < barXright || hamXright > barXleft && hamXright < barXright) {
-        if (hamYtop < barYbottom && hamYtop > barYtop || hamYbottom < barYbottom && hamYbottom > barYtop) {
+    if (hamXcenter >= barXleft && hamXcenter <= barXright) {
+        if (hamYcenter >= barYtop && hamYcenter <= barYbottom) {
             return 1;
+
+        } else {
+            return 0;
+
         }
-    }
-    else {
-        return 0;   
+    } else {
+        return 0;
     }
 }
