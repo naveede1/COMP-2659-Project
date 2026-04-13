@@ -93,15 +93,15 @@ Model testModel = {
 {1, 256, 74, 0}, /* Pauline */ 
 
 /* visible, posX, posY, state, broken, dropTick, timeSpawned */
-{ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* Barrel 1 */
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0} }, /* Barrel 9 */ 
+{ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* Barrel 1 */
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} }, /* Barrel 9 */ 
 
 /* visible, posX, posY, direction */
 {0, 240, 352, 1}, /* Spirit */
@@ -228,6 +228,7 @@ int main() {
     /* For Demo */
     int stepUpTick;
     int deathTick;
+    int jumpedBarrel;
 
     long old_ssp;
 
@@ -320,6 +321,9 @@ int main() {
             updateMario(&model->mario, model->girders, 9, model->ladders, 15);
             /* pointer as it needs to write changes back to the actual Mario struct in the model */
             updateMBounds(&model->mario);
+
+            if (model->mario.onGround == 1)
+                jumpedBarrel = 0;
             
             /* --- UPDATE BARRELS --- */
             if (model->kong.spawnBarrel == 1) {
@@ -369,7 +373,7 @@ int main() {
                 barCheck = checkBarrels(model->mario, model->barrels);
                 if(barCheck != -1 && model->barrels[barCheck].visible){
                     model->barrels[barCheck].visible = 0;
-                    model->score.value += 200;
+                    model->score.value += 2000;
                     barCheck = -1;
                 }
             }
@@ -381,10 +385,23 @@ int main() {
                 model->barrels[o].topB = model->barrels[o].posY + 1;
                 model->barrels[o].bottomB = model->barrels[o].posY + 14;
 
-                if (barrelCollision(&model->mario, model->barrels[o])) {
+                model->barrels[o].leftPt = model->barrels[o].posX + 1;
+                model->barrels[o].rightPt = model->barrels[o].posX + 14;
+                model->barrels[o].topPt = model->barrels[o].posY - 16;
+                model->barrels[o].bottomPt = model->barrels[o].posY;
+
+                if (barrelCollision(&model->mario, model->barrels[o])) { /* Check for Kill Mario */
                     plot_string(back_buffer, 260, 14, "MB Collision");
                     o = 9;
                 }
+                
+                if (barrelJumpCollision(&model->mario, model->barrels[o]) && !jumpedBarrel) { /* Check for  Gain Points */
+                    plot_string(back_buffer, 260, 14, "MB Jumped!");
+                    model->score.value += 200;
+                    jumpedBarrel = 1;
+                    o = 9;
+                }
+
             }
                 
         

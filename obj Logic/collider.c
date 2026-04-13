@@ -161,6 +161,23 @@ int barrelCollision (Mario *mario, Barrel barrel) {
     }
 }
 
+int barrelJumpCollision (Mario *mario, Barrel barrel) {
+    if (!barrel.visible) /* Can't jump a destroyed barrel */
+        return 0;
+    
+    if (mario->centerX >= barrel.leftPt && mario->centerX <= barrel.rightPt) {
+        if (mario->centerY >= barrel.topPt && mario->centerY <= barrel.bottomPt) {
+            return 1;
+
+        } else {
+            return 0;
+
+        }
+    } else {
+        return 0;
+    }
+}
+
 int hammerCollision (Mario *mario, Hammer hammer, int index) {
     if (!hammer.visible) /* Can't recollect a collected hammer */
         return 0;
