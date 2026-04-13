@@ -11,6 +11,7 @@ typedef struct { /* Structure for the Barrels */
     long timeSpawned; /* The time when the barrel was first spawned */
 
     int leftB, rightB, topB, bottomB; /* Bounds */
+    int leftPt, rightPt, topPt, bottomPt; /* Bounds */
 
 } Barrel;
 
