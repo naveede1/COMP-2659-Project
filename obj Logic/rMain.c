@@ -16,6 +16,7 @@
 #include "rBound.c"
 #include "splash.c"
 
+#include "collider.c"
  
 #include "clock.c"
 #include "item.c"
@@ -40,9 +41,10 @@
 #define FRAMERULE 12
 
 Model testModel = {
-/* visible, posX, posY, deltX, deltY, state, direction, climbDir, climbing, collideLadder, onGround, hammerActive,
-    hammerTimer, dead, walkFrame, climbFrame, hammerFrame, hammerFrameTimer, hammerHitActive */
-{1, 210, 352, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 194, 226, 336, 368}, /* Jumpman*/
+/* visible, posX, posY, deltX, deltY, state, direction, climbing, climbDir, collideLadder, onGround, hammerActive,
+    hammerTimer, dead, walkFrame, climbFrame, hammerFrame, hammerFrameTimer, hammerHitActive, leftB, rightB, topB, 
+    bottomB, centerX, ladderIndex*/
+{1, 210, 352, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1}, /* Jumpman*/
 
 /* visible, posY, posX, type, size, colLeft, colRight */
 /*To Calculate colLeft and colRight 
@@ -73,9 +75,9 @@ Model testModel = {
 {1, 320, 251, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
 {1, 360, 252, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
 {1, 208, 295, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1},
-{1, 288, 291, 0, 5, 0, 0, 0, 0, 0, 0, 0, 1},
+{1, 288, 291, 0, 5, 0, 0, 0, 284, 299, 291, 330, 1},
 {1, 272, 336, 1, 4, 1, 1, 2, 0, 0, 0, 0, 1},
-{1, 356, 340, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1} }, /* Ladder 15 */ 
+{1, 356, 340, 0, 3, 0, 0, 0, 352, 367, 340, 363, 1} }, /* Ladder 15 */ 
 
 /* visible, posX, posY, state, topL, bottomR, spawnX, spawnY, stateTimer, spawnBarrel, spawnFireBarrel*/
 {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* Kong */
@@ -167,29 +169,6 @@ void renderLevel(Model *model, UINT32 *base) {
 
 }
 
-int checkMCollision(int jmXleft, int jmYtop, int otherXleft, int otherYtop, int otherSize) { /* Returns 1 if the Object Collides with Mario, 0 if not*/
-
-    /* Set Marios Collider */
-    int jmXright = jmXleft + 15;
-    int jmYbottom = jmYtop + 15;
-
-    /* Set Other Objects Collider */
-    int otherXright = otherXleft + (otherSize - 1);
-    int otherYbottom = otherYtop + (otherSize - 1);
-    
-    /* Check for possible X position collision */
-    if ((jmXleft <= otherXleft <= jmXright) || (jmXleft <= otherXright <= jmXright)) {
-
-        /* Check for possible Y position collision */
-        if ((jmYtop <= otherYtop <= jmYbottom) || (jmYtop <= otherYbottom <= jmYbottom)) {
-
-            /* If both conditions are met, there's some form of overlap -> COLLISION! */
-            return 1;
-        }
-    }
-    /* If there's no X overlap, it doesnt matter if we check the Y */
-    return 0;
-}
 
 void draw (Model *model, UINT32 *buffer) {
     
@@ -199,6 +178,9 @@ void draw (Model *model, UINT32 *buffer) {
     renderBStack(model->kong,buffer);
     renderLives(model->lives, (UINT8 *)buffer);
     renderScore(model->score, buffer);
+
+    printMColliderInfo(model->mario, buffer);
+    printLadderColliderInfo(model->ladders[14], buffer);
 
 }
 
@@ -331,9 +313,8 @@ int main() {
 
             /* --- UPDATE MARIO --- */
             updateMario(&model->mario, model->girders, 9, model->ladders, 15);
-            updateMCollision(&model->mario);
             /* pointer as it needs to write changes back to the actual Mario struct in the model */
-
+            updateMBounds(&model->mario);
             
             /* --- UPDATE BARRELS --- */
             if (model->kong.spawnBarrel == 1) {
@@ -352,6 +333,7 @@ int main() {
 
             /* ----- IMPORTANT: Put Conditional Events (if this then that) into Cond.c Event File ----- */
 
+            ladderCollision(&model->mario, model->ladders[14], 14, (UINT32 *)back_buffer);
 
             /* --- RENDER EVERYTHING (FULL REDRAW) --- */
             draw(model, (UINT32 *)back_buffer);
