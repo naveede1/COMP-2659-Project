@@ -103,7 +103,7 @@ void printHammerColliderInfo(Hammer hammer, UINT32 *base) {
 }
 
 int ladderCollision (Mario *mario, Ladder ladder, int index) {
-    if (ladder.broken)
+    if (ladder.broken || mario->hammerActive)
         return 0;
     if (mario->centerX >= ladder.leftB && mario->centerX <= ladder.rightB) {
         if (mario->centerY >= ladder.topB && mario->centerY <= ladder.bottomB) {
@@ -130,7 +130,7 @@ int hammerCollision (Mario *mario, Hammer hammer, int index) {
         } else {
             return 0;
         }
-        
+
     } else {
         return 0;
     }
