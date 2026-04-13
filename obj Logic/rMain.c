@@ -17,8 +17,7 @@
 #include "splash.c"
 
 #include "collider.c"
- 
-#include "clock.c"
+ #include "vbl.c"
 #include "item.c"
 #include "kong.c"
 #include "barrel.c"
@@ -207,6 +206,16 @@ int splash_screen(UINT16 *base, UINT16 *block) {
     } 
 }
 
+void quit_game() {
+    int old_ssp;
+    shutdown_vbl();
+    old_ssp = Super(0);
+    toggle_keyboard_sound();
+    stop_sound();
+    Super(old_ssp);
+
+}
+
 int main() {
 
     /* --- Allocate buffers --- */
@@ -221,19 +230,14 @@ int main() {
     UINT8 *front_buffer = Physbase();
     UINT8 *back_buffer  = screen1;
 
-    long nowTime;
-    volatile long startTime = getTime();
-    long passedTime;
-
+    long last_frame_tick = 0;
+    long last_timer_tick = 0;
     /* For Demo */
-    int stepUpTick;
-    int deathTick;
     int jumpedBarrel;
 
     long old_ssp;
 
     int gameRunning = 1;
-    int lastFrameTick = -1;
 
     int canSpawnBarrel = rand() % 10;
     Model *model = &testModel;
@@ -255,7 +259,6 @@ int main() {
     renderDK(model->kong, (UINT32 *)back_buffer);
     renderBStack(model->kong, (UINT32 *)back_buffer);
 
-    Vsync();
     Setscreen(back_buffer, back_buffer, -1);
 
     /* swap buffers */
@@ -264,7 +267,8 @@ int main() {
         front_buffer = back_buffer;
         back_buffer = temp;
     }
-    
+
+    init_vbl();
     old_ssp = Super(0);
     toggle_keyboard_sound();
     start_music();
@@ -272,89 +276,62 @@ int main() {
 
     while (gameRunning) {
 
-        nowTime = getTime();
-        passedTime = nowTime - startTime;
-
-        if (passedTime % 2000 == 0) {
-
-            model->timer.value -= 200;
-            clear_region((UINT32 *)back_buffer, model->timer.posY + 11, model->timer.posX + 4, 16, 48);
-            renderBonus(model->timer, (UINT32 *)back_buffer);
-
-            if (model->timer.value == 4000) {
-
-                gameRunning = 0;
-                model->mario.state = 4;
-            }
-        }
-
-        /* --- FRAME CONTROL --- */
-        if (passedTime % FRAMERULE == 0 && passedTime != lastFrameTick) {
-
-            lastFrameTick = passedTime;
-
-            
-            /* --- CLEAR ENTIRE BACK BUFFER --- */
-            memset(back_buffer, 0, SCREEN_SIZE);
-
-            /* ----- IMPORTANT: Put Input Code into the Asynch.c Event File ----- */
+        if (render_request) {
+            render_request = 0;
 
             inputHandler(model, &gameRunning);
-          
-            /* ----- IMPORTANT: Put the Update Code into the Synch.c Event File ----- */
 
-            /* ----- UPDATE MUSIC ----- */
-            old_ssp = Super(0);
-            update_music(passedTime);
-            Super(old_ssp);
+            if ((vbl_ticks - last_timer_tick) >= 70) {
+                last_timer_tick = vbl_ticks;
+                model->timer.value -= 200;
 
-            /* --- GAME LOGIC --- */
-            if (passedTime > 40000) {
-                gameRunning = 0;
-            }
-
-            /* --- UPDATE DK --- */
-            updateKong(&model->kong, canSpawnBarrel);
-
-
-            /* --- UPDATE MARIO --- */
-            updateMario(&model->mario, model->girders, 9, model->ladders, 15);
-            /* pointer as it needs to write changes back to the actual Mario struct in the model */
-            updateMBounds(&model->mario);
-
-            if (model->mario.onGround == 1)
-                jumpedBarrel = 0;
-            
-            /* --- UPDATE BARRELS --- */
-            if (model->kong.spawnBarrel == 1) {
-                model->kong.spawnBarrel = 0;
-                model->barrels[l].visible = 1;
-                model->barrels[l].posY = 126; 
-                model->barrels[l].posX = 254;
-                model->barrels[l].timeSpawned = nowTime;
-                l++;
-                if (l > 8) {
-                    l = 0; /* Reset the Barrel Counter*/
+                if (model->timer.value <= 0) {
+                    gameRunning = 0;
+                    model->mario.state = 4;
                 }
             }
 
-            updateBarrels(model->barrels, nowTime);     
+            updateKong(&model->kong, canSpawnBarrel);
+            updateMario(&model->mario, model->girders, 9, model->ladders, 15);
+            updateMBounds(&model->mario);
 
-            /* ----- IMPORTANT: Put Conditional Events (if this then that) into Cond.c Event File ----- */
+            if (model->mario.onGround == 1) {
+                jumpedBarrel = 0;
+            }
+
+            if (model->kong.spawnBarrel == 1) {
+                model->kong.spawnBarrel = 0;
+                model->barrels[l].visible = 1;
+                model->barrels[l].posY = 126;
+                model->barrels[l].posX = 254;
+                model->barrels[l].timeSpawned = vbl_ticks;
+                l++;
+
+                if (l > 8) {
+                    l = 0;
+                }
+            }
+
+            updateBarrels(model->barrels, vbl_ticks);
+
             for (m = 0; m < 15; m++) {
-                if (!ladderCollision(&model->mario, model->ladders[model->mario.ladderIndex], model->mario.ladderIndex) && model->mario.climbing) {
+                if (!ladderCollision(&model->mario,
+                                    model->ladders[model->mario.ladderIndex],
+                                    model->mario.ladderIndex) &&
+                    model->mario.climbing) {
                     model->mario.climbing = 0;
-                    model->mario.posY  -= 6;
-                    model->mario.state = 2; /* Pull up animation */
+                    model->mario.posY -= 6;
+                    model->mario.state = 2;
                     model->mario.onGround = 1;
-                } 
+                }
+
                 if (ladderCollision(&model->mario, model->ladders[m], m)) {
                     plot_string(back_buffer, 220, 14, "ML Collision");
                     model->mario.collideLadder = 1;
                     model->mario.ladderIndex = m;
                     m = 15;
                 } else {
-                    model->mario.collideLadder = 0; 
+                    model->mario.collideLadder = 0;
                 }
             }
 
@@ -369,17 +346,17 @@ int main() {
                 }
             }
 
-            if(model->mario.hammerActive == 1) {
+            if (model->mario.hammerActive == 1) {
                 barCheck = checkBarrels(model->mario, model->barrels);
-                if(barCheck != -1 && model->barrels[barCheck].visible){
+
+                if (barCheck != -1 && model->barrels[barCheck].visible) {
                     model->barrels[barCheck].visible = 0;
                     model->score.value += 2000;
                     barCheck = -1;
                 }
             }
-        
-            for (o = 0; o < 9; o++) {
 
+            for (o = 0; o < 9; o++) {
                 model->barrels[o].leftB = model->barrels[o].posX + 1;
                 model->barrels[o].rightB = model->barrels[o].posX + 14;
                 model->barrels[o].topB = model->barrels[o].posY + 1;
@@ -390,48 +367,39 @@ int main() {
                 model->barrels[o].topPt = model->barrels[o].posY - 16;
                 model->barrels[o].bottomPt = model->barrels[o].posY;
 
-                if (barrelCollision(&model->mario, model->barrels[o])) { /* Check for Kill Mario */
+                if (barrelCollision(&model->mario, model->barrels[o])) {
                     plot_string(back_buffer, 260, 14, "MB Collision");
                     o = 9;
                 }
-                
-                if (barrelJumpCollision(&model->mario, model->barrels[o]) && !jumpedBarrel) { /* Check for  Gain Points */
+
+                if (barrelJumpCollision(&model->mario, model->barrels[o]) &&
+                    !jumpedBarrel) {
                     plot_string(back_buffer, 260, 14, "MB Jumped!");
                     model->score.value += 200;
                     jumpedBarrel = 1;
                     o = 9;
                 }
-
             }
-                
-        
 
-            /* --- RENDER EVERYTHING (FULL REDRAW) --- */
+            if ((vbl_ticks - last_frame_tick) < 2) {
+                continue;
+            }
+            last_frame_tick = vbl_ticks;
+
+            memset(back_buffer, 0, SCREEN_SIZE);
             draw(model, (UINT32 *)back_buffer);
-            
-            /* --- SWAP BUFFERS --- */
-            Vsync();
             Setscreen(back_buffer, back_buffer, -1);
-            
-            {               
+
+            {
                 UINT8 *temp = front_buffer;
                 front_buffer = back_buffer;
                 back_buffer = temp;
             }
         }
-    
     }
-        
-    old_ssp = Super(0);
-    toggle_keyboard_sound();
-    stop_sound();
-    Super(old_ssp);
-
-    Vsync();
     Setscreen(original_screen, original_screen, -1);
     Mfree(raw1);
     Mfree(raw2);
 
     return 0;
-    
 }
