@@ -90,15 +90,15 @@ Model testModel = {
 {1, 256, 74, 0}, /* Pauline */ 
 
 /* visible, posX, posY, state, broken, dropTick, timeSpawned */
-{ {0, 0, 0, 0, 0, 0}, /* Barrel 1 */
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0}, 
-{0, 0, 0, 0, 0, 0} }, /* Barrel 9 */ 
+{ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* Barrel 1 */
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+{0, 0, 0, 0, 0, 0, 0, 0, 0, 0} }, /* Barrel 9 */ 
 
 /* visible, posX, posY, direction */
 {0, 240, 352, 1}, /* Spirit */
@@ -181,7 +181,7 @@ void draw (Model *model, UINT32 *buffer) {
     renderScore(model->score, buffer);
 
     printMColliderInfo(model->mario, buffer);
-    printHammerColliderInfo(model->hammers[1], buffer);
+    printBarrelColliderInfo(model->barrels[0], buffer);
 
 }
 
@@ -325,7 +325,7 @@ int main() {
                 }
             }
 
-            updateBarrels(model->barrels, nowTime);                      
+            updateBarrels(model->barrels, nowTime);     
 
             /* ----- IMPORTANT: Put Conditional Events (if this then that) into Cond.c Event File ----- */
             for (m = 0; m < 15; m++) {
@@ -358,14 +358,25 @@ int main() {
 
             if(model->mario.hammerActive == 1) {
                 barCheck = checkBarrels(model->mario, model->barrels);
-                if(barCheck != -1){
+                if(barCheck != -1 && model->barrels[barCheck].visible){
                     model->barrels[barCheck].visible = 0;
                     model->score.value += 200;
                     barCheck = -1;
                 }
             }
         
-            
+            for (o = 0; o < 9; o++) {
+
+                model->barrels[o].leftB = model->barrels[o].posX + 1;
+                model->barrels[o].rightB = model->barrels[o].posX + 14;
+                model->barrels[o].topB = model->barrels[o].posY + 1;
+                model->barrels[o].bottomB = model->barrels[o].posY + 14;
+
+                if (barrelCollision(&model->mario, model->barrels[o])) {
+                    plot_string(back_buffer, 260, 14, "MB Collision");
+                    o = 9;
+                }
+            }
                 
         
 

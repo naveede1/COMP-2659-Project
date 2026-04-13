@@ -10,6 +10,8 @@ typedef struct { /* Structure for the Barrels */
     int dropTick; /* Normal = 0, Fire = 1 */
     long timeSpawned; /* The time when the barrel was first spawned */
 
+    int leftB, rightB, topB, bottomB; /* Bounds */
+
 } Barrel;
 
 void updateBarrels(Barrel barrel[], long nowTime);
