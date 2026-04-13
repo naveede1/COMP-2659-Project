@@ -78,24 +78,16 @@ void printLadderColliderInfo(Ladder ladder, UINT32 *base) {
 }
 
 int ladderCollision (Mario *mario, Ladder ladder, int index) {
-
-    char ladInd[4];
-
+    if (ladder.broken)
+        return 0;
     if (mario->centerX >= ladder.leftB && mario->centerX <= ladder.rightB) {
         if (mario->centerY >= ladder.topB && mario->centerY <= ladder.bottomB) {
-        
+            mario->ladderIndex = index;
             return 1;
 
         } else {
             return 0;
-            
-            /*
-            if(mario->climbing == 1) {
-                mario->climbing = 0;
-                mario->posY  -= 6;
-                mario->state = 2; / Pull up animation /
-                mario->onGround = 1;
-            } */
+
         }
     } else {
         return 0;

@@ -325,11 +325,19 @@ int main() {
 
             /* ----- IMPORTANT: Put Conditional Events (if this then that) into Cond.c Event File ----- */
             for (m = 0; m < 15; m++) {
+                if (!ladderCollision(&model->mario, model->ladders[model->mario.ladderIndex], model->mario.ladderIndex) && model->mario.climbing) {
+                    model->mario.climbing = 0;
+                    model->mario.posY  -= 6;
+                    model->mario.state = 2; /* Pull up animation */
+                    model->mario.onGround = 1;
+                } 
                 if (ladderCollision(&model->mario, model->ladders[m], m)) {
                     plot_string(back_buffer, 220, 14, "ML Collision");
                     model->mario.collideLadder = 1;
                     model->mario.ladderIndex = m;
                     m = 15;
+                } else {
+                    model->mario.collideLadder = 0; 
                 }
             }
                 
