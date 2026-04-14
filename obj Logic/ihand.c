@@ -1,5 +1,9 @@
 #include "ihand.h"
 
+#define MOVE_SPEED 4
+
+extern void quit_game();
+
 void handleAirborneInput(Model *model, int *gameRunning, int jumpVelX) {
 
     if (has_input()) {
@@ -7,6 +11,10 @@ void handleAirborneInput(Model *model, int *gameRunning, int jumpVelX) {
         /* Drain every remaining key so the queue stays empty; only the last value is kept, though it is not used while airborne. */
         while (has_input()) {
             input_val = get_input();
+        }
+         if (input_val == 'q') {
+            *gameRunning = 0; /* Allow quitting while airborne */
+            quit_game();
         }
     }
     /* Preserve the horizontal velocity set at jump time — no mid-air steering */
@@ -145,8 +153,10 @@ void inputHandler(Model *model, int *gameRunning) {
         handleClimbDown(model, &lastGroundDeltX, &moveBufferFrames);
     else if (input_val == ' ') 
         handleJump(model, &jumpVelX, &lastGroundDeltX, &moveBufferFrames);
-    else if (input_val == 'q') 
-        *gameRunning = 0; 
+    else if (input_val == 'q'){
+        *gameRunning = 0;
+        quit_game(); 
+    }
     else                       
         handleNoGroundInput(model, &lastGroundDeltX, &moveBufferFrames); /* Unrecognised key; no input */
 }
