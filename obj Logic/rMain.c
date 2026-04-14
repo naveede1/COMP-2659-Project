@@ -267,27 +267,41 @@ int main() {
         front_buffer = back_buffer;
         back_buffer = temp;
     }
-
+    /* Start VBL interrupt */
     init_vbl();
+
     old_ssp = Super(0);
     toggle_keyboard_sound();
     start_music();
     Super(old_ssp);
 
+    /* MAIN GAME LOOP */
     while (gameRunning) {
 
+        /* Wait for the VBL ISR to signal a new tick.
+           render_request is cleared immediately so the same tick cannot be processed twice */
         if (render_request) {
             render_request = 0;
 
+            /* Frame-rate gate: skip this tick if fewer than 2 VBL ticks have elapsed since the last frame.
+               This locks the update rate to ~35fps (70Hz / 2). This is done for have less flicker */
+            if ((vbl_ticks - last_frame_tick) < 2) {
+                continue;
+            }
+            last_frame_tick = vbl_ticks;
             inputHandler(model, &gameRunning);
 
-            if ((vbl_ticks - last_timer_tick) >= 70) {
+            /* --- Bonus timer countdown ---
+               Fires every 350 VBL ticks (~5 seconds at 70Hz). Decrements the on-screen bonus by 200 each time.
+               When the value reaches zero the game ends*/
+            if ((vbl_ticks - last_timer_tick) >= 350) {
                 last_timer_tick = vbl_ticks;
                 model->timer.value -= 200;
 
                 if (model->timer.value <= 0) {
                     gameRunning = 0;
                     model->mario.state = 4;
+                    quit_game();
                 }
             }
 
@@ -381,14 +395,11 @@ int main() {
                 }
             }
 
-            if ((vbl_ticks - last_frame_tick) < 2) {
-                continue;
-            }
-            last_frame_tick = vbl_ticks;
-
             memset(back_buffer, 0, SCREEN_SIZE);
             draw(model, (UINT32 *)back_buffer);
-            Setscreen(back_buffer, back_buffer, -1);
+            Setscreen(-1, back_buffer, -1);
+            /*Buffer flip Only the physical screen pointer is updated; -1 in the first argument leaves the logical address alone.
+            The flip is safe here because draw() has fully finished writing — the display never sees a partially rendered frame.*/          
 
             {
                 UINT8 *temp = front_buffer;

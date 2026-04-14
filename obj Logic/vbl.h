@@ -26,7 +26,7 @@ void init_vbl();
 void shutdown_vbl();
 
 
-/* ---- Function: do_vbl -------
+/* ---- Function: do_vbl_isr -------
 
   Purpose: The function called by the VBL interrupt handler. Increments the tick counter, updates music, and sets the render request flag.
   Inputs: None

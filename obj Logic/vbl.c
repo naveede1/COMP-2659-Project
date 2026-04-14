@@ -1,5 +1,6 @@
 #include <osbind.h>
 #include "vbl.h"
+#include "music.h"
 
 
 extern void vbl_isr(void);
@@ -30,7 +31,7 @@ void init_vbl() {
 }
 
 void shutdown_vbl() {
-    if (old_vbl != 0)
+    if (old_vbl != 0) /*Prevents for storing or using an invalid vector*/
         install_vector(28, old_vbl);
 }
 

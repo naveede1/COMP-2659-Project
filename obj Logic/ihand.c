@@ -2,6 +2,8 @@
 
 #define MOVE_SPEED 4
 
+extern void quit_game();
+
 void handleAirborneInput(Model *model, int *gameRunning, int jumpVelX) {
 
     if (has_input()) {
