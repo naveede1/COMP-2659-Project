@@ -395,7 +395,7 @@ int main() {
                     o = 9;
                 }
                 
-                if (barrelJumpCollision(&model->mario, model->barrels[o]) && !jumpedBarrel) { /* Check for  Gain Points */
+                if (barrelJumpCollision(&model->mario, model->barrels[o]) && !jumpedBarrel && !model->mario.climbing) { /* Check for  Gain Points */
                     plot_string(back_buffer, 260, 14, "MB Jumped!");
                     model->score.value += 200;
                     jumpedBarrel = 1;

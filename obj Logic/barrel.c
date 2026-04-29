@@ -12,12 +12,12 @@ void updateBarrels(Barrel barrel[], long nowTime) {
             
             spawnedTime = nowTime - barrel[i].timeSpawned;
 
-            if (spawnedTime < 250) {
+            if (spawnedTime < 350) {
 
                 barrel[i].posX += 4;
                 barrel[i].dropTick = 4;
 
-            } else if (spawnedTime >= 250 && spawnedTime < 760) {
+            } else if (spawnedTime >= 350 && spawnedTime < 1120) {
 
                 if (barrel[i].dropTick == 4) {
                     barrel[i].posY++; /* Barrel falls one girder */
@@ -26,12 +26,12 @@ void updateBarrels(Barrel barrel[], long nowTime) {
                 barrel[i].posX += 4;
                 barrel[i].dropTick++;
                 
-            } else if (spawnedTime >= 760 && spawnedTime < 930){
+            } else if (spawnedTime >= 1120 && spawnedTime < 1400){
 
                 barrel[i].posY += 6;
                 barrel[i].dropTick = 2;
 
-            } else  if (spawnedTime >= 930 && spawnedTime < 1520) {
+            } else  if (spawnedTime >= 1400 && spawnedTime < 2340) {
 
                 if (barrel[i].dropTick == 2) {
                     barrel[i].posY++; /* Barrel falls one girder */
@@ -40,12 +40,12 @@ void updateBarrels(Barrel barrel[], long nowTime) {
                 barrel[i].posX -= 8;
                 barrel[i].dropTick++;
             
-            } else if (spawnedTime >= 1540 && spawnedTime < 1730){
+            } else if (spawnedTime >= 2340 && spawnedTime < 2620){
 
                 barrel[i].posY += 4;
-                barrel[i].dropTick = 2;
+                barrel[i].dropTick = 1;
 
-            } else if (spawnedTime >= 1730 && spawnedTime < 2340) {
+            } else if (spawnedTime >= 2620 && spawnedTime < 3540) {
 
                 if (barrel[i].dropTick == 2) {
                     barrel[i].posY++; /* Barrel falls one girder */
@@ -54,16 +54,12 @@ void updateBarrels(Barrel barrel[], long nowTime) {
                 barrel[i].posX += 8;
                 barrel[i].dropTick++;
 
-            } else if (spawnedTime >= 2340 && spawnedTime < 2360){
-
-                barrel[i].posX += 4;
-            
-            } else if (spawnedTime >= 2360 && spawnedTime < 2480){
+            } else if (spawnedTime >= 3540 && spawnedTime < 3740){
 
                 barrel[i].posY += 6;
                 barrel[i].dropTick = 2;                
 
-            } else if (spawnedTime >= 2480 && spawnedTime < 3090) {
+            } else if (spawnedTime >= 3740 && spawnedTime < 4640) {
 
                 if (barrel[i].dropTick == 2) {
                     barrel[i].posY++; /* Barrel falls one girder */
@@ -71,13 +67,17 @@ void updateBarrels(Barrel barrel[], long nowTime) {
                 } 
                 barrel[i].posX -= 8;
                 barrel[i].dropTick++;
-        
-            } else if (spawnedTime >= 3110 && spawnedTime < 3290){
+            
+            } else if (spawnedTime >= 4640 && spawnedTime < 4680){
+
+                barrel[i].posX -= 4;
+            
+            } else if (spawnedTime >= 4680 && spawnedTime < 4950){
 
                 barrel[i].posY += 4;
                 barrel[i].dropTick = 2;
             
-            } else if (spawnedTime >= 3290 && spawnedTime < 3900) {
+            } else if (spawnedTime >= 4950 && spawnedTime < 5820) {
 
                 if (barrel[i].dropTick == 2) {
                     barrel[i].posY++; /* Barrel falls one girder */
@@ -85,17 +85,17 @@ void updateBarrels(Barrel barrel[], long nowTime) {
                 }     
                 barrel[i].posX += 8;
                 barrel[i].dropTick++;
-
-            } else if (spawnedTime >= 3900 && spawnedTime < 3920){
-
-                barrel[i].posX += 4;
             
-            } else if (spawnedTime >= 3920 && spawnedTime < 4240){
+            } else if (spawnedTime >= 5820 && spawnedTime < 5880){
+
+                barrel[i].posX += 8;
+            
+            } else if (spawnedTime >= 5880 && spawnedTime < 6340){
 
                 barrel[i].posY += 2;
                 barrel[i].dropTick = 2;        
         
-            } else if (spawnedTime >= 4240 && spawnedTime < 4580) {
+            } else if (spawnedTime >= 6340 && spawnedTime < 6840) {
 
                 if (barrel[i].dropTick == 2) {
                     barrel[i].posY++; /* Barrel falls one girder */
@@ -104,7 +104,7 @@ void updateBarrels(Barrel barrel[], long nowTime) {
                 barrel[i].posX -= 8;
                 barrel[i].dropTick++;
             
-            } else if (spawnedTime > 4960) {
+            } else if (spawnedTime > 7560) {
 
                 barrel[i].visible = 0;
                 barrel[i].timeSpawned = 0;
